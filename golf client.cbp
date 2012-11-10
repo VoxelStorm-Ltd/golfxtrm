@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GolfXTRM client" />
+		<Option pch_mode="2" />
+		<Option default_target="Release" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\GolfXTRM debug" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\GolfXTRM" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-fgcse-sm" />
+					<Add option="-fgcse-las" />
+					<Add option="-fgcse-after-reload" />
+					<Add option="-fsched-spec-load" />
+					<Add option="-fsched-spec-load-dangerous" />
+					<Add option="-fprofile-generate" />
+					<Add option="-fbranch-probabilities" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-fprofile-use" />
+					<Add option="-fprofile-values" />
+					<Add option="--coverage" />
+					<Add option="-ftest-coverage" />
+					<Add option="-fsched2-use-traces" />
+					<Add option="-ftree-loop-linear" />
+					<Add option="-fpeel-loops" />
+					<Add option="-funroll-loops" />
+					<Add option="-funswitch-loops" />
+					<Add option="-fprefetch-loop-arrays" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-lgcov" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Debug;Release;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="include" />
+			<Add directory="$(#glfw.include)" />
+			<Add directory="$(#boost.include)" />
+		</Compiler>
+		<Linker>
+			<Add library="lib\libboost_thread-mgw44-mt-1_51.a" />
+			<Add library="lib\libboost_system-mgw44-mt-1_51.a" />
+			<Add library="lib\libboost_chrono-mgw44-mt-1_51.a" />
+			<Add library="glfw" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="gdi32" />
+			<Add library="lib\libftgl_static_D.a" />
+			<Add library="lib\libglu32.a" />
+			<Add library="lib\libopengl32.a" />
+			<Add library="lib\freetype.lib" />
+			<Add library="ws2_32" />
+			<Add library="lib\libSOIL.a" />
+			<Add directory="$(#glfw.lib)" />
+			<Add directory="$(#boost.lib)" />
+		</Linker>
+		<Unit filename="chatwindow.h" />
+		<Unit filename="circular.h" />
+		<Unit filename="colourgroup.h" />
+		<Unit filename="globaldefs.h" />
+		<Unit filename="globalobjects_client.h" />
+		<Unit filename="globalvars_client.h" />
+		<Unit filename="guistorm.h" />
+		<Unit filename="hashfunctions.h" />
+		<Unit filename="inputstorm.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="material.cpp" />
+		<Unit filename="material.h" />
+		<Unit filename="perlin.cpp" />
+		<Unit filename="progressbar.h" />
+		<Unit filename="sha1.cpp" />
+		<Unit filename="version.h" />
+		<Unit filename="voctree.h" />
+		<Unit filename="worldcomponents.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
