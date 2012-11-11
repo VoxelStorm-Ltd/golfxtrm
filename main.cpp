@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include <cstdio>
+//#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -9,9 +9,11 @@
 #include "version.h"
 
 #include <GL/glfw.h>
+#include "vmath.h">
 
 #include "globaldefs.h"
 #include "globalvars_client.h"
+#include "terrain.h"
 #include "worldcomponents.h"
 
 #include "progressbar.h"
