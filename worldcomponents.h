@@ -11,7 +11,7 @@ class world;
 class golfcourse {  /// the overall landscape object
 public:
   world *parentplanet;
-  terrain landscape;
+  terrain *landscape;
 
   Vector3d origin;                      // where this is located in the world
 
@@ -20,7 +20,7 @@ public:
 
   golfcourse(world *parent) {                      /// default constructor
     parentplanet = parent;
-    //landscape = new terrain();
+    landscape = new terrain();
   }
 
   void render();
@@ -39,7 +39,7 @@ public:
 
   world() {                                 /// default constructor
     gravity = 9.800;
-    numcourses = 18;
+    numcourses = 0;
     addcourse(0);   // no point having less than 1 course
   }
 

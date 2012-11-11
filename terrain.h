@@ -1,6 +1,8 @@
 #ifndef TERRAIN_H_INCLUDED
 #define TERRAIN_H_INCLUDED
 
+#include <GL/glew.h>
+#include <GL/glfw.h>
 #include "vmath.h"
 
 class terrain {                 /// object for handling the terrain heightmap
@@ -8,7 +10,16 @@ public:
   Vector3d origin;      // the map's origin's coordinates
   Vector3d bounds;      // the map's bounding box
 
+  GLuint vao;           // vertex array object
+  GLuint vbo;           // vertex buffer object
+
   terrain() {                            /// default constructor
+    origin.x = 0;
+    origin.y = 0;
+    origin.z = 0;
+    bounds.x = 100;
+    bounds.y = 100;
+    bounds.z = 100;
   }
 
   double get_height_at(double x, double z) {
@@ -28,6 +39,15 @@ public:
   }
 
   void render() {                         /// draw the terrain grid
+    double polysize = 0.2;
+    for(double x = origin.x; x < bounds.x; x += polysize) {
+      glBegin(GL_TRIANGLE_STRIP);
+      for(double z = origin.z; z < bounds.z; z += polysize) {
+        glVertex3d(x,            origin.y, z);
+        glVertex3d(x + polysize, origin.y, z);
+      }
+      glEnd();
+    }
   }
 };
 

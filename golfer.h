@@ -46,6 +46,12 @@ public:
   double armspitchuplimit;    // how far we can tilt our arms back over our head
   double armspitchdownlimit;  // how far we can tilt our arms down in front
 
+  double walkspeed;           // maximum speed on the ground when not sprinting
+  double strafespeed;         // maximum sideways movement ground speed
+  double walkrunspeed;        // maximum speed on the ground while sprinting
+  double straferunspeed;      // maximum sideways movement ground sprint speed
+
+
   golfcourse *currentcourse;  // where we are
   world *currentplanet;       // what planet, is this? ;)
   holdable *helditem;         // what we're holding (NULL for empty hand)
@@ -87,6 +93,10 @@ public:
     bodymomentofinertia = 1.18668836;           // 103.0 lb.in.sec.2 from US military data
     headmomentofinertia = 0.015;                // ~150 kg.cm^2 from US naval data
     armsmomentofinertia = 0.05014;              // -250.7 kg.m^2 from biomechanics paper
+    walkspeed = 1.50876;                        // average walking
+    walkrunspeed = 6.25856;                     // average male running speed
+    strafespeed = walkspeed * 0.75;             // generous guess
+    straferunspeed = strafespeed * 0.75 ;       // generous guess
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;

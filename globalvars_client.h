@@ -22,10 +22,6 @@ double camfov = 0.5;    // field of view - larger numbers are wider
 
 // non-editable interface settings
 double rotations_per_tick = .02;
-double walkspeed = 100;
-double walkrunspeed = 20000;
-double strafespeed = 80;
-double straferunspeed = 15000;
 double camfriction = 0.99;   // multiplier for speed each physics tick
 double cammu = 0.05;         // threshold to stop moving things moving
 

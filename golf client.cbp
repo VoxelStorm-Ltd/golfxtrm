@@ -58,8 +58,11 @@
 			<Add directory="include" />
 			<Add directory="$(#glfw.include)" />
 			<Add directory="$(#boost.include)" />
+			<Add directory="$(#glew.include)" />
+			<Add directory="lib" />
 		</Compiler>
 		<Linker>
+			<Add library="lib\libglew32.a" />
 			<Add library="glfw" />
 			<Add library="opengl32" />
 			<Add library="glu32" />
@@ -72,6 +75,7 @@
 		</Linker>
 		<Unit filename="globaldefs.h" />
 		<Unit filename="globalvars_client.h" />
+		<Unit filename="globalvars_client_extern.h" />
 		<Unit filename="golfer.h" />
 		<Unit filename="holdable.h" />
 		<Unit filename="main.cpp" />
@@ -79,6 +83,7 @@
 		<Unit filename="terrain.h" />
 		<Unit filename="version.h" />
 		<Unit filename="worldcomponents.h" />
+		<Unit filename="worldcomponents_render.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

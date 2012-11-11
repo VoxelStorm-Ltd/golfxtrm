@@ -2,9 +2,11 @@
 #include "golfer.h"
 #include "holdable.h"
 
+extern universe *root;
+
 void golfcourse::render() {
   // draw the terrain
-  landscape.render();
+  landscape->render();
   // draw the trees and other furniture
   // TODO
 }
@@ -14,7 +16,7 @@ void world::render() {
 
   // iterate through the courses
   for(int i=0; i < numcourses; ++i) {
-    course[numcourses]->render();
+    course[i]->render();
   }
 
   // iterate through the players on this planet

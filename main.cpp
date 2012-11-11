@@ -8,7 +8,9 @@
 #define _USE_MATH_DEFINES
 #include "version.h"
 
+#include <GL/glew.h>
 #include <GL/glfw.h>
+#include <GL/gl.h>
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -18,6 +20,8 @@
 #include "golfer.h"
 #include "holdable.h"
 
+#include "global_objects.h"
+
 //#include "progressbar.h"
 
 
@@ -26,7 +30,7 @@ using namespace std;
 
 void login();
 void init();
-void shutdown(int return_code);
+void shutdown(int return_code, string errorstring);
 void mainloop();
 
 void controls();
@@ -34,20 +38,16 @@ void GLFWCALL controlcallback(int key, int action);
 void physics(world *thisplanet);
 void draw();
 
-universe *root;             // this holds everything
-golfer *player;             // the golfer entity that we control
-
 int main() {
   init();
   mainloop();
-  shutdown(0);
+  shutdown(0, "");
 }
 
 void init() {       /// all the one-time initialisation we need for the engine
   // initialise the opengl window
-  if(glfwInit() != GL_TRUE) shutdown(1);
-  // 800 x 600, 16 bit color, no depth, alpha or stencil buffers, windowed
-  if(glfwOpenWindow(windowwidth, windowheight, 8, 8, 8, 0, 8, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1);
+  if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
+  if(glfwOpenWindow(windowwidth, windowheight, 8, 8, 8, 0, 8, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
 
   GLFWvidmode desktopmode;
   glfwGetDesktopMode(&desktopmode);
@@ -68,6 +68,11 @@ void init() {       /// all the one-time initialisation we need for the engine
   strcat(titlestring,AutoVersion::YEAR);
   //glfwSetWindowTitle(titlestring);
   glfwSetWindowTitle("GolfXTRM alpha: Loading...");
+
+  // globalise the opengl extensions we want to use
+  glewExperimental = GL_TRUE;
+  if(glewInit() != GLEW_OK) shutdown(1, "GLEW failed to initialise");
+
 
   // set the projection matrix to a normal frustum with a max depth of 5000
   glMatrixMode(GL_PROJECTION);
@@ -128,7 +133,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
   root = new universe();
   root->addplanet(0);
-
+  player = new golfer(root->planet[0]->course[0], 0, 0, 0);
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
@@ -146,8 +151,12 @@ void init() {       /// all the one-time initialisation we need for the engine
   cout << "Initialisation complete." << endl;
 }
 
-void shutdown(int return_code) {  /// close everything gracefully before exit
-  cout << "Exiting on command - have a nice day!" << endl;
+void shutdown(int return_code, string errorstring) {  /// close everything gracefully before exit
+  if(return_code == 0) {
+    cout << "Exiting on command - have a nice day!" << endl;
+  } else {
+    cout << "Fatal error: " << errorstring << endl;
+  }
   glfwTerminate();  // shut down the window
   exit(return_code);
 }
@@ -171,17 +180,18 @@ void mainloop() {   /// the main rendering loop
     timelastrenderend = glfwGetTime();
     timedeltarender = timelastrenderend - timelastrenderstart;  // render delta
     timedeltatotal = timelastrenderend - timelasttotal;         // total delta
-    timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;  // update the rolling average
+    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;  // update the rolling average
+    timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;  // update the rolling average
 
-    // LOD and time adjustments
+    // framerate capping
     double timetowait = 0;
     if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
       timetowait = timedeltamincap - (glfwGetTime() - timelasttickstart);
       glfwSleep(timetowait);
     }
 
-    //cout << "FPS " << (int)(1 / timedeltatotal) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slept " << timetowait << "ms" << endl;
-    //cout << "Coords X:" << (int)camposx << " Y:" << (int)camposy <<" Z:" << (int)camposz << " camyaw: " << camyaw << " campitch: " << campitch << endl;
+    //cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slept " << timetowait << "ms" << endl;
+    cout << "Coords X:" << (int)camposx << " Y:" << (int)camposy <<" Z:" << (int)camposz << " camyaw: " << camyaw << " campitch: " << campitch << endl;
   }
 }
 
@@ -193,12 +203,14 @@ void controls() {
   double camaccelz = 0;
   double delta_move, delta_strafe;
 
-  if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to walk
-    delta_move   = timedeltatotal * walkrunspeed;
-    delta_strafe = timedeltatotal * straferunspeed;
+  if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to sprint
+    delta_move   = timedeltaaverage * player->walkrunspeed;
+    delta_strafe = timedeltaaverage * player->straferunspeed;
+    cout << timedeltaaverage << "s * " << player->walkrunspeed << "m/s = " << delta_move << "m/frame * FPS " << (int)(1 / timedeltaaverage) << " = " << delta_move / timedeltaaverage << endl;
   } else {
-    delta_move   = timedeltatotal * walkspeed;
-    delta_strafe = timedeltatotal * strafespeed;
+    delta_move   = timedeltaaverage * player->walkspeed;
+    delta_strafe = timedeltaaverage * player->strafespeed;
+    cout << timedeltaaverage << "s * " << player->walkspeed << "m/s = " << delta_move << "m/frame * FPS " << (int)(1 / timedeltaaverage) << " = " << delta_move / timedeltaaverage << endl;
   }
 
   if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement
@@ -239,8 +251,8 @@ void controls() {
 
   // convert mouse movements to camera rotation
   glfwGetMousePos(&mousex, &mousey);
-  camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel * timedeltatotal);
-  campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert * timedeltatotal);
+  camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel * timedeltaaverage);
+  campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert * timedeltaaverage);
   glfwSetMousePos(windowwidth/2, windowheight/2);   //reset the mouse immediately after
   if(camyaw > 360)              //wrap the camera yaw angle
     camyaw = camyaw - 360;
@@ -257,6 +269,12 @@ void GLFWCALL controlcallback(int key, int action) {
     if(key == GLFW_KEY_ESC) {         // escape to quit
       keeprunning = false;
       cout << "Stop requested..." << endl;
+    } else if(key == 'O') {        // O and P switch render modes
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
+      cout << "Switched to filled render mode" << endl;
+    } else if(key == 'P') {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
+      cout << "Switched to wireframe render mode" << endl;
     }
   }
 }
@@ -268,9 +286,9 @@ void physics(world *thisplanet) {   /// update entity and player locations
   camposylast = camposy;
 
   // camera movements
-  camposx += camspeedx * timedeltatotal;     //inertial motion
-  camposy += camspeedy * timedeltatotal;
-  camposz += camspeedz * timedeltatotal;
+  camposx += camspeedx * timedeltaaverage;     //inertial motion
+  camposy += camspeedy * timedeltaaverage;
+  camposz += camspeedz * timedeltaaverage;
 
   //camspeedx *= camfriction;           //primitive friction
   //camspeedy *= camfriction;
