@@ -5,7 +5,10 @@
 
 class golfcourse {  /// the overall landscape object
 public:
+  terrain *landscape;
+
   golfcourse() {                            // default constructor
+    landscape = new terrain();
   }
 };
 

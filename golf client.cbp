@@ -42,7 +42,6 @@
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
-					<Add option="-fprefetch-loop-arrays" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -61,19 +60,13 @@
 			<Add directory="$(#boost.include)" />
 		</Compiler>
 		<Linker>
-			<Add library="lib\libboost_thread-mgw44-mt-1_51.a" />
-			<Add library="lib\libboost_system-mgw44-mt-1_51.a" />
-			<Add library="lib\libboost_chrono-mgw44-mt-1_51.a" />
 			<Add library="glfw" />
 			<Add library="opengl32" />
 			<Add library="glu32" />
 			<Add library="gdi32" />
-			<Add library="lib\libftgl_static_D.a" />
 			<Add library="lib\libglu32.a" />
 			<Add library="lib\libopengl32.a" />
-			<Add library="lib\freetype.lib" />
 			<Add library="ws2_32" />
-			<Add library="lib\libSOIL.a" />
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
@@ -81,6 +74,7 @@
 		<Unit filename="globalvars_client.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="progressbar.h" />
+		<Unit filename="terrain.h" />
 		<Unit filename="version.h" />
 		<Unit filename="worldcomponents.h" />
 		<Extensions>
