@@ -73,7 +73,6 @@ void init() {       /// all the one-time initialisation we need for the engine
   glewExperimental = GL_TRUE;
   if(glewInit() != GLEW_OK) shutdown(1, "GLEW failed to initialise");
 
-
   // set the projection matrix to a normal frustum with a max depth of 5000
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -82,7 +81,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glMatrixMode(GL_MODELVIEW);
 
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
-  //glCullFace(GL_BACK);      // may be redundant to cull back-faces
+  glCullFace(GL_BACK);      // may be redundant to cull back-faces
   glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer
   glEnable(GL_DITHER);      // may marginally increase shading quality
   glEnable(GL_LIGHTING);    // obviously we want lighting... right?
@@ -97,14 +96,14 @@ void init() {       /// all the one-time initialisation we need for the engine
   //glShadeModel(GL_SMOOTH);  //SMOOTH or FLAT
   glShadeModel(GL_FLAT);    //may look more spectacular for a cube world
 
-  /*// fog settings
+  // fog settings
   glEnable(GL_FOG);
-  //GLfloat fogcolour[] = {0.15, 0.15, 0.1, 1};
+  GLfloat fogcolour[] = {fogred, foggreen, fogblue, 1};
   glFogfv(GL_FOG_COLOR, fogcolour);
-  glFogi(GL_FOG_MODE, GL_EXP); // GL_LINEAR GL_EXP GL_EXP2
-  glFogf(GL_FOG_DENSITY, 0.001);  // only used for exponential fog
-  glFogi(GL_FOG_START, 10);     // only used for linear fog
-  glFogi(GL_FOG_END, 4000);*/
+  glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
+  glFogf(GL_FOG_DENSITY, 0.03);  // only used for exponential fog
+  glFogi(GL_FOG_START, 0);     // only used for linear fog
+  glFogi(GL_FOG_END, 200);
 
   /*// temporary material definition
   GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
@@ -113,8 +112,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
 
   // set up some lights
-  //GLfloat ambientlightcol[] = {.25,0,0,1};
-  GLfloat ambientlightcol[] = {ambientred,ambientgreen,ambientblue,1};
+  GLfloat ambientlightcol[] = {ambientred, ambientgreen, ambientblue, 1};
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientlightcol); //global ambient
   //glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlightcol);
   GLfloat directionallightdiff[] = {0.8,0.7,0.5,1};
@@ -208,11 +206,9 @@ void controls() {
   if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to sprint
     delta_move   = timedeltaaverage * player->walkrunspeed;
     delta_strafe = timedeltaaverage * player->straferunspeed;
-    cout << timedeltaaverage << "s * " << player->walkrunspeed << "m/s = " << delta_move << "m/frame * FPS " << (int)(1 / timedeltaaverage) << " = " << delta_move / timedeltaaverage << endl;
   } else {
     delta_move   = timedeltaaverage * player->walkspeed;
     delta_strafe = timedeltaaverage * player->strafespeed;
-    cout << timedeltaaverage << "s * " << player->walkspeed << "m/s = " << delta_move << "m/frame * FPS " << (int)(1 / timedeltaaverage) << " = " << delta_move / timedeltaaverage << endl;
   }
 
   if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement

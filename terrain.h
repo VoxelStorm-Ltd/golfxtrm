@@ -40,8 +40,12 @@ public:
 
   void render() {                         /// draw the terrain grid
     double polysize = 1;
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glColor4f(0.75, 0.75, 0.25, 1);
     for(double x = origin.x; x < bounds.x; x += polysize) {
       glBegin(GL_TRIANGLE_STRIP);
+      glNormal3i(0, 1, 0);
       for(double z = origin.z; z < bounds.z; z += polysize) {
         glVertex3d(x,            origin.y, z);
         glVertex3d(x + polysize, origin.y, z);

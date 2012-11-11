@@ -31,6 +31,7 @@ class world {     /// world (planet) objects containing golf courses
 public:
   golfcourse *course[18];
   int numcourses;
+  double horizondistance;
 
   double gravity;                       // downward acceleration in m/s^2
 
@@ -39,6 +40,7 @@ public:
 
   world() {                                 /// default constructor
     gravity = 9.800;
+    horizondistance = 1200;
     numcourses = 0;
     addcourse(0);   // no point having less than 1 course
   }

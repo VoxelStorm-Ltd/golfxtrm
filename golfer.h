@@ -151,6 +151,67 @@ public:
   }
 
   void render() {                             /// draw this chap
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glColor4f(1,1,0,1);
+
+    // body
+    double top = 1.5;
+    double bottom = 0;
+    double left = -0.25;
+    double right = 0.25;
+    double front = 0.10;
+    double back = -0.10;
+    glBegin(GL_TRIANGLES);
+      glNormal3i(0,     0,      1);
+      glVertex3d(left,	bottom,	front);  // front face
+      glVertex3d(right,	bottom,	front);
+      glVertex3d(right,	top,	  front);
+      glVertex3d(right,	top,	  front);
+      glVertex3d(left,	top,	  front);
+      glVertex3d(left,	bottom,	front);
+
+      glNormal3i(0,     0,      -1);
+      glVertex3d(right,	bottom,	back);  // back face
+      glVertex3d(left,	bottom,	back);
+      glVertex3d(left,	top,	  back);
+      glVertex3d(left,	top,	  back);
+      glVertex3d(right,	top,	  back);
+      glVertex3d(right,	bottom,	back);
+
+      glNormal3i(-1,    0,      0);
+      glVertex3d(left,	bottom,	back);  // left face
+      glVertex3d(left,	bottom,	front);
+      glVertex3d(left,	top,	  front);
+      glVertex3d(left,	top,	  front);
+      glVertex3d(left,	top,	  back);
+      glVertex3d(left,	bottom,	back);
+
+      glNormal3i(1,     0,      0);
+      glVertex3d(right,	bottom,	front);  // right face
+      glVertex3d(right,	bottom,	back);
+      glVertex3d(right,	top,	  back);
+      glVertex3d(right,	top,	  back);
+      glVertex3d(right,	top,	  front);
+      glVertex3d(right,	bottom,	front);
+
+      glNormal3i(0,     1,      0);
+      glVertex3d(left,	top,	  front);  // top face
+      glVertex3d(right,	top,	  front);
+      glVertex3d(right,	top,	  back);
+      glVertex3d(right,	top,	  back);
+      glVertex3d(left,	top,	  back);
+      glVertex3d(left,	top,	  front);
+
+      glNormal3i(0,     -1,     0);
+      glVertex3d(left,	bottom,	front);  // bottom face
+      glVertex3d(left,	bottom,	back);
+      glVertex3d(right,	bottom,	back);
+      glVertex3d(right,	bottom,	back);
+      glVertex3d(right,	bottom,	front);
+      glVertex3d(left,	bottom,	front);
+    glEnd();
+
     // if he's our avatar, skip drawing the head and neck
   }
 };

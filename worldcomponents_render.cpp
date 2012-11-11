@@ -3,6 +3,7 @@
 #include "holdable.h"
 
 extern universe *root;
+extern golfer *player;
 
 void golfcourse::render() {
   // draw the terrain
@@ -13,6 +14,26 @@ void golfcourse::render() {
 
 void world::render() {
   // give us a basic horizon, sky, atmospheric stuff
+  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_COLOR_MATERIAL);
+  // ground
+  glColor4f(0.75, 0.75, 0.25, 1);
+  glBegin(GL_TRIANGLE_STRIP);
+  glNormal3i(0, 1, 0);
+  glVertex3d(player->bodyposition.x - horizondistance, 0, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, 0, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, 0, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, 0, player->bodyposition.z + horizondistance);
+  glEnd();
+  // sky
+  glColor4f(skyred, skygreen, skyblue, 1);
+  glBegin(GL_TRIANGLE_STRIP);
+  glNormal3i(0, -1, 0);
+  glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z + horizondistance);
+  glEnd();
 
   // iterate through the courses
   for(int i=0; i < numcourses; ++i) {

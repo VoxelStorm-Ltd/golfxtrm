@@ -27,12 +27,15 @@ double cammu = 0.05;         // threshold to stop moving things moving
 
 // non-editable world settings (later server-fed)
 GLfloat fogcolour[] = {0.85, 0.85, 0.9, 1};
-float skyred   = 0.6;
-float skygreen = 0.6;
-float skyblue  = 0.6;
-float ambientred   = 0.0;
-float ambientgreen = 0.0;
-float ambientblue  = 0.5;
+float fogred   = 0.98;
+float foggreen = 0.92;
+float fogblue  = 0.50;
+float skyred   = 0.90;
+float skygreen = 0.95;
+float skyblue  = 0.67;
+float ambientred   = 0.7;
+float ambientgreen = 0.7;
+float ambientblue  = 0.7;
 
 GLfloat sundirection[] = {0.5,1,0.25,0};
 

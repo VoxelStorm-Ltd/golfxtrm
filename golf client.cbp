@@ -73,6 +73,7 @@
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
+		<Unit filename="global_objects.h" />
 		<Unit filename="globaldefs.h" />
 		<Unit filename="globalvars_client.h" />
 		<Unit filename="globalvars_client_extern.h" />

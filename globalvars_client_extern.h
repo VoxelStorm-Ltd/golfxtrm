@@ -30,6 +30,9 @@ extern double cammu;
 
 // non-editable world settings (later server-fed)
 extern GLfloat fogcolour[];
+extern float fogred;
+extern float foggreen;
+extern float fogblue;
 extern float skyred;
 extern float skygreen;
 extern float skyblue;
