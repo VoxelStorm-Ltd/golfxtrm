@@ -49,7 +49,7 @@ double timedeltatick    = 0.005; // time spent calculating the last tick
 double timedeltatotal   = 0.01;  // time taken between two complete loops (1/FPS)
 double timedeltaaverage = 0.01;  // rolling average of the delta time
 
-inputmodetype inputmode = INPUTMODE_WALKING;
+inputmodetype inputmode = INPUTMODE_MOVING_HEAD;
 
 double camposx = 0;
 double camposy = 1.6095;  // average human standing eye height

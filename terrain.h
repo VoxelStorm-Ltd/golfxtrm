@@ -3,6 +3,9 @@
 
 class terrain {                 /// object for handling the terrain heightmap
 public:
+  Vector3d origin;      // the map's origin's coordinates
+  Vector3d bounds;      // the map's bounding box
+
   terrain() {                            // default constructor
   }
 
@@ -13,13 +16,13 @@ public:
 
   Vector3d get_slope_at(double x, double z) {
     /// return the downward slope vector at this spot
-    Vector3d thisvector;
+    Vector3d result;
 
-    thisvector.x = (double)0;
-    thisvector.y = (double)1;
-    thisvector.z = (double)0;
+    result.x = (double)0;
+    result.y = (double)1;
+    result.z = (double)0;
 
-    return thisvector;
+    return result;
   }
 };
 

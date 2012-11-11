@@ -3,11 +3,15 @@
 
 #include "progressbar.h"
 
+class world;  // forward dec
+
 class golfcourse {  /// the overall landscape object
 public:
+  world *parentplanet;
   terrain *landscape;
 
-  golfcourse() {                            // default constructor
+  golfcourse(world *parent) {                      // default constructor
+    parentplanet = parent;
     landscape = new terrain();
   }
 };
@@ -18,12 +22,15 @@ public:
   golfcourse *course[18];
   int numcourses;
 
+  double gravity;     // downward acceleration in m/s^2
+
   world() {                                 // default constructor
+    gravity = 9.800;
     numcourses = 18;
   }
 
   void addcourse(int coursenum) {           // add a golf course to this planet
-    course[coursenum] = new golfcourse();
+    course[coursenum] = new golfcourse(this);
     ++numcourses;
   }
 
