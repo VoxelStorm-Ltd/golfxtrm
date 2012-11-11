@@ -59,11 +59,14 @@ public:
   void update(double timedelta, Vector3d impulse) {
     /// update position and velocity based on force and time delta
     // only update if it's free in the air, not hand-held
-    if(held_by = NULL) {
+    if(held_by == NULL) {
       position += (velocity * timedelta);
 
       // TODO: apply quaternion rotation
     }
+  }
+
+  void render() {                           /// draw this item in the world
   }
 };
 

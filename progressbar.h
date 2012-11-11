@@ -2,10 +2,10 @@
 #define PROGRESSBAR_H_INCLUDED
 
 #include <iostream>
-#include <GL/glfw.h>
+//#include <GL/glfw.h>
 
-#include "globaldefs.h"
-#include "globalvars_client.h"
+//#include "globaldefs.h"
+//#include "globalvars_client.h"
 /*
   Generic little widget to draw various kinds of progress bars in an
   OpenGL context, ranging from basic debugging text cout to various

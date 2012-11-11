@@ -2,15 +2,16 @@
 #define WORLDCOMPONENTS_H_INCLUDED
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include "terrain.h"
 
-class golfer; // forward dec
+class golfer;   // forward dec
 class holdable;
 class world;
 
 class golfcourse {  /// the overall landscape object
 public:
   world *parentplanet;
-  terrain *landscape;
+  terrain landscape;
 
   Vector3d origin;                      // where this is located in the world
 
@@ -19,9 +20,10 @@ public:
 
   golfcourse(world *parent) {                      /// default constructor
     parentplanet = parent;
-    landscape = new terrain();
+    //landscape = new terrain();
   }
 
+  void render();
 };
 
 
@@ -38,6 +40,7 @@ public:
   world() {                                 /// default constructor
     gravity = 9.800;
     numcourses = 18;
+    addcourse(0);   // no point having less than 1 course
   }
 
   void addcourse(int coursenum) {           /// add a golf course to this planet
@@ -45,8 +48,7 @@ public:
     ++numcourses;
   }
 
-  void render() {
-  }
+  void render();
 };
 
 
@@ -66,13 +68,7 @@ public:
     ++numplanets;
   }
 
-  void render() {
-    /// Renders every planet in this universe
-    // search the universe for worlds to render
-    for (int p = 0; p < numplanets; ++p) {
-      planet[p]->render();
-    }
-  }
+  void render();
 };
 
 

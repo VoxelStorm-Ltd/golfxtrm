@@ -1,11 +1,15 @@
 #ifndef GLOBALVARS_CLIENT_H_INCLUDED
 #define GLOBALVARS_CLIENT_H_INCLUDED
 
+#include <GL/glfw.h>
+
+#include "globaldefs.h"
+
 // user settings
 int windowwidth = 800;
 int windowheight = 600;
 bool fullscreen = false;
-short mouseinvert = 1;      // multiplier: -1 to invert
+int mouseinvert = 1;      // multiplier: -1 to invert
 double camyawperpixel   = 10;     // mouse sensitivity
 double campitchperpixel = 10;
 double fpsmin = 25;         // minimum requested fps
@@ -17,13 +21,13 @@ double timedeltamincap = 1/fpscap; // if we complete rendering before, just slee
 double camfov = 0.5;    // field of view - larger numbers are wider
 
 // non-editable interface settings
-const double rotations_per_tick = .02;
+double rotations_per_tick = .02;
 double walkspeed = 100;
 double walkrunspeed = 20000;
 double strafespeed = 80;
 double straferunspeed = 15000;
-const double camfriction = 0.99;   // multiplier for speed each physics tick
-const double cammu = 0.05;         // threshold to stop moving things moving
+double camfriction = 0.99;   // multiplier for speed each physics tick
+double cammu = 0.05;         // threshold to stop moving things moving
 
 // non-editable world settings (later server-fed)
 GLfloat fogcolour[] = {0.85, 0.85, 0.9, 1};
@@ -61,15 +65,12 @@ double camposzlast = camposz;
 double camspeedx = 0;
 double camspeedy = 0;
 double camspeedz = 0;
-
 double campitch = 0;
 double camyaw   = 0;
-
 double camnearplane = 0.5;  // default near and far clipping planes
 double camfarplane  = 30000000;
 
 int mousex = 0;       // track mouse movement from screen centre
 int mousey = 0;
-
 
 #endif // GLOBALVARS_CLIENT_H_INCLUDED

@@ -1,7 +1,9 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-class holdable; // forward declaration
+#include "globalvars_client_extern.h"
+
+class holdable;   // forward declaration
 
 class golfer {                 /// all of the player's properties
 public:
@@ -136,6 +138,10 @@ public:
     } else if(headyaw < 0) {
       headyaw += 360;
     }
+  }
+
+  void render() {                             /// draw this chap
+    // if he's our avatar, skip drawing the head and neck
   }
 };
 

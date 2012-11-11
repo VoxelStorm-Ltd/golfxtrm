@@ -9,7 +9,7 @@
 #include "version.h"
 
 #include <GL/glfw.h>
-#include "vmath.h">
+#include "vmath.h"
 
 #include "globaldefs.h"
 #include "globalvars_client.h"
@@ -18,7 +18,7 @@
 #include "golfer.h"
 #include "holdable.h"
 
-#include "progressbar.h"
+//#include "progressbar.h"
 
 
 
@@ -142,6 +142,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
+
+  cout << "Initialisation complete." << endl;
 }
 
 void shutdown(int return_code) {  /// close everything gracefully before exit
@@ -297,7 +299,7 @@ void draw() {
   // light the scene
   glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
 
-  // tell the universe to render itself
+  // tell the universe to go render itself
   root->render();
 
   // do the buffer shuffle

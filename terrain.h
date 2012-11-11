@@ -1,6 +1,8 @@
 #ifndef TERRAIN_H_INCLUDED
 #define TERRAIN_H_INCLUDED
 
+#include "vmath.h"
+
 class terrain {                 /// object for handling the terrain heightmap
 public:
   Vector3d origin;      // the map's origin's coordinates
@@ -23,6 +25,9 @@ public:
     result.z = (double)0;
 
     return result;
+  }
+
+  void render() {                         /// draw the terrain grid
   }
 };
 
