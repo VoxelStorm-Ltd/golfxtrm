@@ -5,9 +5,14 @@ class holdable; // forward declaration
 
 class golfer {                 /// all of the player's properties
 public:
-  double bodymass;            // how heavy this fellow is - for force calcs (Kg)
-  double headmass;            // self-explanatory, useful for severing  (Kg)
+  double bodymass;            // how heavy this fellow is in total - for force calcs (Kg)
+  double headmass;            // self-explanatory, useful for severing (Kg)
   double armsmass;            // how much the arms weigh, held out (Kg)
+
+  Vector3d headfulcrum;       // head fulcrim position (base of the neck)
+  Vector3d eyeleveloffset;    // the eye position within the head
+  Vector3d armfulcrum;        // where the arms pivot about
+  double armlength;           // how far away the hand-hold point is from fulcrum
 
   Vector3d bodyposition;      // current location in 3D world (m)
   Vector3d bodyvelocity;      // current velocity (m/s)
@@ -15,14 +20,29 @@ public:
 
   double bodyyaw;             // body facing rotation
   double bodyyawvelocity;     // how fast the body is already turning right
+  double bodymomentofinertia; // the body's moment of inertia resisting torque
 
   double headyaw;             // head facing rotation relative to inclined neck
   double headyawvelocity;     // how fast the head is already turning right
   double headpitch;           // neck inclination angle down
   double headpitchvelocity;   // how fast the neck is already tilting down
+  double headmomentofinertia; // in reality this would differ per axis
+
+  double armsyaw;             // arms facing rotation relative to front of body
+  double armsyawvelocity;     // how fast the arms are already turning right
+  double armspitch;           // arm inclination angle down from horizontal
+  double armspitchvelocity;   // how fast the arms are already tilting down
+  double armsmomentofinertia; // in reality this would differ per axis
 
   double yawtorque;           // left-right rotation force (N)
   double pitchtorque;         // up-down rotation force (N)
+
+  double headyawlimit;        // how far we can turn our head to the right/left
+  double headpitchuplimit;    // how far we can tilt our neck back
+  double headpitchdownlimit;  // how far we can tilt our neck forward
+  double armsyawlimit;        // how far we can turn our arms (more than the head)
+  double armspitchuplimit;    // how far we can tilt our arms back over our head
+  double armspitchdownlimit;  // how far we can tilt our arms down in front
 
   golfcourse *currentcourse;  // where we are
   world *currentplanet;       // what planet, is this? ;)
@@ -34,18 +54,37 @@ public:
     bodyposition.x = xpos;
     bodyposition.y = ypos;
     bodyposition.z = zpos;
-    // the Vector3's initialise themselves automatically
+    // the vectors initialise themselves automatically so skip those
     bodyyaw = 0;
     headyaw = 0;
     headpitch = 0;
+    armsyaw = 0;
+    armspitch = 0;
     bodyyawvelocity = 0;
     headyawvelocity = 0;
     headpitchvelocity = 0;
-
+    armsyawvelocity = 0;
+    armspitchvelocity = 0;
     yawtorque = 0;
     pitchtorque = 0;
-
     helditem = NULL;
+
+    // biometrics
+    bodymass = 70.8;                            // official biometric average for Europe
+    headmass = 5;                               // rough official biometric
+    armsmass = 3.216 * 2;                       // official biometric
+    headfulcrum.y = 1.38;                       // DIY biometric guess
+    eyeleveloffset.y = 1.6095 - headfulcrum.y;  // official average human standing eye height
+    armlength = 0.68;                           // DIY biometric guess
+    headyawlimit = 90;                          // DIY biometric approximation (including eye angles etc)
+    headpitchuplimit = 89;                      // <90 to avoid gimbal lock
+    headpitchdownlimit = 89;                    // consider making this >90?
+    armsyawlimit = 160;                         // DIY guess - can point arms all the way behind yourself
+    armspitchuplimit = 160;                     // DIY guess - arms can go back over your head
+    armspitchdownlimit = 80;                    // limited for basic realism while holding clubs
+    bodymomentofinertia = 1.18668836;           // 103.0 lb.in.sec.2 from US military data
+    headmomentofinertia = 0.015;                // ~150 kg.cm^2 from US naval data
+    armsmomentofinertia = 0.05014;              // -250.7 kg.m^2 from biomechanics paper
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;
@@ -59,15 +98,43 @@ public:
 
   void update(double timedelta) {
     /// update position and velocity based on force and time delta
+    // come on and move your body... impulse application
     bodyvelocity += (moveforce * timedelta) / bodymass;   // impulse
-    bodyposition += (bodyvelocity * timedelta);
 
-    bodyyawvelocity += (yawtorque * timedelta);
+    if(inputmode == INPUTMODE_MOVING_HEAD) {
+      // default walk-around mode - move the head
+      headyawvelocity += (yawtorque * timedelta) / headmomentofinertia;
+      // put our arms down and centered
+      // attempt to center the body on the head
+      bodyyawvelocity += (yawtorque * timedelta) / bodymomentofinertia;
+
+    } else if(inputmode == INPUTMODE_MOVING_HEAD_AND_ARMS) {
+      // swing / aim / interact mode - move the arms and head
+      // head follows arms precisely
+      // body stays still
+
+    } else {  // INPUTMODE_MOVING_ARMS
+      // swing / interact with fixed view - move the arms only
+      // body stays still
+      // head stays still
+
+    }
+
+    // the inertially driven motions
+    bodyposition += (bodyvelocity * timedelta);
     bodyyaw += (bodyyawvelocity * timedelta);
-    if(bodyyaw > 360) {                       // wrap
+    headyaw += (headyawvelocity * timedelta);
+
+    // wrapping and clamping
+    if(bodyyaw > 360) {                       // wrap body rotation
       bodyyaw -= 360;
     } else if(bodyyaw < 0) {
       bodyyaw += 360;
+    }
+    if(headyaw > 360) {                       // clamp head rotation
+      headyaw -= 360;
+    } else if(headyaw < 0) {
+      headyaw += 360;
     }
   }
 };

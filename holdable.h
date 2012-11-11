@@ -7,7 +7,7 @@ public:
   bool at_rest;             // whether it's settled (in which case don't do further physics with it)
 
   double mass;              // how much it weighs (kg)
-  double inertia;           // moment of inertia (hand-hold as fulcrum)
+  double momentofinertia;   // moment of inertia (hand-hold as fulcrum)
   Vector3d cog;             // centre of gravity relative to hand-hold
   double airresistance;     // how much its flight is slowed by atmospheric drag
   double slideresistance;   // how much its slide along the ground is slowed
@@ -30,7 +30,7 @@ public:
     held_by = NULL;
     at_rest = true;
     mass = 0;
-    inertia = 0;
+    momentofinertia = 0;
     name = "object";
     description = "Some sort of object that hasn't been properly defined yet.";
 
