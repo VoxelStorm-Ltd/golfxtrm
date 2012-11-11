@@ -16,6 +16,7 @@
 #include "terrain.h"
 #include "worldcomponents.h"
 #include "player.h"
+#include "holdable.h"
 
 #include "progressbar.h"
 
@@ -34,7 +35,7 @@ void physics(world *thisplanet);
 void draw();
 
 universe *root;             // this holds everything
-golfer player;
+golfer *player;
 
 int main() {
   init();

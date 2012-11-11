@@ -72,7 +72,9 @@
 		</Linker>
 		<Unit filename="globaldefs.h" />
 		<Unit filename="globalvars_client.h" />
+		<Unit filename="holdable.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="player.h" />
 		<Unit filename="progressbar.h" />
 		<Unit filename="terrain.h" />
 		<Unit filename="version.h" />
