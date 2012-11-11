@@ -77,9 +77,7 @@
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
-		<Unit filename="colourgroup.h" />
 		<Unit filename="globaldefs.h" />
-		<Unit filename="globalobjects_client.h" />
 		<Unit filename="globalvars_client.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="progressbar.h" />
