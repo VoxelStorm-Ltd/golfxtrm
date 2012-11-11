@@ -77,23 +77,13 @@
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
-		<Unit filename="chatwindow.h" />
-		<Unit filename="circular.h" />
 		<Unit filename="colourgroup.h" />
 		<Unit filename="globaldefs.h" />
 		<Unit filename="globalobjects_client.h" />
 		<Unit filename="globalvars_client.h" />
-		<Unit filename="guistorm.h" />
-		<Unit filename="hashfunctions.h" />
-		<Unit filename="inputstorm.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="material.cpp" />
-		<Unit filename="material.h" />
-		<Unit filename="perlin.cpp" />
 		<Unit filename="progressbar.h" />
-		<Unit filename="sha1.cpp" />
 		<Unit filename="version.h" />
-		<Unit filename="voctree.h" />
 		<Unit filename="worldcomponents.h" />
 		<Extensions>
 			<code_completion />
