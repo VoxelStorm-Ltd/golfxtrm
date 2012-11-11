@@ -1,19 +1,27 @@
 #ifndef WORLDCOMPONENTS_H_INCLUDED
 #define WORLDCOMPONENTS_H_INCLUDED
 
-#include "progressbar.h"
+#include <boost/ptr_container/ptr_vector.hpp>
 
-class world;  // forward dec
+class golfer; // forward dec
+class holdable;
+class world;
 
 class golfcourse {  /// the overall landscape object
 public:
   world *parentplanet;
   terrain *landscape;
 
-  golfcourse(world *parent) {                      // default constructor
+  Vector3d origin;                      // where this is located in the world
+
+  Vector3d teeposition;                 // where we tee off from
+  Vector3d holeposition;                // where the hole is
+
+  golfcourse(world *parent) {                      /// default constructor
     parentplanet = parent;
     landscape = new terrain();
   }
+
 };
 
 
@@ -22,14 +30,17 @@ public:
   golfcourse *course[18];
   int numcourses;
 
-  double gravity;     // downward acceleration in m/s^2
+  double gravity;                       // downward acceleration in m/s^2
 
-  world() {                                 // default constructor
+  boost::ptr_vector<golfer> players;    // all the players on this planet
+  boost::ptr_vector<holdable> items;    // all the loose items on this planet
+
+  world() {                                 /// default constructor
     gravity = 9.800;
     numcourses = 18;
   }
 
-  void addcourse(int coursenum) {           // add a golf course to this planet
+  void addcourse(int coursenum) {           /// add a golf course to this planet
     course[coursenum] = new golfcourse(this);
     ++numcourses;
   }
@@ -42,14 +53,15 @@ public:
 class universe {  /// universe objects - there's only one of these - contains worlds
 public:
   world *planet[1];
+
   int numplanets;
 
-  universe() {                              // default constructor
+  universe() {                              /// default constructor
     // big bang!
     numplanets = 0;
   }
 
-  void addplanet(int worldnum) {            // add a planet to this universe
+  void addplanet(int worldnum) {            /// add a planet to this universe
     planet[worldnum] = new world();
     ++numplanets;
   }

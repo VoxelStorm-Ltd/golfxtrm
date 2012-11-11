@@ -15,7 +15,7 @@
 #include "globalvars_client.h"
 #include "terrain.h"
 #include "worldcomponents.h"
-#include "player.h"
+#include "golfer.h"
 #include "holdable.h"
 
 #include "progressbar.h"
@@ -35,7 +35,7 @@ void physics(world *thisplanet);
 void draw();
 
 universe *root;             // this holds everything
-golfer *player;
+golfer *player;             // the golfer entity that we control
 
 int main() {
   init();

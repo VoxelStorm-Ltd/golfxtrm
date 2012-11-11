@@ -6,7 +6,7 @@ public:
   Vector3d origin;      // the map's origin's coordinates
   Vector3d bounds;      // the map's bounding box
 
-  terrain() {                            // default constructor
+  terrain() {                            /// default constructor
   }
 
   double get_height_at(double x, double z) {

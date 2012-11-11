@@ -25,10 +25,11 @@ public:
   double pitchtorque;         // up-down rotation force (N)
 
   golfcourse *currentcourse;  // where we are
+  world *currentplanet;       // what planet, is this? ;)
   holdable *helditem;         // what we're holding (NULL for empty hand)
 
   golfer(golfcourse *course,
-         double xpos, double ypos, double zpos) {   // specific constructor
+         double xpos, double ypos, double zpos) {   /// specific constructor
     currentcourse = course;
     bodyposition.x = xpos;
     bodyposition.y = ypos;
@@ -45,6 +46,15 @@ public:
     pitchtorque = 0;
 
     helditem = NULL;
+
+    // add it to the pointer vector of the home planet
+    currentplanet = currentcourse->parentplanet;
+    currentplanet->players.push_back(this);
+  }
+
+  ~golfer() {
+    //currentplanet->players.erase(std::find(currentplanet->players.begin(), currentplanet->players.end(), this));
+    // why won't the above work?
   }
 
   void update(double timedelta) {
