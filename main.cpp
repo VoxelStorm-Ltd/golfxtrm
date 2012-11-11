@@ -144,6 +144,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
 
+  //glfwSwapInterval(1);    // activate vsync
+
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
@@ -183,15 +185,15 @@ void mainloop() {   /// the main rendering loop
     //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;  // update the rolling average
     timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;  // update the rolling average
 
-    // framerate capping
-    double timetowait = 0;
+    // framerate capping - don't do this if we're using vsync
+    /*double timetowait = 0;
     if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
-      timetowait = timedeltamincap - (glfwGetTime() - timelasttickstart);
+      timetowait = timedeltamincap - timedeltatotal;
       glfwSleep(timetowait);
-    }
+    }*/
 
-    //cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slept " << timetowait << "ms" << endl;
-    cout << "Coords X:" << (int)camposx << " Y:" << (int)camposy <<" Z:" << (int)camposz << " camyaw: " << camyaw << " campitch: " << campitch << endl;
+    //cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slp " << timetowait << "s Ttl " << glfwGetTime() - timelasttickstart << " Trg " << timedeltamincap << endl;
+    //cout << "Coords X:" << (int)camposx << " Y:" << (int)camposy <<" Z:" << (int)camposz << " camyaw: " << camyaw << " campitch: " << campitch << endl;
   }
 }
 
@@ -251,8 +253,10 @@ void controls() {
 
   // convert mouse movements to camera rotation
   glfwGetMousePos(&mousex, &mousey);
-  camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel * timedeltaaverage);
-  campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert * timedeltaaverage);
+  //camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel * timedeltaaverage);
+  //campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert * timedeltaaverage);
+  camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel);
+  campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert);
   glfwSetMousePos(windowwidth/2, windowheight/2);   //reset the mouse immediately after
   if(camyaw > 360)              //wrap the camera yaw angle
     camyaw = camyaw - 360;
@@ -286,9 +290,9 @@ void physics(world *thisplanet) {   /// update entity and player locations
   camposylast = camposy;
 
   // camera movements
-  camposx += camspeedx * timedeltaaverage;     //inertial motion
-  camposy += camspeedy * timedeltaaverage;
-  camposz += camspeedz * timedeltaaverage;
+  camposx += camspeedx;     //inertial motion
+  camposy += camspeedy;
+  camposz += camspeedz;
 
   //camspeedx *= camfriction;           //primitive friction
   //camspeedy *= camfriction;

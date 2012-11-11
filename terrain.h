@@ -39,7 +39,7 @@ public:
   }
 
   void render() {                         /// draw the terrain grid
-    double polysize = 0.2;
+    double polysize = 1;
     for(double x = origin.x; x < bounds.x; x += polysize) {
       glBegin(GL_TRIANGLE_STRIP);
       for(double z = origin.z; z < bounds.z; z += polysize) {

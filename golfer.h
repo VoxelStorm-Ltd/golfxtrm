@@ -96,7 +96,7 @@ public:
     walkspeed = 1.50876;                        // average walking
     walkrunspeed = 6.25856;                     // average male running speed
     strafespeed = walkspeed * 0.75;             // generous guess
-    straferunspeed = strafespeed * 0.75 ;       // generous guess
+    straferunspeed = walkrunspeed * 0.75 ;      // generous guess
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;
