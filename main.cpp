@@ -35,7 +35,7 @@ void mainloop();
 
 void controls();
 void GLFWCALL controlcallback(int key, int action);
-void physics(world *thisplanet);
+void physics(double timedelta);
 void draw();
 
 int main() {
@@ -73,11 +73,15 @@ void init() {       /// all the one-time initialisation we need for the engine
   glewExperimental = GL_TRUE;
   if(glewInit() != GLEW_OK) shutdown(1, "GLEW failed to initialise");
 
-  // set the projection matrix to a normal frustum with a max depth of 5000
+  // set up the frustum
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   float aspect_ratio = ((float)windowheight) / windowwidth;
-  glFrustum(-camfov, camfov, -camfov * aspect_ratio, camfov * aspect_ratio, camnearplane, camfarplane);
+  glFrustum(-camfov * camnearplane,
+            camfov * camnearplane,
+            -camfov * camnearplane * aspect_ratio,
+            camfov  * camnearplane * aspect_ratio,
+            camnearplane, camfarplane);
   glMatrixMode(GL_MODELVIEW);
 
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
@@ -102,8 +106,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   glFogfv(GL_FOG_COLOR, fogcolour);
   glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
   glFogf(GL_FOG_DENSITY, 0.03);  // only used for exponential fog
-  glFogi(GL_FOG_START, 0);     // only used for linear fog
-  glFogi(GL_FOG_END, 200);
+  glFogi(GL_FOG_START, 2);     // only used for linear fog
+  glFogi(GL_FOG_END, 100);
 
   /*// temporary material definition
   GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
@@ -129,9 +133,9 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   // create and populate the universe
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
-  root = new universe();
-  root->addplanet(0);
-  player = new golfer(root->planet[0]->course[0], 0, 0, 0);
+  root = new universe();      // create the global universe object
+  root->addplanet(0);         // populate it with a default planet
+  player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
@@ -168,8 +172,6 @@ void mainloop() {   /// the main rendering loop
 
     controls(); // run the control polling loop, if it's time
 
-    physics(root->planet[0]);  // run the physics for this tick, if it's time
-
     timelasttickend = glfwGetTime();
     timedeltatick = timelasttickend - timelasttickstart;          // tick delta
 
@@ -182,6 +184,8 @@ void mainloop() {   /// the main rendering loop
     timedeltatotal = timelastrenderend - timelasttotal;         // total delta
     //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;  // update the rolling average
     timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;  // update the rolling average
+
+    physics(timedeltatotal);  // run the physics for this tick, if it's time
 
     // framerate capping - don't do this if we're using vsync
     /*double timetowait = 0;
@@ -198,59 +202,51 @@ void mainloop() {   /// the main rendering loop
 
 void controls() {
   short keyspressed = 0;
-  double camaccelx = 0;
-  double camaccely = 0;
-  double camaccelz = 0;
-  double delta_move, delta_strafe;
+  double thismoveforce = 0;
+  double thisstrafeforce = 0;
 
   if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to sprint
-    delta_move   = timedeltaaverage * player->walkrunspeed;
-    delta_strafe = timedeltaaverage * player->straferunspeed;
+    thismoveforce   = player->maxforce_run;
+    thisstrafeforce = player->maxforce_runstrafe;
   } else {
-    delta_move   = timedeltaaverage * player->walkspeed;
-    delta_strafe = timedeltaaverage * player->strafespeed;
+    thismoveforce   = player->maxforce_walk;
+    thisstrafeforce = player->maxforce_walkstrafe;
   }
 
   if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement
-    camaccelx =  sin(camyaw*M_PI/180) * delta_move;
-    camaccelz = -cos(camyaw*M_PI/180) * delta_move;
+    player->moveforce.x += sin(camyaw*M_PI/180) * thismoveforce;
+    player->moveforce.z -= cos(camyaw*M_PI/180) * thismoveforce;
     keyspressed++;
   }
   if(glfwGetKey('S') == GLFW_PRESS) {
-    camaccelx -= sin(camyaw*M_PI/180) * delta_strafe; // you can't run as fast
-    camaccelz += cos(camyaw*M_PI/180) * delta_strafe; // backwards as forwards
+    player->moveforce.x -= sin(camyaw*M_PI/180) * thisstrafeforce; // you can't run as fast
+    player->moveforce.z += cos(camyaw*M_PI/180) * thisstrafeforce; // backwards as forwards
     keyspressed++;
   }
   if(glfwGetKey('A') == GLFW_PRESS) {
-    camaccelx -= cos(camyaw*M_PI/180) * delta_strafe;
-    camaccelz -= sin(camyaw*M_PI/180) * delta_strafe;
+    player->moveforce.x -= cos(camyaw*M_PI/180) * thisstrafeforce;
+    player->moveforce.z -= sin(camyaw*M_PI/180) * thisstrafeforce;
     keyspressed++;
   }
   if(glfwGetKey('D') == GLFW_PRESS) {
-    camaccelx += cos(camyaw*M_PI/180) * delta_strafe;
-    camaccelz += sin(camyaw*M_PI/180) * delta_strafe;
+    player->moveforce.x += cos(camyaw*M_PI/180) * thisstrafeforce;
+    player->moveforce.z += sin(camyaw*M_PI/180) * thisstrafeforce;
     keyspressed++;
   }
   if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
-    camaccely += delta_move;
+    player->jumping = true;;
   }
   if(glfwGetKey('X') == GLFW_PRESS) {                 //crouch/fly down
-    camaccely -= delta_move;
+    // we can't actually produce downwards motion...
+    //player->moveforce.y -= thismoveforce;
   }
 
   if(keyspressed > 1) {     //allow for relatively smooth diagonal strafe
-    camaccelx /= keyspressed;
-    camaccelz /= keyspressed;
+    player->moveforce /= keyspressed;
   }
-
-  camspeedx = camaccelx;
-  camspeedy = camaccely;
-  camspeedz = camaccelz;
 
   // convert mouse movements to camera rotation
   glfwGetMousePos(&mousex, &mousey);
-  //camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel * timedeltaaverage);
-  //campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert * timedeltaaverage);
   camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel);
   campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert);
   glfwSetMousePos(windowwidth/2, windowheight/2);   //reset the mouse immediately after
@@ -279,8 +275,7 @@ void GLFWCALL controlcallback(int key, int action) {
   }
 }
 
-void physics(world *thisplanet) {   /// update entity and player locations
-
+void physics(double timedelta) {   /// update entity and player locations
   camposxlast = camposx;
   camposylast = camposy;
   camposylast = camposy;
@@ -297,6 +292,8 @@ void physics(world *thisplanet) {   /// update entity and player locations
   if(fabs(camspeedx) < cammu) camspeedx = 0;    //minimum bound clamping
   if(fabs(camspeedy) < cammu) camspeedy = 0;
   if(fabs(camspeedz) < cammu) camspeedz = 0;
+
+  root->update(timedelta);   // carry out the global physics update
 }
 
 void draw() {
@@ -312,7 +309,10 @@ void draw() {
   glRotatef(camyaw,   0, 1, 0);
 
   // take us to the current coords
-  glTranslated(-camposx, -camposy, -camposz);
+  //glTranslated(-camposx, -camposy, -camposz);
+  glTranslated(-player->bodyposition.x,
+               -(player->bodyposition.y + player->headfulcrum.y + player->eyeleveloffset.y),
+               -player->bodyposition.z);
 
   // light the scene
   glLightfv(GL_LIGHT0, GL_POSITION, sundirection);

@@ -17,6 +17,7 @@ extern double fpscap;
 extern double timedeltamax;
 extern double timedeltamin;
 extern double timedeltamincap;
+extern double updatefreq;
 extern double camfov;
 
 // non-editable interface settings

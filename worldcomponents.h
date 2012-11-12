@@ -3,6 +3,7 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "terrain.h"
+#include "globalvars_client_extern.h"
 
 class golfer;   // forward dec
 class holdable;
@@ -23,7 +24,12 @@ public:
     landscape = new terrain();
   }
 
+  void update(double timedelta);
   void render();
+
+  double get_height_at(double x, double z) {
+    return landscape->get_height_at(x, z);
+  }
 };
 
 
@@ -34,13 +40,19 @@ public:
   double horizondistance;
 
   double gravity;                       // downward acceleration in m/s^2
+  double airdensity;                    // ya rly, for drag calculations (kg/m^3)
+  Vector3d windvelocity;                // also used for air resistance (m/s)
 
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
 
   world() {                                 /// default constructor
     gravity = 9.800;
+    airdensity = 1.2041;
     horizondistance = 1200;
+
+    //windvelocity.x = 10;
+
     numcourses = 0;
     addcourse(0);   // no point having less than 1 course
   }
@@ -50,6 +62,7 @@ public:
     ++numcourses;
   }
 
+  void update(double timedelta);
   void render();
 };
 
@@ -60,9 +73,15 @@ public:
 
   int numplanets;
 
+  double updatetime;              // how long to wait between updates (1/above)
+  double updatenexttime;          // what time the next update is due
+
   universe() {                              /// default constructor
     // big bang!
     numplanets = 0;
+
+    updatetime = 1 / updatefreq;  // set this from the global
+    updatenexttime = 0;           // this is ready for an update asap
   }
 
   void addplanet(int worldnum) {            /// add a planet to this universe
@@ -70,6 +89,7 @@ public:
     ++numplanets;
   }
 
+  void update(double timedelta);
   void render();
 };
 

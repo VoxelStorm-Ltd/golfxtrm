@@ -56,8 +56,8 @@ public:
     // TODO: calculate offset from COG and apply rotational acceleration
   }
 
-  void update(double timedelta, Vector3d impulse) {
-    /// update position and velocity based on force and time delta
+  void update(double timedelta) {
+    /// update position and velocity based on time delta
     // only update if it's free in the air, not hand-held
     if(held_by == NULL) {
       position += (velocity * timedelta);

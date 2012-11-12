@@ -18,7 +18,7 @@ double fpscap = 60;         // fps we don't want to ever exceed
 double timedeltamax = 1/fpsmin; // decrease detail until we hit this time
 double timedeltamin = 1/fpsmax; // increase detail until we hit this time
 double timedeltamincap = 1/fpscap; // if we complete rendering before, just sleep
-double camfov = 0.5;    // field of view - larger numbers are wider
+double updatefreq = 20;     // how many times to update the world per second
 
 // non-editable interface settings
 double rotations_per_tick = .02;
@@ -66,8 +66,9 @@ double camspeedy = 0;
 double camspeedz = 0;
 double campitch = 0;
 double camyaw   = 0;
-double camnearplane = 0.5;  // default near and far clipping planes
-double camfarplane  = 30000000;
+double camfov = 1;          // field of view - larger numbers are wider
+double camnearplane = 0.1;  // default near and far clipping planes
+double camfarplane  = 1000;
 
 int mousex = 0;       // track mouse movement from screen centre
 int mousey = 0;

@@ -16,7 +16,7 @@ public:
   Vector3d armfulcrum;        // where the arms pivot about
   double armlength;           // how far away the hand-hold point is from fulcrum
 
-  Vector3d bodyposition;      // current location in 3D world (m)
+  Vector3d bodyposition;      // current location of standing spot in 3D world (m)
   Vector3d bodyvelocity;      // current velocity (m/s)
   Vector3d moveforce;         // (velocity change) wanted right now (N)
 
@@ -50,7 +50,15 @@ public:
   double strafespeed;         // maximum sideways movement ground speed
   double walkrunspeed;        // maximum speed on the ground while sprinting
   double straferunspeed;      // maximum sideways movement ground sprint speed
+  double maxforce_walk;       // maximum movement force we exert when walking (N)
+  double maxforce_walkstrafe; // maximum movement force we exert when strafing (N)
+  double maxforce_run;        // maximum movement force we exert when running (N)
+  double maxforce_runstrafe;  // maximum movement force we exert when run-strafing (N)
+  double maximpulse_jump;     // impulse delivered instantly, not as a force
 
+  double cda;                 // coefficient of drag * crossectional area
+
+  bool jumping;               // used to make him jump, and for animation
 
   golfcourse *currentcourse;  // where we are
   world *currentplanet;       // what planet, is this? ;)
@@ -96,7 +104,13 @@ public:
     walkspeed = 1.50876;                        // average walking
     walkrunspeed = 6.25856;                     // average male running speed
     strafespeed = walkspeed * 0.75;             // generous guess
-    straferunspeed = walkrunspeed * 0.75 ;      // generous guess
+    straferunspeed = walkrunspeed * 0.75;       // generous guess
+    maxforce_walk = bodymass * walkspeed / 2.5; // calculated from accelerating to top speed in 2.5s
+    maxforce_walkstrafe = maxforce_walk * 0.75; // as above
+    maxforce_run = bodymass * walkrunspeed / 5; // calculated from accelerating to top speed in 5s
+    maxforce_runstrafe = maxforce_run * 0.75;   // as above
+    maximpulse_jump = 236;                      // from neuromechanics paper (N.s)
+    cda = 0.3963;                               // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;
@@ -132,10 +146,37 @@ public:
 
     }
 
+    // gravitational force
+    bodyvelocity.y -= (currentplanet->gravity * timedelta);     // acceleration
+
     // the inertially driven motions
     bodyposition += (bodyvelocity * timedelta);
     bodyyaw += (bodyyawvelocity * timedelta);
     headyaw += (headyawvelocity * timedelta);
+
+    // air resistance and wind effect (combined)
+    //Vector3d thisveldiff = bodyvelocity;
+    Vector3d thisveldiff = bodyvelocity - currentplanet->windvelocity;
+    double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta ) / bodymass ;
+    Vector3d thisdragdecel = thisveldiff;
+    thisdragdecel.normalize();
+    thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
+    //std::cout << "Velocity: " << bodyvelocity.length() * 2.23693629 << "mph Drag impulse: " << thisdragimpulse << " Drag decel: " << thisdragdecel.length() << " " << std::endl;
+    std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
+    bodyvelocity += thisdragdecel;
+
+    // ground collision
+    double groundheight = currentcourse->get_height_at(bodyposition.x, bodyposition.z);
+    if(bodyposition.y <= groundheight) {
+      bodyposition.y = groundheight;
+      if(bodyvelocity.y < 0) {                // stop downwards motion
+        bodyvelocity.y = 0;
+      }
+      if(jumping) {                           // apply an impulse upwards
+        bodyvelocity.y += (maximpulse_jump / bodymass);
+      }
+    }
+    jumping = false;                          // reset the flag
 
     // wrapping and clamping
     if(bodyyaw > 360) {                       // wrap body rotation
@@ -148,6 +189,10 @@ public:
     } else if(headyaw < 0) {
       headyaw += 360;
     }
+
+    moveforce.x = 0;
+    moveforce.y = 0;
+    moveforce.z = 0;
   }
 
   void render() {                             /// draw this chap
@@ -156,12 +201,12 @@ public:
     glColor4f(1,1,0,1);
 
     // body
-    double top = 1.5;
-    double bottom = 0;
-    double left = -0.25;
-    double right = 0.25;
-    double front = 0.10;
-    double back = -0.10;
+    double top    = bodyposition.y + 1.5;
+    double bottom = bodyposition.y;
+    double left   = bodyposition.x - 0.25;
+    double right  = bodyposition.x + 0.25;
+    double front  = bodyposition.z + 0.10;
+    double back   = bodyposition.z - 0.10;
     glBegin(GL_TRIANGLES);
       glNormal3i(0,     0,      1);
       glVertex3d(left,	bottom,	front);  // front face

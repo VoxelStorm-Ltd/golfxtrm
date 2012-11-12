@@ -20,10 +20,10 @@ void world::render() {
   glColor4f(0.75, 0.75, 0.25, 1);
   glBegin(GL_TRIANGLE_STRIP);
   glNormal3i(0, 1, 0);
-  glVertex3d(player->bodyposition.x - horizondistance, 0, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, 0, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x - horizondistance, 0, player->bodyposition.z + horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, 0, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z + horizondistance);
   glEnd();
   // sky
   glColor4f(skyred, skygreen, skyblue, 1);
