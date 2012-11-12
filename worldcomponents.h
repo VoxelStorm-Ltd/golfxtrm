@@ -30,6 +30,10 @@ public:
   double get_height_at(double x, double z) {
     return landscape->get_height_at(x, z);
   }
+
+  double get_friction_at(double x, double z) {
+    return landscape->get_friction_at(x, z);
+  }
 };
 
 

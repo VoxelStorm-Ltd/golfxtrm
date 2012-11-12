@@ -22,8 +22,6 @@ double updatefreq = 20;     // how many times to update the world per second
 
 // non-editable interface settings
 double rotations_per_tick = .02;
-double camfriction = 0.99;   // multiplier for speed each physics tick
-double cammu = 0.05;         // threshold to stop moving things moving
 
 // non-editable world settings (later server-fed)
 GLfloat fogcolour[] = {0.85, 0.85, 0.9, 1};
@@ -54,16 +52,6 @@ double timedeltaaverage = 0.01;  // rolling average of the delta time
 
 inputmodetype inputmode = INPUTMODE_MOVING_HEAD;
 
-double camposx = 0;
-double camposy = 1.6095;  // average human standing eye height
-double camposz = 0;
-double camposxlast = camposx;   // for collision reaction
-double camposylast = camposy;
-double camposzlast = camposz;
-
-double camspeedx = 0;
-double camspeedy = 0;
-double camspeedz = 0;
 double campitch = 0;
 double camyaw   = 0;
 double camfov = 1;          // field of view - larger numbers are wider

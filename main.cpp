@@ -195,7 +195,6 @@ void mainloop() {   /// the main rendering loop
     }*/
 
     //cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slp " << timetowait << "s Ttl " << glfwGetTime() - timelasttickstart << " Trg " << timedeltamincap << endl;
-    //cout << "Coords X:" << (int)camposx << " Y:" << (int)camposy <<" Z:" << (int)camposz << " camyaw: " << camyaw << " campitch: " << campitch << endl;
   }
 }
 
@@ -204,42 +203,50 @@ void controls() {
   short keyspressed = 0;
   double thismoveforce = 0;
   double thisstrafeforce = 0;
+  golfer::golferstatetype movestate;
 
   if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to sprint
     thismoveforce   = player->maxforce_run;
     thisstrafeforce = player->maxforce_runstrafe;
+    movestate = golfer::GOLFER_RUNNING;
   } else {
     thismoveforce   = player->maxforce_walk;
     thisstrafeforce = player->maxforce_walkstrafe;
+    movestate = golfer::GOLFER_WALKING;
   }
 
+  player->state = golfer::GOLFER_STANDING;
   if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement
     player->moveforce.x += sin(camyaw*M_PI/180) * thismoveforce;
     player->moveforce.z -= cos(camyaw*M_PI/180) * thismoveforce;
     keyspressed++;
+    player->state = movestate;
   }
   if(glfwGetKey('S') == GLFW_PRESS) {
     player->moveforce.x -= sin(camyaw*M_PI/180) * thisstrafeforce; // you can't run as fast
     player->moveforce.z += cos(camyaw*M_PI/180) * thisstrafeforce; // backwards as forwards
     keyspressed++;
+    player->state = movestate;
   }
   if(glfwGetKey('A') == GLFW_PRESS) {
     player->moveforce.x -= cos(camyaw*M_PI/180) * thisstrafeforce;
     player->moveforce.z -= sin(camyaw*M_PI/180) * thisstrafeforce;
     keyspressed++;
+    player->state = movestate;
   }
   if(glfwGetKey('D') == GLFW_PRESS) {
     player->moveforce.x += cos(camyaw*M_PI/180) * thisstrafeforce;
     player->moveforce.z += sin(camyaw*M_PI/180) * thisstrafeforce;
     keyspressed++;
+    player->state = movestate;
   }
   if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
-    player->jumping = true;;
+    player->state = golfer::GOLFER_JUMPING;
   }
-  if(glfwGetKey('X') == GLFW_PRESS) {                 //crouch/fly down
+  //if(glfwGetKey('X') == GLFW_PRESS) {                 //crouch/fly down
     // we can't actually produce downwards motion...
     //player->moveforce.y -= thismoveforce;
-  }
+  //}
 
   if(keyspressed > 1) {     //allow for relatively smooth diagonal strafe
     player->moveforce /= keyspressed;
@@ -276,23 +283,6 @@ void GLFWCALL controlcallback(int key, int action) {
 }
 
 void physics(double timedelta) {   /// update entity and player locations
-  camposxlast = camposx;
-  camposylast = camposy;
-  camposylast = camposy;
-
-  // camera movements
-  camposx += camspeedx;     //inertial motion
-  camposy += camspeedy;
-  camposz += camspeedz;
-
-  //camspeedx *= camfriction;           //primitive friction
-  //camspeedy *= camfriction;
-  //camspeedz *= camfriction;
-
-  if(fabs(camspeedx) < cammu) camspeedx = 0;    //minimum bound clamping
-  if(fabs(camspeedy) < cammu) camspeedy = 0;
-  if(fabs(camspeedz) < cammu) camspeedz = 0;
-
   root->update(timedelta);   // carry out the global physics update
 }
 

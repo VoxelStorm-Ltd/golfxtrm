@@ -50,6 +50,9 @@ public:
   double strafespeed;         // maximum sideways movement ground speed
   double walkrunspeed;        // maximum speed on the ground while sprinting
   double straferunspeed;      // maximum sideways movement ground sprint speed
+  double walkspeed_sq;        // cached for easier comparison
+  double walkrunspeed_sq;
+
   double maxforce_walk;       // maximum movement force we exert when walking (N)
   double maxforce_walkstrafe; // maximum movement force we exert when strafing (N)
   double maxforce_run;        // maximum movement force we exert when running (N)
@@ -58,7 +61,14 @@ public:
 
   double cda;                 // coefficient of drag * crossectional area
 
-  bool jumping;               // used to make him jump, and for animation
+  enum golferstatetype {
+    GOLFER_STANDING,
+    GOLFER_WALKING,
+    GOLFER_RUNNING,
+    GOLFER_JUMPING,
+    GOLFER_FREEFALL
+  };
+  golferstatetype state;      // for friction control, animation, etc
 
   golfcourse *currentcourse;  // where we are
   world *currentplanet;       // what planet, is this? ;)
@@ -105,6 +115,8 @@ public:
     walkrunspeed = 6.25856;                     // average male running speed
     strafespeed = walkspeed * 0.75;             // generous guess
     straferunspeed = walkrunspeed * 0.75;       // generous guess
+    walkspeed_sq = walkspeed * walkspeed;       // caching
+    walkrunspeed_sq = walkrunspeed * walkrunspeed;
     maxforce_walk = bodymass * walkspeed / 2.5; // calculated from accelerating to top speed in 2.5s
     maxforce_walkstrafe = maxforce_walk * 0.75; // as above
     maxforce_run = bodymass * walkrunspeed / 5; // calculated from accelerating to top speed in 5s
@@ -150,20 +162,35 @@ public:
     bodyvelocity.y -= (currentplanet->gravity * timedelta);     // acceleration
 
     // the inertially driven motions
+    //std::cout << "DEBUGv:" << bodyvelocity.x << ":" << bodyvelocity.y << ":" << bodyvelocity.z << ":" << std::endl;
+    //std::cout << "DEBUGp:" << bodyposition.x << ":" << bodyposition.y << ":" << bodyposition.z << ":" << std::endl;
     bodyposition += (bodyvelocity * timedelta);
     bodyyaw += (bodyyawvelocity * timedelta);
     headyaw += (headyawvelocity * timedelta);
 
     // air resistance and wind effect (combined)
-    //Vector3d thisveldiff = bodyvelocity;
     Vector3d thisveldiff = bodyvelocity - currentplanet->windvelocity;
-    double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta ) / bodymass ;
-    Vector3d thisdragdecel = thisveldiff;
-    thisdragdecel.normalize();
-    thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
-    //std::cout << "Velocity: " << bodyvelocity.length() * 2.23693629 << "mph Drag impulse: " << thisdragimpulse << " Drag decel: " << thisdragdecel.length() << " " << std::endl;
-    std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
-    bodyvelocity += thisdragdecel;
+    if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
+      if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
+        // no calculations necessary
+      } else {
+        double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
+        Vector3d thisdragdecel;
+        thisdragdecel = currentplanet->windvelocity;
+        thisdragdecel.normalize();
+        thisdragdecel *= thisdragimpulse;
+        //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
+        bodyvelocity += thisdragdecel;
+      }
+    } else {
+      double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
+      Vector3d thisdragdecel;
+      thisdragdecel = thisveldiff;
+      thisdragdecel.normalize();
+      thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
+      //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
+      bodyvelocity += thisdragdecel;
+    }
 
     // ground collision
     double groundheight = currentcourse->get_height_at(bodyposition.x, bodyposition.z);
@@ -172,11 +199,22 @@ public:
       if(bodyvelocity.y < 0) {                // stop downwards motion
         bodyvelocity.y = 0;
       }
-      if(jumping) {                           // apply an impulse upwards
+      // apply ground friction
+      if(((state == GOLFER_STANDING) && (bodyvelocity.lengthSq() > 0.0001 )) ||
+         ((state == GOLFER_WALKING) && (bodyvelocity.lengthSq() > walkspeed)) ||
+         ((state == GOLFER_RUNNING) && (bodyvelocity.lengthSq() > walkrunspeed))) {
+        double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta;  // mass cancels
+        Vector3d thisdragdecel = bodyvelocity;
+        thisdragdecel.normalize();
+        std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
+        thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisfrictionimpulse);
+        std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
+        bodyvelocity += thisdragdecel;
+      } else if(state == GOLFER_JUMPING) {    // apply an impulse upwards
         bodyvelocity.y += (maximpulse_jump / bodymass);
+        state = GOLFER_FREEFALL;              // the natural conclusion to jumping
       }
     }
-    jumping = false;                          // reset the flag
 
     // wrapping and clamping
     if(bodyyaw > 360) {                       // wrap body rotation

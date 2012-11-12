@@ -81,6 +81,11 @@ public:
     // nothing to do here currently
   }
 
+  double get_friction_at(double x, double z) {
+    /// return the coefficient of friction at the current spot
+    return 0.0409;    // from physics forum for ball on golf green
+  }
+
   void render() {
     /// alias function to render the terrain using the preferred method
     render1();
