@@ -114,6 +114,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   GLfloat mat_shininess[] = {50.0};
   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
+  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_COLOR_MATERIAL);
 
   // set up some lights
   GLfloat ambientlightcol[] = {ambientred, ambientgreen, ambientblue, 1};

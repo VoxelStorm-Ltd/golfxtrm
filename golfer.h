@@ -156,8 +156,11 @@ public:
     };
 
     // rendering setup
+    vao = vbo = ibo = 0;
+    glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
+
     glBindBuffer(GL_ARRAY_BUFFER,             vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
     glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
@@ -165,35 +168,12 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    /*// test VAO setup
-    vao = 0;
-    vbo = 0;
-    ibo = 0;
-    glGenVertexArrays(1, &vao);           // Create our Vertex Array Object
-    glGenBuffers(1, &vbo);                // Generate our Vertex Buffer Object
-    glGenBuffers(1, &ibo);                // Generate our Index Buffer Object
-
-    glBindVertexArray(vao);               // Bind our Vertex Array Object
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);   // Bind our Vertex Buffer Object
-    //glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-
+    glBindVertexArray(vao);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // Set up our vertex attributes pointer
-    //glEnableClientState(GL_VERTEX_ARRAY); // non-shader version
-    //glVertexPointer(3, GL_FLOAT, sizeof(float) * 3, 0);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
-
-    //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-
-    glDisableVertexAttribArray(0);
-
-    glBindVertexArray(0);               // Unbind our Vertex Buffer Object
-    */
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;
@@ -202,6 +182,7 @@ public:
 
   ~golfer() {
     //currentplanet->players.erase(std::find(currentplanet->players.begin(), currentplanet->players.end(), this));
+    //currentplanet->players.release(std::find(currentplanet->players.begin(), currentplanet->players.end(), this));
     // why won't the above work?
   }
 
@@ -307,12 +288,10 @@ public:
   }
 
   void render() {           /// alias function for preferred render method
-    render4();
+    render5();
   }
 
   void render1() {          /// draw this chap as a simple immediate mode cuboid
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
     glColor4f(1,1,0,1);
 
     // body
@@ -375,18 +354,9 @@ public:
     // if he's our avatar, skip drawing the head and neck
   }
 
-  void render2() {
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+  void render2() {          /// draw this fellow using an indexed vertex array
     glColor4f(1,1,0,1);
 
-    glBindVertexArray(vao);                   // Bind our Vertex Array Object
-    //glDrawArrays(GL_TRIANGLES, 0, 2);
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-    glBindVertexArray(0);                     // Unbind our Vertex Array Object
-  }
-
-  void render3() {          /// draw this fellow using an indexed vertex array
     double top    = bodyposition.y + 1.5;
     double bottom = bodyposition.y;
     double left   = bodyposition.x - 0.25;
@@ -421,13 +391,15 @@ public:
     glDisableClientState(GL_VERTEX_ARRAY);
   }
 
-  void render4() {          /// draw this fellow using an indexed VBO
+  void render3() {          /// draw this fellow using an indexed VBO
+    glColor4f(1,1,0,1);
+
     glPushMatrix();
     glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
     glRotated(bodyyaw, 0, -1, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -438,6 +410,43 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glPopMatrix();
+  }
+
+  void render4() {          /// draw this fellow using an indexed VBO with VAA
+    glColor4f(1,1,0,1);
+
+    glPushMatrix();
+    glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
+    glRotated(bodyyaw, 0, -1, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+
+    glDisableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glPopMatrix();
+  }
+
+  void render5() {          /// draw this fellow using an indexed VBO with VAA and VAO
+    glColor4f(1,1,0,1);
+
+    glPushMatrix();
+    glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
+    glRotated(bodyyaw, 0, -1, 0);
+
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+    glBindVertexArray(0);
 
     glPopMatrix();
   }

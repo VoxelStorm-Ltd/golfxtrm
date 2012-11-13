@@ -53,9 +53,18 @@ public:
       }
     }
 
+    vao = vbo = ibo = 0;
+    glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
     update_vbo(); // generate the vbo ready for first run
+
+    glBindVertexArray(vao);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
   }
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
@@ -137,14 +146,12 @@ public:
 
   void render() {
     /// alias function to render the terrain using the preferred method
-    render3();
+    render5();
   }
 
-  void render1() {     /// draw the terrain based on world coords
+  void render1() {      /// draw the terrain based on world coords (immediate mode)
     double xpolysize = bounds.x / gridwidth;
     double zpolysize = bounds.z / gridwidth;
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
     glColor4f(0.75, 0.75, 0.25, 1);
     for(double x = origin.x; x < origin.x + bounds.x - xpolysize; x += xpolysize) {
       glBegin(GL_TRIANGLE_STRIP);
@@ -157,9 +164,7 @@ public:
     }
   }
 
-  void render2() {     /// draw the terrain based on grid coords
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+  void render2() {      /// draw the terrain based on grid coords (immediate mode)
     glColor4f(0.75, 0.75, 0.25, 1);
     for(int xgrid = 0; xgrid < gridwidth - 1; ++xgrid) {
       double xpolysize = bounds.x / gridwidth;
@@ -178,13 +183,11 @@ public:
     }
   }
 
-  void render3() {    /// draw the terrain using an indexed VBO
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+  void render3() {      /// draw the terrain using an indexed VBO
     glColor4f(0.75, 0.75, 0.25, 1);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -195,6 +198,31 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+
+  void render4() {      /// draw the terrain using an indexed VBO with VAA
+    glColor4f(0.75, 0.75, 0.25, 1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+
+    glDisableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+
+  void render5() {      /// draw the terrain using an indexed VBO with VAA and VAO
+    glColor4f(0.75, 0.75, 0.25, 1);
+
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+    glBindVertexArray(0);
   }
 };
 
