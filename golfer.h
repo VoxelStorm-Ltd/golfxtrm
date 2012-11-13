@@ -17,6 +17,7 @@ public:
   Vector3d eyeleveloffset;    // the eye position within the head
   Vector3d armfulcrum;        // where the arms pivot about
   double armlength;           // how far away the hand-hold point is from fulcrum
+  double armshoulderoffset;   // how far the shoulder is from fulcrum
 
   Vector3d bodyposition;      // current location of standing spot in 3D world (m)
   Vector3d bodyvelocity;      // current velocity (m/s)
@@ -79,15 +80,20 @@ public:
 
   golfcourse *currentcourse;  // where we are
   world *currentplanet;       // what planet, is this? ;)
+  bool isplayer;              // is this controlled by the player?
   holdable *helditem;         // what we're holding (NULL for empty hand)
 
-  GLuint vao;                 // vertex array object
-  GLuint vbo;                 // vertex buffer object
-  GLuint ibo;                 // element buffer object (index buffer object)
+  GLuint vao_body;            // vertex array object for the body
+  GLuint vao_hands;           // vertex array object for the hands
+  GLuint vao_arms;            // vertex array object for the arms
+  GLuint vao_head;            // vertex array object for the head
+  //GLuint vbo;                 // vertex buffer object
+  //GLuint ibo;                 // element buffer object (index buffer object)
 
   golfer(golfcourse *course,
          double xpos, double ypos, double zpos) {   /// specific constructor
     currentcourse = course;
+    isplayer = false;
     bodyposition.x = xpos;
     bodyposition.y = ypos;
     bodyposition.z = zpos;
@@ -112,14 +118,18 @@ public:
     armsmass = 3.216 * 2;                       // official biometric
     headfulcrum.y = 1.38;                       // DIY biometric guess
     eyeleveloffset.y = 1.6095 - headfulcrum.y;  // official average human standing eye height
-    armlength = 0.68;                           // DIY biometric guess
+    armlength = 0.50;                           // DIY biometric guess - hand distance from centre fulcrum
+    armfulcrum.x = 0;                           // DIY guesses
+    armfulcrum.y = 1.5;
+    armfulcrum.z = 0;
+    armshoulderoffset = 0.32;                   // DIY guess
     headyawlimit = 90;                          // DIY biometric approximation (including eye angles etc)
     headpitchuplimit = 75;                      // something reasonable to minimise neck-back effects
     headpitchdownlimit = 89;                    // consider making this >90?
     armsyawlimit = 160;                         // DIY guess - can point arms all the way behind yourself
     headyawdeadzone = 15;                       // arbitrary comfort value
     armspitchuplimit = 160;                     // DIY guess - arms can go back over your head
-    armspitchdownlimit = 80;                    // limited for basic realism while holding clubs
+    armspitchdownlimit = 75;                    // limited for basic realism while holding clubs
     bodymomentofinertia = 1.18668836;           // 103.0 lb.in.sec.2 from US military data
     headmomentofinertia = 0.015;                // ~150 kg.cm^2 from US naval data
     armsmomentofinertia = 0.05014;              // -250.7 kg.m^2 from biomechanics paper
@@ -132,15 +142,15 @@ public:
     straferunspeed = walkrunspeed * 0.75;       // generous guess
     walkspeed_sq = walkspeed * walkspeed;       // caching
     walkrunspeed_sq = walkrunspeed * walkrunspeed;
-    maxforce_walk = bodymass * walkspeed / 2.5; // calculated from accelerating to top speed in 2.5s
+    maxforce_walk = bodymass * walkspeed / 1; // calculated from accelerating to top speed in n seconds
     maxforce_walkstrafe = maxforce_walk * 0.75; // as above
-    maxforce_run = bodymass * walkrunspeed / 5; // calculated from accelerating to top speed in 5s
+    maxforce_run = bodymass * walkrunspeed / 2; // calculated from accelerating to top speed in n seconds
     maxforce_runstrafe = maxforce_run * 0.75;   // as above
     maximpulse_jump = 236;                      // from neuromechanics paper (N.s)
     cda = 0.3963;                               // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
 
     // rendering data
-    // body
+    // body:
     double top    = 1.5;
     double bottom = 0;
     double left   = -0.25;
@@ -165,29 +175,110 @@ public:
       2,6,7, 7,3,2,   // top
       5,4,0, 0,1,5    // bottom
     };
+
+
+    // hands:
+    top    = 0.05;
+    bottom = -0.05;
+    left   = -0.05;
+    right  = 0.05;
+    front  = -armlength - 0.05;
+    back   = -armlength + 0.05;
+    GLfloat vbodata_hands[] = {
+      left,  bottom, back,    // 0
+      left,  bottom, front,   // 1
+      left,  top,    back,    // 2
+      left,  top,    front,   // 3
+      right, bottom, back,    // 4
+      right, bottom, front,   // 5
+      right, top,    back,    // 6
+      right, top,    front    // 7
+    };
+
+    // arm sections:
+    top    = 0.05;
+    bottom = -0.05;
+    left   = -0.05;
+    right  = 0.05;
+    front  = -(armlength + armshoulderoffset) / 2;
+    back   = 0;
+    GLfloat vbodata_arms[] = {
+      left,  bottom, back,    // 0
+      left,  bottom, front,   // 1
+      left,  top,    back,    // 2
+      left,  top,    front,   // 3
+      right, bottom, back,    // 4
+      right, bottom, front,   // 5
+      right, top,    back,    // 6
+      right, top,    front    // 7
+    };
     // if he's our avatar, skip drawing the head and neck
-    //if(this == player) {
+    if(isplayer) {
       // anything we draw for internal view should go here
-    //} else {
+    } else {
       //
-    //}
+    }
 
     // rendering setup
-    vao = vbo = ibo = 0;
-    glGenVertexArrays(1, &vao);
+    vao_body = 0;
+    vao_hands = 0;
+    vao_arms = 0;
+    vao_head = 0;
+    GLuint vbo = 0;
+    GLuint ibo = 0;
+    glGenVertexArrays(1, &vao_body);
+    glGenVertexArrays(1, &vao_hands);
+    glGenVertexArrays(1, &vao_arms);
+    glGenVertexArrays(1, &vao_head);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
 
-    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao_body);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
+
+    // arm sections
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata_arms), vbodata_arms, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(vao_arms);             // set up the VAO's state
     glBindBuffer(GL_ARRAY_BUFFER,             vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
+
+    // hands
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata_hands), vbodata_hands, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(vao_hands);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
@@ -208,12 +299,52 @@ public:
     // come on and move your body... impulse application
     bodyvelocity += (moveforce * timedelta) / bodymass;   // impulse
 
-    if(inputmode == INPUTMODE_MOVING_HEAD_AND_BODY) {
+    if(isplayer) {
+      if(inputmode == INPUTMODE_MOVING_HEAD_AND_BODY) {
+        // default walk-around mode - move the head
+        headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
+        headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+        // put our arms down and centered
+        armsyawvelocity   += ((0                  - armsyaw)   / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+        armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+        // attempt to center the body on the head
+        if(headyaw > headyawdeadzone || headyaw < -headyawdeadzone || state == GOLFER_WALKING || state == GOLFER_RUNNING) {
+          double thistorque = headyaw / 90 * bodyyawtorquelimit;
+          if(thistorque > bodyyawtorquelimit) {
+            thistorque = bodyyawtorquelimit;
+          } else if(thistorque < -bodyyawtorquelimit) {
+            thistorque = -bodyyawtorquelimit;
+          }
+          bodyyawvelocity += (thistorque * timedelta) / bodymomentofinertia;
+        }
+      } else if(inputmode == INPUTMODE_MOVING_HEAD_AND_ARMS) {
+        // swing / aim / interact mode - move the arms and head
+        armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
+        armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+        // head follows arms precisely
+        headyawvelocity   += ((armsyaw   - headyaw)   / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+        headpitchvelocity += ((armspitch - headpitch) / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+
+        //std::cout << "Arms yaw: " << armsyaw << " pitch: " << armspitch << " yawvel: " << armsyawvelocity << " pitchvel: " << armspitchvelocity << std::endl;
+        // body stays still
+      } else if(inputmode == INPUTMODE_MOVING_ARMS) {  // INPUTMODE_MOVING_ARMS
+        // swing / interact with fixed view - move the arms only
+        armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
+        armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+        // body stays still
+        // head stays still
+      } else {          // INPUTMODE_MOVING_HEAD
+        // like default mode but leave body frozen and arms where they are
+        headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
+        headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+      }
+    } else {
       // default walk-around mode - move the head
       headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
       headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
       // put our arms down and centered
-      //armsyawvelocity += (yawtorque * timedelta) / armsmomentofinertia;
+      armsyawvelocity   += ((0                  - armsyaw)   / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+      armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
       // attempt to center the body on the head
       if(headyaw > headyawdeadzone || headyaw < -headyawdeadzone || state == GOLFER_WALKING || state == GOLFER_RUNNING) {
         double thistorque = headyaw / 90 * bodyyawtorquelimit;
@@ -224,24 +355,6 @@ public:
         }
         bodyyawvelocity += (thistorque * timedelta) / bodymomentofinertia;
       }
-    } else if(inputmode == INPUTMODE_MOVING_HEAD_AND_ARMS) {
-      // swing / aim / interact mode - move the arms and head
-      armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-      // head follows arms precisely
-      headyaw = armsyaw;
-      headpitch = armspitch;
-      // body stays still
-    } else if(inputmode == INPUTMODE_MOVING_ARMS) {  // INPUTMODE_MOVING_ARMS
-      // swing / interact with fixed view - move the arms only
-      armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-      // body stays still
-      // head stays still
-    } else {          // INPUTMODE_MOVING_HEAD
-      // like default mode but leave body frozen and arms where they are
-      headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
     }
 
     // gravitational force
@@ -256,9 +369,9 @@ public:
     armsyaw      += armsyawvelocity   * timedelta;
     armspitch    += armspitchvelocity * timedelta;
     if(headpitch > 0) {
-      headpitch += (headpitchvelocity - (abs(bodyyawvelocity) / 4)) * timedelta;
+      headpitch += (headpitchvelocity - (abs(bodyyawvelocity) * headpitch      * 0.01)) * timedelta;
     } else {
-      headpitch += (headpitchvelocity + (abs(bodyyawvelocity) / 4)) * timedelta;
+      headpitch += (headpitchvelocity + (abs(bodyyawvelocity) * abs(headpitch) * 0.01)) * timedelta;
     }
 
     // internal damping
@@ -266,6 +379,7 @@ public:
     headyawvelocity   *= thisheaddampingamount;
     headpitchvelocity *= thisheaddampingamount;
     armsyawvelocity   *= thisheaddampingamount;
+    armspitchvelocity *= thisheaddampingamount;
     headyawvelocity   *= thisheaddampingamount;
     bodyyawvelocity   *= 1 - (bodyyawdampingcoefficient * timedelta);
 
@@ -304,8 +418,8 @@ public:
       }
       // apply ground friction
       if(((state == GOLFER_STANDING) && (bodyvelocity.lengthSq() > 0.0001 )) ||
-         ((state == GOLFER_WALKING) && (bodyvelocity.lengthSq() > walkspeed)) ||
-         ((state == GOLFER_RUNNING) && (bodyvelocity.lengthSq() > walkrunspeed))) {
+         ((state == GOLFER_WALKING) && (bodyvelocity.lengthSq() > walkspeed_sq)) ||
+         ((state == GOLFER_RUNNING) && (bodyvelocity.lengthSq() > walkrunspeed_sq))) {
         double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta;  // mass cancels
         Vector3d thisdragdecel = bodyvelocity;
         thisdragdecel.normalize();
@@ -335,6 +449,16 @@ public:
     } else if(headpitch < -headpitchuplimit) {
       headpitch = -headpitchuplimit;
     }
+    if(armsyaw > armsyawlimit) {                       // clamp arms rotation
+      armsyaw = armsyawlimit;
+    } else if(armsyaw < -armsyawlimit) {
+      armsyaw = -armsyawlimit;
+    }
+    if(armspitch > armspitchdownlimit) {
+      armspitch = armspitchdownlimit;
+    } else if(armspitch < -armspitchuplimit) {
+      armspitch = -armspitchuplimit;
+    }
 
     moveforce.x = 0;
     moveforce.y = 0;
@@ -345,7 +469,7 @@ public:
   void render() {           /// alias function for preferred render method
     render5();
   }
-
+/*
   void render1() {          /// draw this chap as a simple immediate mode cuboid
     glColor4f(1,1,0,1);
 
@@ -405,13 +529,6 @@ public:
       glVertex3d(right,	bottom,	front);
       glVertex3d(left,	bottom,	front);
     glEnd();
-
-    // if he's our avatar, skip drawing the head and neck
-    //if(this == player) {
-      // anything we draw for internal view should go here
-    //} else {
-      //
-    //}
   }
 
   void render2() {          /// draw this fellow using an indexed vertex array
@@ -496,18 +613,77 @@ public:
 
     glPopMatrix();
   }
-
+*/
   void render5() {          /// draw this fellow using an indexed VBO with VAA and VAO
     glColor4f(1,1,0,1);
 
-    glPushMatrix();
-    glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
-    glRotated(bodyyaw, 0, -1, 0);
+    glPushMatrix();   // body
+      glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
+      glRotated(bodyyaw, 0, -1, 0);
 
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-    glBindVertexArray(0);
+      glBindVertexArray(vao_body);
+      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
 
+      glPushMatrix();   // hands
+        glTranslated(armfulcrum.x, armfulcrum.y, armfulcrum.z);
+        glRotated(armspitch, -1,  0, 0);
+        glRotated(armsyaw,    0, -1, 0);
+        glBindVertexArray(vao_hands);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glBindVertexArray(0);
+      glPopMatrix();
+      glPushMatrix();   // right upper arm
+      {
+        Vector3d fulcrum_to_hands;
+        Vector3d fulcrum_to_shoulder;
+        double armsectionlength = (armlength + armshoulderoffset) / 2;
+        fulcrum_to_hands.z = armlength;
+        fulcrum_to_shoulder.x = armshoulderoffset;
+        fulcrum_to_hands.rotate(0, armsyaw, 0);
+        Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
+        double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
+        double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
+        glTranslated(armfulcrum.x + armshoulderoffset, armfulcrum.y, armfulcrum.z);
+        glRotated(armspitch, -1, 0, 0);
+        glRotated(armangle + elbowangle, 0, -1, 0);
+        glBindVertexArray(vao_arms);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glBindVertexArray(0);
+        glPushMatrix();   // right forearm
+          glTranslated(0, 0, -armsectionlength);
+          glRotated(elbowangle * 2, 0, 1, 0);
+          glBindVertexArray(vao_arms);
+          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+          glBindVertexArray(0);
+        glPopMatrix();
+      }
+      glPopMatrix();
+      glPushMatrix();   // left upper arm
+      {
+        Vector3d fulcrum_to_hands;
+        Vector3d fulcrum_to_shoulder;
+        double armsectionlength = (armlength + armshoulderoffset) / 2;
+        fulcrum_to_hands.z = armlength;
+        fulcrum_to_shoulder.x = -armshoulderoffset;
+        fulcrum_to_hands.rotate(0, armsyaw, 0);
+        Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
+        double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
+        double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
+        glTranslated(armfulcrum.x - armshoulderoffset, armfulcrum.y, armfulcrum.z);
+        glRotated(armspitch, -1, 0, 0);
+        glRotated(armangle - elbowangle, 0, -1, 0);
+        glBindVertexArray(vao_arms);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glBindVertexArray(0);
+        glPushMatrix();   // left forearm
+          glTranslated(0, 0, -armsectionlength);
+          glRotated(-elbowangle * 2, 0, 1, 0);
+          glBindVertexArray(vao_arms);
+          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+          glBindVertexArray(0);
+        glPopMatrix();
+      }
+      glPopMatrix();
     glPopMatrix();
   }
 };

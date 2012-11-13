@@ -25,8 +25,17 @@ public:
   Quatd rotation;           // current rotation
   Quatd angularvelocity;    // rotational velocity
 
+  GLuint vao;               // vertex array object
+  GLushort numtris;         // number of triangles in the VBO
 
-  holdable(world *parentplanet) {              /// default constructor
+  holdable() {                                /// default constructor
+    held_by = NULL;
+    at_rest = true;
+
+    currentplanet = NULL;
+  }
+
+  holdable(world *parentplanet) {             /// specific constructor
     held_by = NULL;
     at_rest = true;
     mass = 0;
@@ -49,12 +58,12 @@ public:
     //                                        {return ptr == &other;} ));
   }
 
-  void push(Vector3d impulse) {  /// apply a one-off impulse to this object
+  virtual void push(Vector3d impulse) {  /// apply a one-off impulse to this object
     // TODO: apply max holding force, enable knocking out of hand
     velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
   }
 
-  void push(Vector3d impulse, double targetx, double targety, double targetz) {
+  virtual void push(Vector3d impulse, double targetx, double targety, double targetz) {
     /// apply a one-off impulse offset from centre of this object
     // TODO: apply max holding force, enable knocking out of hand
     velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
@@ -62,7 +71,7 @@ public:
     // TODO: calculate offset from COG and apply rotational acceleration
   }
 
-  void update(double timedelta) {
+  virtual void update(double timedelta) {
     /// update position and velocity based on time delta
     // only update if it's free in the air, not hand-held
     if(held_by == NULL) {
@@ -72,7 +81,86 @@ public:
     }
   }
 
-  void render() {                           /// draw this item in the world
+  virtual void render() {                           /// draw this item in the world
+  }
+};
+
+class golfclub : public holdable {
+public:
+
+  golfclub(world *parentplanet) {
+    held_by = NULL;
+    at_rest = true;
+    mass = 0;
+    momentofinertia = 0;
+    name = "golf club";
+    description = "A long stick with a heavy end for hitting small balls with.";
+
+    currentplanet = parentplanet;
+    currentplanet->items.push_back(this);
+
+    // rendering data
+    // body:
+    double top    = 0.9;
+    double bottom = -0.1;
+    double left   = -0.01;
+    double right  = 0.01;
+    double front  = 0.01;
+    double back   = -0.01;
+    GLfloat vbodata[] = {
+      left,  bottom, back,    // 0
+      left,  bottom, front,   // 1
+      left,  top,    back,    // 2
+      left,  top,    front,   // 3
+      right, bottom, back,    // 4
+      right, bottom, front,   // 5
+      right, top,    back,    // 6
+      right, top,    front    // 7
+    };
+    GLushort ibodata[] = {
+      6,4,0, 0,2,6,   // front
+      3,1,5, 5,7,3,   // back
+      2,0,1, 1,3,2,   // left
+      7,5,4, 4,6,7,   // right
+      2,6,7, 7,3,2,   // top
+      5,4,0, 0,1,5    // bottom
+    };
+    numtris = 12;
+
+    // rendering setup
+    vao = 0;
+    GLuint vbo = 0;
+    GLuint ibo = 0;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(vao);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
+  }
+
+  void render() {
+    /// alias function to render this object using the preferred method
+    render1();
+  }
+
+  void render1() {      /// draw the terrain using an indexed VBO with VAA and VAO
+    glColor4f(1, 1, 1, 1);
+
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+    glBindVertexArray(0);
   }
 };
 

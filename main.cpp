@@ -4,8 +4,8 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
-#include <math.h>
 #define _USE_MATH_DEFINES
+#include <math.h>
 #include "version.h"
 
 #include <GL/glew.h>
@@ -47,14 +47,24 @@ int main() {
 void init() {       /// all the one-time initialisation we need for the engine
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
-  if(glfwOpenWindow(windowwidth, windowheight, 8, 8, 8, 0, 8, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-
   GLFWvidmode desktopmode;
   glfwGetDesktopMode(&desktopmode);
-  short winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-  short winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
 
+  #ifdef WINDOW_FULLSCREEN
+  if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+  #elif defined WINDOW_LARGE
+  windowwidth  = desktopmode.Width  - 100;
+  windowheight = desktopmode.Height - 100;
+  if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+  int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
+  int winfinalposy = 25;
   glfwSetWindowPos(winfinalposx,winfinalposy);
+  #else
+  if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+  int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
+  int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
+  glfwSetWindowPos(winfinalposx,winfinalposy);
+  #endif
 
   char titleprefix[] = "GolfXTRM alpha ";
   char titlestring[100];
@@ -140,6 +150,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   root->addplanet(0);         // populate it with a default planet
   player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
   player->bodyyaw = 155;
+  player->isplayer = true;    // give us control
+  player->helditem = new golfclub(root->planet[0]);
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
 
@@ -302,8 +314,12 @@ void GLFWCALL controlcallback(int key, int action) {
   }
 }
 
-void physics(double timedelta) {   /// update entity and player locations
-  root->update(timedelta);   // carry out the global physics update
+void physics(double timedelta) {    /// update entity and player locations
+  if(timedelta > 0.1) {
+     root->update(0.1);             // clamp our time delta
+  } else {
+    root->update(timedelta);        // carry out the global physics update
+  }
 }
 
 void draw() {

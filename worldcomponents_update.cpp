@@ -31,17 +31,21 @@ void world::update(double timedelta) {
 void universe::update(double timedelta) {
   /// Runs physics update for every planet in this universe
   // check if we're due for an update yet
-  double timenow = glfwGetTime();
+  /*double timenow = glfwGetTime();
   if(timenow > updatenexttime) {
     updatenexttime = timenow + updatetime;
     // search the universe for worlds to update
     for (int p = 0; p < numplanets; ++p) {
-      planet[p]->update(timedelta);
+      planet[p]->update(updatetime);
     }
     // this is a decent place for an FPS counter because of the time delay
     std::cout << "FPS " << (int)(1 / timedeltaaverage) << std::endl;
   } else {
     // just update the player, not the rest of the planet
     player->update(timedelta);
+  }*/
+
+  for (int p = 0; p < numplanets; ++p) {
+    planet[p]->update(timedelta);
   }
 }

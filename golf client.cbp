@@ -49,9 +49,79 @@
 					<Add option="-lgcov" />
 				</Linker>
 			</Target>
+			<Target title="Release_fullscreen">
+				<Option output="bin\Release\GolfXTRM fullscreen" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-fgcse-sm" />
+					<Add option="-fgcse-las" />
+					<Add option="-fgcse-after-reload" />
+					<Add option="-fsched-spec-load" />
+					<Add option="-fsched-spec-load-dangerous" />
+					<Add option="-fprofile-generate" />
+					<Add option="-fbranch-probabilities" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-fprofile-use" />
+					<Add option="-fprofile-values" />
+					<Add option="--coverage" />
+					<Add option="-ftest-coverage" />
+					<Add option="-fsched2-use-traces" />
+					<Add option="-ftree-loop-linear" />
+					<Add option="-fpeel-loops" />
+					<Add option="-funroll-loops" />
+					<Add option="-funswitch-loops" />
+					<Add option="-DWINDOW_FULLSCREEN" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-lgcov" />
+				</Linker>
+			</Target>
+			<Target title="Release_largewindow">
+				<Option output="bin\Release\GolfXTRM large window" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-fgcse-sm" />
+					<Add option="-fgcse-las" />
+					<Add option="-fgcse-after-reload" />
+					<Add option="-fsched-spec-load" />
+					<Add option="-fsched-spec-load-dangerous" />
+					<Add option="-fprofile-generate" />
+					<Add option="-fbranch-probabilities" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-fprofile-use" />
+					<Add option="-fprofile-values" />
+					<Add option="--coverage" />
+					<Add option="-ftest-coverage" />
+					<Add option="-fsched2-use-traces" />
+					<Add option="-ftree-loop-linear" />
+					<Add option="-fpeel-loops" />
+					<Add option="-funroll-loops" />
+					<Add option="-funswitch-loops" />
+					<Add option="-DWINDOW_LARGE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-lgcov" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;" />
+			<Add alias="All" targets="Debug;Release;Release_fullscreen;Release_largewindow;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -85,6 +155,7 @@
 		<Unit filename="version.h" />
 		<Unit filename="worldcomponents.h" />
 		<Unit filename="worldcomponents_render.cpp" />
+		<Unit filename="worldcomponents_update.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
