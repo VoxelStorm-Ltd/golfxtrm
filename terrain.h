@@ -4,6 +4,7 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GL/glfw.h>
+#include <GL/gl.h>
 #include "vmath.h"
 
 class terrain {                 /// object for handling the terrain heightmap

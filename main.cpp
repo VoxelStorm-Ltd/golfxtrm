@@ -85,7 +85,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glMatrixMode(GL_MODELVIEW);
 
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
-  glCullFace(GL_BACK);      // may be redundant to cull back-faces
+  //glCullFace(GL_BACK);      // may be redundant to cull back-faces
   glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer
   glEnable(GL_DITHER);      // may marginally increase shading quality
   glEnable(GL_LIGHTING);    // obviously we want lighting... right?
@@ -96,6 +96,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   //glEnable(GL_MINMAX);      // allow min and max colour tables for HDR effects
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
+  //glPolygonMode(GL_FRONT, GL_FILL);  //filled
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
   //glShadeModel(GL_SMOOTH);  //SMOOTH or FLAT
   glShadeModel(GL_FLAT);    //may look more spectacular for a cube world
@@ -138,6 +139,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
   player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
+  player->bodyyaw = 155;
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
 
@@ -222,26 +224,26 @@ void controls() {
 
   player->state = golfer::GOLFER_STANDING;
   if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement
-    player->moveforce.x += sin(camyaw*M_PI/180) * thismoveforce;
-    player->moveforce.z -= cos(camyaw*M_PI/180) * thismoveforce;
+    player->moveforce.x += sin(player->bodyyaw * M_PI / 180) * thismoveforce;
+    player->moveforce.z -= cos(player->bodyyaw * M_PI / 180) * thismoveforce;
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey('S') == GLFW_PRESS) {
-    player->moveforce.x -= sin(camyaw*M_PI/180) * thisstrafeforce; // you can't run as fast
-    player->moveforce.z += cos(camyaw*M_PI/180) * thisstrafeforce; // backwards as forwards
+    player->moveforce.x -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce; // you can't run as fast
+    player->moveforce.z += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce; // backwards as forwards
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey('A') == GLFW_PRESS) {
-    player->moveforce.x -= cos(camyaw*M_PI/180) * thisstrafeforce;
-    player->moveforce.z -= sin(camyaw*M_PI/180) * thisstrafeforce;
+    player->moveforce.x -= cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.z -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey('D') == GLFW_PRESS) {
-    player->moveforce.x += cos(camyaw*M_PI/180) * thisstrafeforce;
-    player->moveforce.z += sin(camyaw*M_PI/180) * thisstrafeforce;
+    player->moveforce.x += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.z += sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }
@@ -259,17 +261,30 @@ void controls() {
 
   // convert mouse movements to camera rotation
   glfwGetMousePos(&mousex, &mousey);
-  camyaw = camyaw + ((mousex-(windowwidth/2)) * camyawperpixel);
-  campitch = campitch + ((mousey-(windowheight/2)) * campitchperpixel * mouseinvert);
-  glfwSetMousePos(windowwidth/2, windowheight/2);   //reset the mouse immediately after
-  if(camyaw > 360)              //wrap the camera yaw angle
-    camyaw = camyaw - 360;
-  else if(camyaw < 0)
-    camyaw = camyaw + 360;
-  if(campitch > 85)             //and clamp the camera pitch angle
-    campitch = 85;
-  else if(campitch < -85)
-    campitch = -85;
+  //player->headyaw += (mousex-(windowwidth / 2)) * camyawperpixel;
+  //player->headpitch += (mousey-(windowheight / 2)) * campitchperpixel * mouseinvert;
+  player->yawtorque   = (mousex-(windowwidth  / 2)) * camyawperpixel;
+  player->pitchtorque = (mousey-(windowheight / 2)) * campitchperpixel * mouseinvert;
+  glfwSetMousePos(windowwidth / 2, windowheight / 2);   //reset the mouse immediately after
+
+  // poll mouse buttons
+  if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
+    if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT)) {
+      // both buttons held down
+      inputmode = INPUTMODE_MOVING_HEAD;
+    } else {
+      // LMB held down
+      inputmode = INPUTMODE_MOVING_ARMS;
+    }
+  } else {
+    if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT)) {
+      // RMB held down
+      inputmode = INPUTMODE_MOVING_HEAD_AND_ARMS;
+    } else {
+      // no buttons pressed
+      inputmode = INPUTMODE_MOVING_HEAD_AND_BODY;
+    }
+  }
 }
 
 void GLFWCALL controlcallback(int key, int action) {
@@ -300,13 +315,17 @@ void draw() {
   glLoadIdentity();
 
   // rotate the view
-  glRotatef(campitch, 1, 0, 0);
-  glRotatef(camyaw,   0, 1, 0);
+  //glRotatef(player->headpitch, 1, 0, 0);
+  //glRotatef(player->headyaw,   0, 1, 0);
 
-  // take us to the current coords
-  //glTranslated(-camposx, -camposy, -camposz);
+  // translate us from the player's viewpoint
+  glTranslated(0, -player->eyeleveloffset.y, 0);
+  glRotatef(player->headyaw,   0, 1, 0);
+  glRotatef(player->headpitch, 1, 0, 0);
+  glTranslated(0, -player->headfulcrum.y, 0);
+  glRotatef(player->bodyyaw,   0, 1, 0);
   glTranslated(-player->bodyposition.x,
-               -(player->bodyposition.y + player->headfulcrum.y + player->eyeleveloffset.y),
+               -player->bodyposition.y,
                -player->bodyposition.z);
 
   // light the scene

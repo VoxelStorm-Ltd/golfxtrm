@@ -12,6 +12,7 @@ enum progressbartype {
 
 // input
 enum inputmodetype {
+  INPUTMODE_MOVING_HEAD_AND_BODY,
   INPUTMODE_MOVING_HEAD,
   INPUTMODE_MOVING_HEAD_AND_ARMS,
   INPUTMODE_MOVING_ARMS
