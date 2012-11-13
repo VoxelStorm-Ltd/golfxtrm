@@ -27,6 +27,7 @@ void world::render() {
   glEnd();
   // sky
   glColor4f(skyred, skygreen, skyblue, 1);
+  //glColor4f(0, 0, 1, 1);
   glBegin(GL_TRIANGLE_STRIP);
   glNormal3i(0, -1, 0);
   glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z - horizondistance);

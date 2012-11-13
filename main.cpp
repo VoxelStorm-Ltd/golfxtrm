@@ -135,7 +135,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
-  player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
+  player = new golfer(root->planet[0]->course[0], 0, 0, -2);   // our player
+  golfer *caddy = new golfer(root->planet[0]->course[0], 3, 0, 5); // the caddy
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 

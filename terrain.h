@@ -77,6 +77,14 @@ public:
     return result;
   }
 
+  double get_hardness_at(double x, double z) {
+    /// return springiness (per-second) coefficient
+    // FPS = player/ball reacts to all slopes instantly
+    // 1 = player/ball reacts to all slopes within 1 sec
+    // <0.98 = player/ball start to sink (> gravity)
+    return 10;   // how quickly things come back up from the ground
+  }
+
   void update(double timedelta) {
     // nothing to do here currently
   }

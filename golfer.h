@@ -74,6 +74,10 @@ public:
   world *currentplanet;       // what planet, is this? ;)
   holdable *helditem;         // what we're holding (NULL for empty hand)
 
+  GLuint vao;                 // vertex array object
+  GLuint vbo;                 // vertex buffer object
+  GLuint ibo;                 // element buffer object (index buffer object)
+
   golfer(golfcourse *course,
          double xpos, double ypos, double zpos) {   /// specific constructor
     currentcourse = course;
@@ -123,6 +127,116 @@ public:
     maxforce_runstrafe = maxforce_run * 0.75;   // as above
     maximpulse_jump = 236;                      // from neuromechanics paper (N.s)
     cda = 0.3963;                               // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
+
+    // rendering data
+    // body
+    double top    = bodyposition.y + 1.5;
+    double bottom = bodyposition.y;
+    double left   = bodyposition.x - 0.25;
+    double right  = bodyposition.x + 0.25;
+    double front  = bodyposition.z + 0.10;
+    double back   = bodyposition.z - 0.10;
+    GLfloat vbodata[] = {
+      left,  bottom, back,
+      left,  bottom, front,
+      left,  top,    back,
+      left,  top,    front,
+      right, bottom, back,
+      right, bottom, front,
+      right, top,    back,
+      right, top,    front,
+    };
+    GLushort ibodata[] = {
+      1,5,7, 7,3,1,
+      4,0,2, 3,6,4,
+      0,1,3, 3,2,0,
+      5,4,6, 6,7,5,
+      3,7,6, 6,2,3,
+      1,0,4, 4,5,1
+    };
+
+    /*std::vector<GLushort> indices;
+    // fill "indices" as needed
+    indices.push_back(1);
+    indices.push_back(5);
+    indices.push_back(7);
+    indices.push_back(7);
+    indices.push_back(3);
+    indices.push_back(1);
+
+    indices.push_back(4);
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(6);
+    indices.push_back(4);
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(3);
+    indices.push_back(3);
+    indices.push_back(2);
+    indices.push_back(0);
+
+    indices.push_back(5);
+    indices.push_back(4);
+    indices.push_back(6);
+    indices.push_back(6);
+    indices.push_back(7);
+    indices.push_back(5);
+
+    indices.push_back(3);
+    indices.push_back(7);
+    indices.push_back(6);
+    indices.push_back(6);
+    indices.push_back(2);
+    indices.push_back(3);
+
+    indices.push_back(1);
+    indices.push_back(0);
+    indices.push_back(4);
+    indices.push_back(4);
+    indices.push_back(5);
+    indices.push_back(1);*/
+
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // rendering setup
+    /*vao = 0;
+    vbo = 0;
+    ibo = 0;
+    glGenVertexArrays(1, &vao);           // Create our Vertex Array Object
+    glGenBuffers(1, &vbo);                // Generate our Vertex Buffer Object
+    glGenBuffers(1, &ibo);                // Generate our Index Buffer Object
+
+    glBindVertexArray(vao);               // Bind our Vertex Array Object
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);   // Bind our Vertex Buffer Object
+    //glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); // Set up our vertex attributes pointer
+    //glEnableClientState(GL_VERTEX_ARRAY); // non-shader version
+    //glVertexPointer(3, GL_FLOAT, sizeof(float) * 3, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
+
+    //glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+
+    glDisableVertexAttribArray(0);
+
+    glBindVertexArray(0);               // Unbind our Vertex Buffer Object
+    */
 
     // add it to the pointer vector of the home planet
     currentplanet = currentcourse->parentplanet;
@@ -195,7 +309,9 @@ public:
     // ground collision
     double groundheight = currentcourse->get_height_at(bodyposition.x, bodyposition.z);
     if(bodyposition.y <= groundheight) {
-      bodyposition.y = groundheight;
+      //bodyposition.y = groundheight;
+      // smoothly bring us back up to the ground
+      bodyposition.y = bodyposition.y + ((groundheight - bodyposition.y) * currentcourse->get_hardness_at(bodyposition.x, bodyposition.y) * timedelta);
       if(bodyvelocity.y < 0) {                // stop downwards motion
         bodyvelocity.y = 0;
       }
@@ -206,9 +322,9 @@ public:
         double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta;  // mass cancels
         Vector3d thisdragdecel = bodyvelocity;
         thisdragdecel.normalize();
-        std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
         thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisfrictionimpulse);
-        std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
+        //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
+        //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
         bodyvelocity += thisdragdecel;
       } else if(state == GOLFER_JUMPING) {    // apply an impulse upwards
         bodyvelocity.y += (maximpulse_jump / bodymass);
@@ -233,7 +349,11 @@ public:
     moveforce.z = 0;
   }
 
-  void render() {                             /// draw this chap
+  void render() {           /// alias function for preferred render method
+    render4();
+  }
+
+  void render1() {          /// draw this chap as a simple immediate mode cuboid
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
     glColor4f(1,1,0,1);
@@ -296,6 +416,67 @@ public:
     glEnd();
 
     // if he's our avatar, skip drawing the head and neck
+  }
+
+  void render2() {
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glColor4f(1,1,0,1);
+
+    glBindVertexArray(vao);                   // Bind our Vertex Array Object
+    //glDrawArrays(GL_TRIANGLES, 0, 2);
+    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+    glBindVertexArray(0);                     // Unbind our Vertex Array Object
+  }
+
+  void render3() {          /// draw this fellow using an indexed vertex array
+    double top    = bodyposition.y + 1.5;
+    double bottom = bodyposition.y;
+    double left   = bodyposition.x - 0.25;
+    double right  = bodyposition.x + 0.25;
+    double front  = bodyposition.z + 0.10;
+    double back   = bodyposition.z - 0.10;
+    GLfloat vbodata[] = {
+      left,  bottom, back,
+      left,  bottom, front,
+      left,  top,    back,
+      left,  top,    front,
+      right, bottom, back,
+      right, bottom, front,
+      right, top,    back,
+      right, top,    front,
+    };
+
+    GLushort indices[] = {
+      1,5,7, 7,3,1,
+      4,0,2, 3,6,4,
+      0,1,3, 3,2,0,
+      5,4,6, 6,7,5,
+      3,7,6, 6,2,3,
+      1,0,4, 4,5,1
+    };
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, vbodata);
+
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLushort), GL_UNSIGNED_SHORT, indices);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+  }
+
+  void render4() {          /// draw this fellow using an indexed VBO
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 };
 

@@ -34,6 +34,10 @@ public:
   double get_friction_at(double x, double z) {
     return landscape->get_friction_at(x, z);
   }
+
+  double get_hardness_at(double x, double z) {
+    return landscape->get_hardness_at(x, z);
+  }
 };
 
 

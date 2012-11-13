@@ -24,7 +24,7 @@ double updatefreq = 20;     // how many times to update the world per second
 double rotations_per_tick = .02;
 
 // non-editable world settings (later server-fed)
-GLfloat fogcolour[] = {0.85, 0.85, 0.9, 1};
+//GLfloat fogcolour[] = {0.85, 0.85, 0.9, 1};
 float fogred   = 0.98;
 float foggreen = 0.92;
 float fogblue  = 0.50;
@@ -34,6 +34,14 @@ float skyblue  = 0.67;
 float ambientred   = 0.7;
 float ambientgreen = 0.7;
 float ambientblue  = 0.7;
+
+/*float fogred   = 0.98;
+float foggreen = 0.92;
+float fogblue  = 0.9;
+float skyred   = 0.90;
+float skygreen = 0.95;
+float skyblue  = 1.0;*/
+
 
 GLfloat sundirection[] = {0.5,1,0.25,0};
 
@@ -53,7 +61,7 @@ double timedeltaaverage = 0.01;  // rolling average of the delta time
 inputmodetype inputmode = INPUTMODE_MOVING_HEAD;
 
 double campitch = 0;
-double camyaw   = 0;
+double camyaw   = 180;
 double camfov = 1;          // field of view - larger numbers are wider
 double camnearplane = 0.1;  // default near and far clipping planes
 double camfarplane  = 1000;
