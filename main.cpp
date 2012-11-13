@@ -17,6 +17,7 @@
 #include "globalvars_client.h"
 #include "terrain.h"
 #include "worldcomponents.h"
+#include "landscape_features.h"
 #include "golfer.h"
 #include "holdable.h"
 
@@ -115,8 +116,9 @@ void init() {       /// all the one-time initialisation we need for the engine
   glEnable(GL_FOG);
   GLfloat fogcolour[] = {fogred, foggreen, fogblue, 1};
   glFogfv(GL_FOG_COLOR, fogcolour);
-  glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
-  glFogf(GL_FOG_DENSITY, 0.03);  // only used for exponential fog
+  //glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
+  glFogi(GL_FOG_MODE, GL_EXP); // GL_LINEAR GL_EXP GL_EXP2
+  glFogf(GL_FOG_DENSITY, 0.02);  // only used for exponential fog
   glFogi(GL_FOG_START, 2);     // only used for linear fog
   glFogi(GL_FOG_END, 100);
 
@@ -151,9 +153,25 @@ void init() {       /// all the one-time initialisation we need for the engine
   player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
   player->bodyyaw = 155;
   player->isplayer = true;    // give us control
+  golfclub *randomgroundclub = new golfclub(root->planet[0]);
+  randomgroundclub->rotate(golfclub::AXIS_X, 90);
+  randomgroundclub->position.x = 1;
+  randomgroundclub->position.z = 22;
   player->helditem = new golfclub(root->planet[0]);
+  player->helditem->held_by = player;
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
+  caddy->helditem = new golfclub(root->planet[0]);
+  player->helditem->held_by = caddy;
+
+  firtree *thistree = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32);
+
+  for(int i = 0; i < 2000; ++i) {
+    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
+    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
+    firtree *thistree = new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos);
+  }
+
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
@@ -168,9 +186,8 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
+  cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
-
-  cout << "Initialisation complete." << endl;
 }
 
 void shutdown(int return_code, string errorstring) {  /// close everything gracefully before exit

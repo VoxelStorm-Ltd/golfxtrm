@@ -1,6 +1,7 @@
 #include "worldcomponents.h"
 #include "golfer.h"
 #include "holdable.h"
+#include "landscape_features.h"
 
 extern universe *root;
 extern golfer *player;

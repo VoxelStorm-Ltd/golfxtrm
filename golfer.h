@@ -69,6 +69,8 @@ public:
 
   double cda;                 // coefficient of drag * crossectional area
 
+  Vector3f skincolour;        // keep this adjustable per golfer
+
   enum golferstatetype {
     GOLFER_STANDING,
     GOLFER_WALKING,
@@ -118,9 +120,9 @@ public:
     armsmass = 3.216 * 2;                       // official biometric
     headfulcrum.y = 1.38;                       // DIY biometric guess
     eyeleveloffset.y = 1.6095 - headfulcrum.y;  // official average human standing eye height
-    armlength = 0.50;                           // DIY biometric guess - hand distance from centre fulcrum
+    armlength = 0.60;                           // DIY biometric guess - hand distance from centre fulcrum
     armfulcrum.x = 0;                           // DIY guesses
-    armfulcrum.y = 1.5;
+    armfulcrum.y = 1.45;
     armfulcrum.z = 0;
     armshoulderoffset = 0.32;                   // DIY guess
     headyawlimit = 90;                          // DIY biometric approximation (including eye angles etc)
@@ -148,15 +150,18 @@ public:
     maxforce_runstrafe = maxforce_run * 0.75;   // as above
     maximpulse_jump = 236;                      // from neuromechanics paper (N.s)
     cda = 0.3963;                               // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
+    skincolour.r = 0.937;                       // average caucasian skin swatch apparently
+    skincolour.g = 0.815;
+    skincolour.b = 0.811;
 
     // rendering data
     // body:
-    double top    = 1.5;
-    double bottom = 0;
-    double left   = -0.25;
-    double right  = 0.25;
-    double front  = 0.10;
-    double back   = -0.10;
+    float top    = 1.5;
+    float bottom = 0;
+    float left   = -0.25;
+    float right  = 0.25;
+    float front  = 0.10;
+    float back   = -0.10;
     GLfloat vbodata[] = {
       left,  bottom, back,    // 0
       left,  bottom, front,   // 1
@@ -178,12 +183,12 @@ public:
 
 
     // hands:
-    top    = 0.05;
-    bottom = -0.05;
-    left   = -0.05;
-    right  = 0.05;
-    front  = -armlength - 0.05;
-    back   = -armlength + 0.05;
+    top    = 0.04;
+    bottom = -0.04;
+    left   = -0.04;
+    right  = 0.04;
+    front  = -armlength - 0.04;
+    back   = -armlength + 0.04;
     GLfloat vbodata_hands[] = {
       left,  bottom, back,    // 0
       left,  bottom, front,   // 1
@@ -200,8 +205,8 @@ public:
     bottom = -0.05;
     left   = -0.05;
     right  = 0.05;
-    front  = -(armlength + armshoulderoffset) / 2;
-    back   = 0;
+    front  = -((armlength + armshoulderoffset) / 2) + 0.05;
+    back   = +0.05;
     GLfloat vbodata_arms[] = {
       left,  bottom, back,    // 0
       left,  bottom, front,   // 1
@@ -213,11 +218,23 @@ public:
       right, top,    front    // 7
     };
     // if he's our avatar, skip drawing the head and neck
-    if(isplayer) {
-      // anything we draw for internal view should go here
-    } else {
-      //
-    }
+    // head:
+    top    = 0.12;
+    bottom = -0.12;
+    left   = -0.075;
+    right  = 0.075;
+    front  = -0.12;
+    back   = 0.09;
+    GLfloat vbodata_head[] = {
+      left,  bottom, back,    // 0
+      left,  bottom, front,   // 1
+      left,  top,    back,    // 2
+      left,  top,    front,   // 3
+      right, bottom, back,    // 4
+      right, bottom, front,   // 5
+      right, top,    back,    // 6
+      right, top,    front    // 7
+    };
 
     // rendering setup
     vao_body = 0;
@@ -235,7 +252,7 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -253,7 +270,7 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata_arms), vbodata_arms, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_arms), vbodata_arms, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -271,12 +288,30 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata_hands), vbodata_hands, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_hands), vbodata_hands, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindVertexArray(vao_hands);             // set up the VAO's state
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindVertexArray(0);
+
+    // head
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_head), vbodata_head, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(vao_head);             // set up the VAO's state
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArray(0);
@@ -614,78 +649,9 @@ public:
     glPopMatrix();
   }
 */
-  void render5() {          /// draw this fellow using an indexed VBO with VAA and VAO
-    glColor4f(1,1,0,1);
 
-    glPushMatrix();   // body
-      glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
-      glRotated(bodyyaw, 0, -1, 0);
+  void render5();   // external
 
-      glBindVertexArray(vao_body);
-      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-      glPushMatrix();   // hands
-        glTranslated(armfulcrum.x, armfulcrum.y, armfulcrum.z);
-        glRotated(armspitch, -1,  0, 0);
-        glRotated(armsyaw,    0, -1, 0);
-        glBindVertexArray(vao_hands);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-      glPopMatrix();
-      glPushMatrix();   // right upper arm
-      {
-        Vector3d fulcrum_to_hands;
-        Vector3d fulcrum_to_shoulder;
-        double armsectionlength = (armlength + armshoulderoffset) / 2;
-        fulcrum_to_hands.z = armlength;
-        fulcrum_to_shoulder.x = armshoulderoffset;
-        fulcrum_to_hands.rotate(0, armsyaw, 0);
-        Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
-        double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
-        double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
-        glTranslated(armfulcrum.x + armshoulderoffset, armfulcrum.y, armfulcrum.z);
-        glRotated(armspitch, -1, 0, 0);
-        glRotated(armangle + elbowangle, 0, -1, 0);
-        glBindVertexArray(vao_arms);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-        glPushMatrix();   // right forearm
-          glTranslated(0, 0, -armsectionlength);
-          glRotated(elbowangle * 2, 0, 1, 0);
-          glBindVertexArray(vao_arms);
-          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-          glBindVertexArray(0);
-        glPopMatrix();
-      }
-      glPopMatrix();
-      glPushMatrix();   // left upper arm
-      {
-        Vector3d fulcrum_to_hands;
-        Vector3d fulcrum_to_shoulder;
-        double armsectionlength = (armlength + armshoulderoffset) / 2;
-        fulcrum_to_hands.z = armlength;
-        fulcrum_to_shoulder.x = -armshoulderoffset;
-        fulcrum_to_hands.rotate(0, armsyaw, 0);
-        Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
-        double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
-        double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
-        glTranslated(armfulcrum.x - armshoulderoffset, armfulcrum.y, armfulcrum.z);
-        glRotated(armspitch, -1, 0, 0);
-        glRotated(armangle - elbowangle, 0, -1, 0);
-        glBindVertexArray(vao_arms);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-        glPushMatrix();   // left forearm
-          glTranslated(0, 0, -armsectionlength);
-          glRotated(-elbowangle * 2, 0, 1, 0);
-          glBindVertexArray(vao_arms);
-          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-          glBindVertexArray(0);
-        glPopMatrix();
-      }
-      glPopMatrix();
-    glPopMatrix();
-  }
 };
 
 

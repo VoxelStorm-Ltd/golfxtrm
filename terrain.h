@@ -43,8 +43,8 @@ public:
           heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
         } else {
           //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
-          double centredist = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2)) / gridwidth * 20;
-          double offsetheight = 10 - (centredist/(gridwidth/2));
+          double centredist = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2)) / gridwidth * 40;
+          double offsetheight = 20 - (centredist/(gridwidth/2));
           if(offsetheight > 0) {
             heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * 0.25);
           } else {

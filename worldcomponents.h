@@ -5,8 +5,9 @@
 #include "terrain.h"
 #include "globalvars_client_extern.h"
 
-class golfer;   // forward dec
+class golfer;   // forward decs
 class holdable;
+class feature;
 class world;
 
 class golfcourse {  /// the overall landscape object
@@ -53,6 +54,7 @@ public:
 
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
+  boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
 
   world() {                                 /// default constructor
     gravity = 9.800;

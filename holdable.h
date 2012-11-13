@@ -26,7 +26,13 @@ public:
   Quatd angularvelocity;    // rotational velocity
 
   GLuint vao;               // vertex array object
-  GLuint numtris;         // number of triangles in the VBO
+  GLuint numtris;           // number of triangles in the VBO
+
+  enum axistype {
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z
+  };
 
   holdable() {                                /// default constructor
     held_by = NULL;
@@ -81,7 +87,23 @@ public:
     }
   }
 
-  virtual void render() {                           /// draw this item in the world
+  virtual void rotate(axistype axis, double angle) {
+    if(axis == AXIS_X) {
+      rotation += Quaternion<double>::fromAxisRot(Vector3d(1,0,0), angle);
+      rotation.normalize();
+    } else if (axis == AXIS_Y) {
+      rotation += Quaternion<double>::fromAxisRot(Vector3d(0,1,0), angle);
+      rotation.normalize();
+    } else if (axis == AXIS_Z) {
+      rotation += Quaternion<double>::fromAxisRot(Vector3d(0,0,1), angle);
+      rotation.normalize();
+    }
+  }
+
+  virtual void render() {       /// draw this item in the world
+  }
+
+  virtual void renderlocal() {  /// draw this item in a hand or container
   }
 };
 
@@ -101,12 +123,14 @@ public:
 
     // rendering data
     // body:
-    double top    = 0.9;
-    double bottom = -0.1;
-    double left   = -0.01;
-    double right  = 0.01;
-    double front  = 0.01;
-    double back   = -0.01;
+    float top    = 0.9;
+    float bottom = -0.1;
+    float left   = -0.01;
+    float right  = 0.01;
+    float front  = 0.01;
+    float back   = -0.01;
+    float headlength = 0.1;
+    float headdepth = 0.05;
     GLfloat vbodata[] = {
       left,  bottom, back,    // 0
       left,  bottom, front,   // 1
@@ -115,7 +139,16 @@ public:
       right, bottom, back,    // 4
       right, bottom, front,   // 5
       right, top,    back,    // 6
-      right, top,    front    // 7
+      right, top,    front,   // 7
+
+      left,  top+headdepth, back,        // 8
+      left,  top+headdepth, headlength,  // 9
+      left,  top,           back,        // 10
+      left,  top,           headlength,  // 11
+      right, top+headdepth, back,        // 12
+      right, top+headdepth, headlength,  // 13
+      right, top,           back,        // 14
+      right, top,           headlength   // 15
     };
     GLuint ibodata[] = {
       6,4,0, 0,2,6,   // front
@@ -123,9 +156,15 @@ public:
       2,0,1, 1,3,2,   // left
       7,5,4, 4,6,7,   // right
       2,6,7, 7,3,2,   // top
-      5,4,0, 0,1,5    // bottom
+      5,4,0, 0,1,5,   // bottom
+
+      14,12, 8,  8,10,14,  // front
+      10, 8, 9,  9,11,10,  // left
+      15,13,12, 12,14,15,  // right
+      10,14,13, 15,11,10,  // top
+      13,12, 8,  8, 9,13,  // bottom
     };
-    numtris = 12;
+    numtris = 22;
 
     // rendering setup
     vao = 0;
@@ -150,25 +189,37 @@ public:
     glBindVertexArray(0);
   }
 
-  void render() {
-    /// alias function to render this object using the preferred method
-    render1();
-  }
-
-  void render1() {      /// draw the terrain using an indexed VBO with VAA and VAO
+  void render() {     /// draw the terrain using an indexed VBO with VAA and VAO
     if(held_by == NULL) {
       // only draw objects that aren't held by someone (leave it to their own renderer otherwise)
       glPushMatrix();
         glTranslated(position.x, position.y, position.z);
+        glMultMatrixd(rotation.transform());
         //glRotated(bodyyaw, 0, -1, 0);
-        Matrix3d rotmatrix = rotation.rotMatrix();
-        //std::cout << rotmatrix.toString() << std::endl;
+        //Matrix3d rotmatrix = rotation.rotMatrix();
+        //glLoadMatrixd(rotation.rotMatrix());
+        //GLdouble temp[16];
+        //glGetDoublev(GL_MODELVIEW_MATRIX, temp);
+        //std::cout << temp[0] << " " << temp[1] << " " << temp[2] << " " << temp[3] << " " << std::endl;
+        //std::cout << temp[4] << " " << temp[5] << " " << temp[6] << " " << temp[7] << " " << std::endl;
+        //std::cout << temp[8] << " " << temp[9] << " " << temp[10] << " " << temp[11] << " " << std::endl;
+        //std::cout << temp[12] << " " << temp[13] << " " << temp[14] << " " << temp[15] << " " << std::endl;
+        //std::cout << "---" << std::endl;
+        //std::cout << rotation.rotMatrix().toString() << std::endl;
         glColor4f(1, 1, 1, 1);
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
       glPopMatrix();
     }
+  }
+
+  void renderlocal() {      /// draw the terrain using an indexed VBO with VAA and VAO
+    // we have no position, just render where we are
+    glColor4f(1, 1, 1, 1);
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
   }
 };
 
