@@ -167,7 +167,7 @@ public:
       right, top,    back,    // 6
       right, top,    front    // 7
     };
-    GLushort ibodata[] = {
+    GLuint ibodata[] = {
       6,4,0, 0,2,6,   // front
       3,1,5, 5,7,3,   // back
       2,0,1, 1,3,2,   // left
@@ -551,7 +551,7 @@ public:
       right, top,    front,
     };
 
-    GLushort indices[] = {
+    GLuint indices[] = {
       1,5,7, 7,3,1,
       4,0,2, 3,6,4,
       0,1,3, 3,2,0,
@@ -563,7 +563,7 @@ public:
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, vbodata);
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLushort), GL_UNSIGNED_SHORT, indices);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLuint), GL_UNSIGNED_INT, indices);
 
     glDisableClientState(GL_VERTEX_ARRAY);
   }
@@ -581,7 +581,7 @@ public:
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -604,7 +604,7 @@ public:
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(0);
 
@@ -622,14 +622,14 @@ public:
       glRotated(bodyyaw, 0, -1, 0);
 
       glBindVertexArray(vao_body);
-      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
       glPushMatrix();   // hands
         glTranslated(armfulcrum.x, armfulcrum.y, armfulcrum.z);
         glRotated(armspitch, -1,  0, 0);
         glRotated(armsyaw,    0, -1, 0);
         glBindVertexArray(vao_hands);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
       glPopMatrix();
       glPushMatrix();   // right upper arm
@@ -647,13 +647,13 @@ public:
         glRotated(armspitch, -1, 0, 0);
         glRotated(armangle + elbowangle, 0, -1, 0);
         glBindVertexArray(vao_arms);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         glPushMatrix();   // right forearm
           glTranslated(0, 0, -armsectionlength);
           glRotated(elbowangle * 2, 0, 1, 0);
           glBindVertexArray(vao_arms);
-          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
           glBindVertexArray(0);
         glPopMatrix();
       }
@@ -673,13 +673,13 @@ public:
         glRotated(armspitch, -1, 0, 0);
         glRotated(armangle - elbowangle, 0, -1, 0);
         glBindVertexArray(vao_arms);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         glPushMatrix();   // left forearm
           glTranslated(0, 0, -armsectionlength);
           glRotated(-elbowangle * 2, 0, 1, 0);
           glBindVertexArray(vao_arms);
-          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
           glBindVertexArray(0);
         glPopMatrix();
       }

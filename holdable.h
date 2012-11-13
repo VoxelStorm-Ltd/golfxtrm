@@ -26,7 +26,7 @@ public:
   Quatd angularvelocity;    // rotational velocity
 
   GLuint vao;               // vertex array object
-  GLushort numtris;         // number of triangles in the VBO
+  GLuint numtris;         // number of triangles in the VBO
 
   holdable() {                                /// default constructor
     held_by = NULL;
@@ -117,7 +117,7 @@ public:
       right, top,    back,    // 6
       right, top,    front    // 7
     };
-    GLushort ibodata[] = {
+    GLuint ibodata[] = {
       6,4,0, 0,2,6,   // front
       3,1,5, 5,7,3,   // back
       2,0,1, 1,3,2,   // left
@@ -156,11 +156,19 @@ public:
   }
 
   void render1() {      /// draw the terrain using an indexed VBO with VAA and VAO
-    glColor4f(1, 1, 1, 1);
-
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
-    glBindVertexArray(0);
+    if(held_by == NULL) {
+      // only draw objects that aren't held by someone (leave it to their own renderer otherwise)
+      glPushMatrix();
+        glTranslated(position.x, position.y, position.z);
+        //glRotated(bodyyaw, 0, -1, 0);
+        Matrix3d rotmatrix = rotation.rotMatrix();
+        //std::cout << rotmatrix.toString() << std::endl;
+        glColor4f(1, 1, 1, 1);
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+      glPopMatrix();
+    }
   }
 };
 

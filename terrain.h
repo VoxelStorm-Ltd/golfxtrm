@@ -20,7 +20,7 @@ public:
   GLuint vao;                 // vertex array object
   GLuint vbo;                 // vertex buffer object
   GLuint ibo;                 // element buffer object (index buffer object)
-  GLushort numtris;           // number of triangles in the index
+  GLuint numtris;           // number of triangles in the index
 
   terrain() {                            /// default constructor
     origin.x = 0;
@@ -70,7 +70,7 @@ public:
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
     GLfloat  vbodata[gridwidth * gridwidth * 3];
-    std::vector<GLushort> indices;
+    std::vector<GLuint> indices;
     numtris = 0;
 
     for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
@@ -98,7 +98,7 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
@@ -193,7 +193,7 @@ public:
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
@@ -210,7 +210,7 @@ public:
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(0);
 
@@ -222,7 +222,7 @@ public:
     glColor4f(0.75, 0.75, 0.25, 1);
 
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
   }
 };
