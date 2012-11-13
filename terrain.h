@@ -1,6 +1,7 @@
 #ifndef TERRAIN_H_INCLUDED
 #define TERRAIN_H_INCLUDED
 
+#include <vector>
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include "vmath.h"
@@ -18,6 +19,7 @@ public:
   GLuint vao;                 // vertex array object
   GLuint vbo;                 // vertex buffer object
   GLuint ibo;                 // element buffer object (index buffer object)
+  GLushort numtris;           // number of triangles in the index
 
   terrain() {                            /// default constructor
     origin.x = 0;
@@ -58,7 +60,8 @@ public:
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
     GLfloat  vbodata[gridwidth * gridwidth * 3];
-    GLushort ibodata[gridwidth * gridwidth * 3 * 2];
+    std::vector<GLushort> indices;
+    numtris = 0;
 
     for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
       for(int zgrid = 0; zgrid < gridwidth; ++zgrid) {
@@ -71,23 +74,21 @@ public:
 
         // populate the triangles
         if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
-          int ibo_offset = (xgrid * (gridwidth-1) * 3 * 2) + (zgrid * 3 * 2);
-          ibodata[ibo_offset    ] = ( xgrid      * (gridwidth)) +  zgrid;
-          ibodata[ibo_offset + 1] = ( xgrid      * (gridwidth)) + (zgrid + 1);
-          ibodata[ibo_offset + 2] = ((xgrid + 1) * (gridwidth)) + (zgrid + 1);
-          ibo_offset = (xgrid * gridwidth * 3 * 2) + (zgrid * 3 * 2) + 3;
-          ibodata[ibo_offset    ] = ((xgrid + 1) * (gridwidth)) + (zgrid + 1);
-          ibodata[ibo_offset + 1] = ((xgrid + 1) * (gridwidth)) +  zgrid;
-          ibodata[ibo_offset + 2] = ( xgrid      * (gridwidth)) +  zgrid;
-          //std::cout << "DEBUG: " << ibodata[ibo_offset    ] << " " << ibodata[ibo_offset + 1] << " " << ibodata[ibo_offset + 2] << std::endl;
+          indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
+          indices.push_back(( xgrid      * (gridwidth)) + (zgrid + 1));
+          indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
+          indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
+          indices.push_back(((xgrid + 1) * (gridwidth)) +  zgrid     );
+          indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
+          numtris += 2;
         }
       }
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
@@ -188,7 +189,7 @@ public:
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glDrawElements(GL_TRIANGLES, (gridwidth-1) * (gridwidth) * 3 * 2, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_SHORT, 0);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 

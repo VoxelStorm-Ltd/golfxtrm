@@ -130,12 +130,12 @@ public:
 
     // rendering data
     // body
-    double top    = bodyposition.y + 1.5;
-    double bottom = bodyposition.y;
-    double left   = bodyposition.x - 0.25;
-    double right  = bodyposition.x + 0.25;
-    double front  = bodyposition.z + 0.10;
-    double back   = bodyposition.z - 0.10;
+    double top    = 1.5;
+    double bottom = 0;
+    double left   = -0.25;
+    double right  = 0.25;
+    double front  = 0.10;
+    double back   = -0.10;
     GLfloat vbodata[] = {
       left,  bottom, back,
       left,  bottom, front,
@@ -155,50 +155,7 @@ public:
       1,0,4, 4,5,1
     };
 
-    /*std::vector<GLushort> indices;
-    // fill "indices" as needed
-    indices.push_back(1);
-    indices.push_back(5);
-    indices.push_back(7);
-    indices.push_back(7);
-    indices.push_back(3);
-    indices.push_back(1);
-
-    indices.push_back(4);
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(3);
-    indices.push_back(6);
-    indices.push_back(4);
-
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(3);
-    indices.push_back(3);
-    indices.push_back(2);
-    indices.push_back(0);
-
-    indices.push_back(5);
-    indices.push_back(4);
-    indices.push_back(6);
-    indices.push_back(6);
-    indices.push_back(7);
-    indices.push_back(5);
-
-    indices.push_back(3);
-    indices.push_back(7);
-    indices.push_back(6);
-    indices.push_back(6);
-    indices.push_back(2);
-    indices.push_back(3);
-
-    indices.push_back(1);
-    indices.push_back(0);
-    indices.push_back(4);
-    indices.push_back(4);
-    indices.push_back(5);
-    indices.push_back(1);*/
-
+    // rendering setup
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ARRAY_BUFFER,             vbo);
@@ -208,8 +165,8 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // rendering setup
-    /*vao = 0;
+    /*// test VAO setup
+    vao = 0;
     vbo = 0;
     ibo = 0;
     glGenVertexArrays(1, &vao);           // Create our Vertex Array Object
@@ -465,6 +422,10 @@ public:
   }
 
   void render4() {          /// draw this fellow using an indexed VBO
+    glPushMatrix();
+    glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
+    glRotated(bodyyaw, 0, -1, 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
 
@@ -477,6 +438,8 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glPopMatrix();
   }
 };
 
