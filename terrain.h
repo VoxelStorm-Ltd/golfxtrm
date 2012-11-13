@@ -7,37 +7,38 @@
 
 class terrain {                 /// object for handling the terrain heightmap
 public:
-  Vector3d origin;      // the map's origin's coordinates
-  Vector3d bounds;      // the map's bounding box
+  Vector3d origin;            // the map's origin's coordinates
+  Vector3d bounds;            // the map's bounding box
 
   double heightmap[256*256];  // the heightmap data
-  int gridwidth;        // the x and z resolution of the heightmap as above
+  int gridwidth;              // the x and z resolution of the heightmap as above
 
-  int randomseed;       // the fixed seed for this course
+  int randomseed;             // the fixed seed for this course
 
-  GLuint vao;           // vertex array object
-  GLuint vbo;           // vertex buffer object
+  GLuint vao;                 // vertex array object
+  GLuint vbo;                 // vertex buffer object
+  GLuint ibo;                 // element buffer object (index buffer object)
 
   terrain() {                            /// default constructor
     origin.x = 0;
     origin.y = 0;
     origin.z = 0;
     bounds.x = 200;
-    bounds.y = 60;
     bounds.z = 200;
+    bounds.y = 60;
     gridwidth = 256;
 
     randomseed = 1337;
 
     // initialise the heightmap
     srand(randomseed);                  // seed the random generator predictably
+    double xcentre = gridwidth / 2;
+    double zcentre = gridwidth / 2;
     for(int x = 0; x < gridwidth; ++x) {
       for(int z = 0; z < gridwidth; ++z) {
         if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
           heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
         } else {
-          double xcentre = gridwidth / 2;
-          double zcentre = gridwidth / 2;
           //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
           double centredist = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2)) / gridwidth * 20;
           double offsetheight = 10 - (centredist/(gridwidth/2));
@@ -46,10 +47,49 @@ public:
           } else {
             heightmap[(x * gridwidth) + z] = 0;
           }
-
         }
       }
     }
+
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+    update_vbo(); // generate the vbo ready for first run
+  }
+
+  void update_vbo() {   /// update the VBO from the current grid heightmap
+    GLfloat  vbodata[gridwidth * gridwidth * 3];
+    GLushort ibodata[gridwidth * gridwidth * 3 * 2];
+
+    for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
+      for(int zgrid = 0; zgrid < gridwidth; ++zgrid) {
+        // populate the vertex locations
+        int vbo_offset = (xgrid * gridwidth * 3) + (zgrid * 3);
+        vbodata[vbo_offset    ] = origin.x + ((double)xgrid / gridwidth * bounds.x);
+        vbodata[vbo_offset + 1] = heightmap[(xgrid * gridwidth) + zgrid];
+        vbodata[vbo_offset + 2] = origin.z + ((double)zgrid / gridwidth * bounds.z);
+        //std::cout << "DEBUG: " << vbodata[vbo_offset    ] << " " << vbodata[vbo_offset + 1] << " " << vbodata[vbo_offset + 2] << std::endl;
+
+        // populate the triangles
+        if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
+          int ibo_offset = (xgrid * (gridwidth-1) * 3 * 2) + (zgrid * 3 * 2);
+          ibodata[ibo_offset    ] = ( xgrid      * (gridwidth)) +  zgrid;
+          ibodata[ibo_offset + 1] = ( xgrid      * (gridwidth)) + (zgrid + 1);
+          ibodata[ibo_offset + 2] = ((xgrid + 1) * (gridwidth)) + (zgrid + 1);
+          ibo_offset = (xgrid * gridwidth * 3 * 2) + (zgrid * 3 * 2) + 3;
+          ibodata[ibo_offset    ] = ((xgrid + 1) * (gridwidth)) + (zgrid + 1);
+          ibodata[ibo_offset + 1] = ((xgrid + 1) * (gridwidth)) +  zgrid;
+          ibodata[ibo_offset + 2] = ( xgrid      * (gridwidth)) +  zgrid;
+          //std::cout << "DEBUG: " << ibodata[ibo_offset    ] << " " << ibodata[ibo_offset + 1] << " " << ibodata[ibo_offset + 2] << std::endl;
+        }
+      }
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
   double get_height_at(double x, double z) {
@@ -96,8 +136,7 @@ public:
 
   void render() {
     /// alias function to render the terrain using the preferred method
-    render1();
-    render2();
+    render3();
   }
 
   void render1() {     /// draw the terrain based on world coords
@@ -136,6 +175,25 @@ public:
       }
       glEnd();
     }
+  }
+
+  void render3() {    /// draw the terrain using an indexed VBO
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glColor4f(0.75, 0.75, 0.25, 1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+
+    glDrawElements(GL_TRIANGLES, (gridwidth-1) * (gridwidth) * 3 * 2, GL_UNSIGNED_SHORT, 0);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 };
 
