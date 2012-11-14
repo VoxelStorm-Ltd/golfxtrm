@@ -20,9 +20,9 @@ public:
   GLuint vao;                 // vertex array object
   GLuint vbo;                 // vertex buffer object
   GLuint ibo;                 // element buffer object (index buffer object)
-  GLuint numtris;           // number of triangles in the index
+  GLuint numtris;             // number of triangles in the index
 
-  terrain() {                            /// default constructor
+  terrain(Vector3d teeposition, Vector3d holeposition) {  /// default constructor
     origin.x = 0;
     origin.y = 0;
     origin.z = 0;
@@ -43,8 +43,14 @@ public:
           heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
         } else {
           //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
-          double centredist = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2)) / gridwidth * 40;
-          double offsetheight = 20 - (centredist/(gridwidth/2));
+          double centredist_sq = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
+          double offsetheight = 20 - ((centredist_sq / gridwidth * 40 ) / (gridwidth / 2));
+
+          double holedist_sq = pow(x - holeposition.x, (double)2) + pow(z - holeposition.z, (double)2);
+          if(holedist_sq < 100) {
+            offsetheight = holeposition.y;
+          }
+
           if(offsetheight > 0) {
             heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * 0.25);
           } else {

@@ -51,7 +51,7 @@
 			</Target>
 			<Target title="Release_fullscreen">
 				<Option output="bin\Release\GolfXTRM fullscreen" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj\Release\fullscreen" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -86,7 +86,7 @@
 			</Target>
 			<Target title="Release_largewindow">
 				<Option output="bin\Release\GolfXTRM large window" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj\Release\largewindow" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -149,7 +149,10 @@
 		<Unit filename="globalvars_client_extern.h" />
 		<Unit filename="golfer.h" />
 		<Unit filename="holdable.h" />
-		<Unit filename="main.cpp" />
+		<Unit filename="landscape_features.h" />
+		<Unit filename="main.cpp">
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="progressbar.h" />
 		<Unit filename="terrain.h" />
 		<Unit filename="version.h" />

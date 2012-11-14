@@ -114,8 +114,7 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   // fog settings
   glEnable(GL_FOG);
-  GLfloat fogcolour[] = {fogred, foggreen, fogblue, 1};
-  glFogfv(GL_FOG_COLOR, fogcolour);
+  glFogfv(GL_FOG_COLOR, Vector4f(fogred, foggreen, fogblue, 1));
   //glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
   glFogi(GL_FOG_MODE, GL_EXP); // GL_LINEAR GL_EXP GL_EXP2
   glFogf(GL_FOG_DENSITY, 0.02);  // only used for exponential fog
@@ -131,8 +130,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glEnable(GL_COLOR_MATERIAL);
 
   // set up some lights
-  GLfloat ambientlightcol[] = {ambientred, ambientgreen, ambientblue, 1};
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientlightcol); //global ambient
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Vector4f(ambientred, ambientgreen, ambientblue, 1)); //global ambient
   //glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlightcol);
   GLfloat directionallightdiff[] = {0.8,0.7,0.5,1};
   glLightfv(GL_LIGHT0, GL_DIFFUSE, directionallightdiff);
@@ -150,7 +148,13 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
-  player = new golfer(root->planet[0]->course[0], 0, 0, 0);   // our player
+
+  root->planet[0]->course[0]->holeposition = Vector3d(25, 0, 25);
+
+  player = new golfer(root->planet[0]->course[0],
+                      root->planet[0]->course[0]->teeposition.x,
+                      root->planet[0]->course[0]->teeposition.y,
+                      root->planet[0]->course[0]->teeposition.z);   // our player
   player->bodyyaw = 155;
   player->isplayer = true;    // give us control
   golfclub *randomgroundclub = new golfclub(root->planet[0]);
@@ -164,12 +168,18 @@ void init() {       /// all the one-time initialisation we need for the engine
   caddy->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = caddy;
 
-  firtree *thistree = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32);
+  firtree *thistree = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD);
+
+  for(int i = 0; i < 40; ++i) {
+    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
+    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
+    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM);
+  }
 
   for(int i = 0; i < 2000; ++i) {
     double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
     double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
-    firtree *thistree = new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos);
+    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM);
   }
 
 

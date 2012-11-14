@@ -18,7 +18,7 @@ void world::render() {
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
   // ground
-  glColor4f(0.75, 0.75, 0.25, 1);
+  glColor4fv(groundcolour);
   glBegin(GL_TRIANGLE_STRIP);
   glNormal3i(0, 1, 0);
   glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
@@ -27,7 +27,7 @@ void world::render() {
   glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z + horizondistance);
   glEnd();
   // sky
-  glColor4f(skyred, skygreen, skyblue, 1);
+  glColor4fv(skycolour);
   //glColor4f(0, 0, 1, 1);
   glBegin(GL_TRIANGLE_STRIP);
   glNormal3i(0, -1, 0);

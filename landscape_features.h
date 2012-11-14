@@ -9,7 +9,9 @@ public:
 
   world *currentplanet;         // what planet are you even on?
 
-  GLuint vao;                   // vector array object
+  GLuint vao;                   // vertex array object
+  GLuint vbo;                   // vertex buffer object
+  GLuint ibo;                   // index buffer object
   GLuint numtris;               // number of triangles in the VBO
 
   feature() {      /// default constructor
@@ -19,6 +21,9 @@ public:
   ~feature() {     /// destructor
   }
 
+  virtual void update(double timespeed, double timedelta) {
+  }
+
   virtual void render() {
   }
 };
@@ -26,8 +31,23 @@ public:
 
 class firtree : public feature {
 public:
+  float maxheight;        // the tallest these can get
+  float maxwidth;         // the widest they can get
+  double growthrate;      // how fast it grows in % per second
 
-  firtree(world *parentplanet, double x, double y, double z) {      /// default constructor
+  float height;           // overall height
+  float bottom;           // bottom of the foliage from the ground
+  float width;            // width of the bottom section / 2
+  float trunkwidth;       // thickness of the trunk / 2
+
+  enum firtreetype {
+    FIRTREE_STANDARD,
+    FIRTREE_RANDOM,
+    FIRTREE_SAPLING,
+    FIRTREE_SAPLING_RANDOM
+  };
+
+  firtree(world *parentplanet, double x, double y, double z, firtreetype treetype) {      /// default constructor
     currentplanet = parentplanet;
     currentplanet->features.push_back(this);
 
@@ -35,12 +55,53 @@ public:
     position.y = y;
     position.z = z;
 
+    maxwidth = 10;
+    maxheight = 40;
+    //growthrate = 0.000001;  // reaches full height in about 30 days
+    growthrate = 0.00000003;  // reaches full height in about 3 years
+    //growthrate = 0.000000003;  // reaches full height in about 30 years
+
+    if(treetype == FIRTREE_STANDARD) {
+      height     = 5;   // default sizes
+      bottom     = 1;
+      width      = 1;
+      trunkwidth = width / 5;
+    } else if(treetype == FIRTREE_RANDOM) {
+      // set its size to something random
+      height     = 5 + ((float)rand() / RAND_MAX * 8) - 1;
+      bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
+      width      = 1 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
+      trunkwidth = width / 5;
+    } else if(treetype == FIRTREE_SAPLING) {
+      // make it tiny
+      height     = 0.5;
+      bottom     = 0.1;
+      width      = 0.1;
+      trunkwidth = width / 5;
+    } else if(treetype == FIRTREE_SAPLING_RANDOM) {
+      // make it tiny and random
+      height     = 0.5 + ((float)rand() / RAND_MAX * 0.8) - 0.1;
+      bottom     = 0.1 + ((float)rand() / RAND_MAX * 0.05);
+      width      = 0.1 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
+      trunkwidth = width / 5;
+    }
+    // rendering setup
+    vao = 0;
+    vbo = 0;
+    ibo = 0;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    updatevbo();
+  }
+
+  ~firtree() {     /// destructor
+  }
+
+  void updatevbo() {
     // rendering data
     // body:
-    float height     = 5 + ((float)rand() / RAND_MAX * 8) - 1;
-    float bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
-    float width      = 1 + ((float)rand() / RAND_MAX * 0.8) - 0.6;
-    float trunkwidth = 0.3 + ((float)rand() / RAND_MAX * 0.4) - 0.2;
     GLfloat vbodata[] = {
       -trunkwidth, 0,      -trunkwidth,    // 0
       -trunkwidth, 0,      trunkwidth,     // 1
@@ -77,14 +138,6 @@ public:
     };
     numtris = 18;
 
-    // rendering setup
-    vao = 0;
-    GLuint vbo = 0;
-    GLuint ibo = 0;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ibo);
-
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
@@ -100,7 +153,26 @@ public:
     glBindVertexArray(0);
   }
 
-  ~firtree() {     /// destructor
+  void update(double timespeed, double timedelta) {
+    grow(growthrate * timespeed * timedelta);
+  }
+
+  void grow(double amount) {
+    /// grow "rate" percent of this tree's height per second
+    if(height < maxheight) {
+      height += (height * amount);
+      width += (width * amount);
+      trunkwidth += (trunkwidth * amount);
+      bottom += (bottom * amount);
+      updatevbo();
+    } else if(width < maxwidth) {
+      width += (width * amount);
+      //trunkwidth += (trunkwidth * amount);
+      bottom += (bottom * amount);
+      updatevbo();
+    } else {
+      // time to fall over
+    }
   }
 
   void render() {
@@ -115,6 +187,9 @@ public:
     glPopMatrix();
   }
 };
+
+
+
 
 
 #endif // LANDSCAPE_FEATURES

@@ -20,9 +20,10 @@ public:
   Vector3d teeposition;                 // where we tee off from
   Vector3d holeposition;                // where the hole is
 
-  golfcourse(world *parent) {                      /// default constructor
+  golfcourse(world *parent, Vector3d tee, Vector3d hole)
+    : teeposition(tee), holeposition(hole) {                      /// default constructor
     parentplanet = parent;
-    landscape = new terrain();
+    landscape = new terrain(teeposition, holeposition);
   }
 
   void update(double timedelta);
@@ -48,27 +49,61 @@ public:
   int numcourses;
   double horizondistance;
 
+  double featureupdatefreq;       // how often to update features
+  double updatetime;              // how long to wait between updates (1/above)
+  double updatenexttime;          // what time the next update is due
+
+  double timespeed;               // how fast time passes on this world
+  double timeofday;               // in seconds since midnight
+  int calendardate;               // days since we started
+
   double gravity;                       // downward acceleration in m/s^2
   double airdensity;                    // ya rly, for drag calculations (kg/m^3)
   Vector3d windvelocity;                // also used for air resistance (m/s)
+
+  Vector4f groundcolour;                // colour of the grass / snow / whatever
+  Vector4f skycolour;                   // colour of the sky lid
+  Vector4f fogcolour;                   // colour of the distance fog
+  Vector4f ambientcolour;               // colour of the background light
 
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
   boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
 
   world() {                                 /// default constructor
+    //featureupdatefreq = (double)1/(double)5;
+    featureupdatefreq = (double)60;
+    updatetime = 1 / featureupdatefreq; // time from frequency
+    updatenexttime = 0;                 // this is ready for an update asap
+
     gravity = 9.800;
     airdensity = 1.2041;
     horizondistance = 1200;
 
+    //timespeed = 1;          // realtime
+    //timespeed = 60;         // 1 minute per second
+    //timespeed = 3600;       // 1 hour per second
+    //timespeed = 86400;      // 1 day per second
+    //timespeed = 2592000;    // 1 month per second
+    timespeed = 31556926;   // 1 year per second
+    //timeofday = 8 * 60 * 60;    // 8am
+    timeofday = 0;
+    calendardate = 0;
+
+    groundcolour  = Vector4f(0.75, 0.75, 0.25, 1);
+    skycolour     = Vector4f(0.90, 0.95, 0.67, 1);
+    fogcolour     = Vector4f(0.98, 0.92, 0.50, 1);
+    ambientcolour = Vector4f(0.7, 0.7, 0.7, 1);
+
     //windvelocity.x = 10;
 
     numcourses = 0;
-    addcourse(0);   // no point having less than 1 course
+    addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
   }
 
-  void addcourse(int coursenum) {           /// add a golf course to this planet
-    course[coursenum] = new golfcourse(this);
+  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition) {
+    /// add a golf course to this planet
+    course[coursenum] = new golfcourse(this, teeposition, holeposition);
     ++numcourses;
   }
 
