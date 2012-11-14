@@ -46,6 +46,7 @@ void world::update(double timedelta) {
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
     glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);
+    glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
 
     // search the universe for worlds to update
     // iterate through the courses

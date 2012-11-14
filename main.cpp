@@ -386,11 +386,7 @@ void draw() {
   // reset view matrix
   glLoadIdentity();
 
-  // rotate the view
-  //glRotatef(player->headpitch, 1, 0, 0);
-  //glRotatef(player->headyaw,   0, 1, 0);
-
-  // translate us from the player's viewpoint
+  // translate us to the player's viewpoint
   glTranslated(0, -player->eyeleveloffset.y, 0);
   glRotatef(player->headyaw,   0, 1, 0);
   glRotatef(player->headpitch, 1, 0, 0);
@@ -399,9 +395,6 @@ void draw() {
   glTranslated(-player->bodyposition.x,
                -player->bodyposition.y,
                -player->bodyposition.z);
-
-  // light the scene
-  glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
 
   // tell the universe to go render itself
   root->render();
