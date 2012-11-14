@@ -115,7 +115,7 @@ public:
   golfclub(world *parentplanet) {
     held_by = NULL;
     at_rest = true;
-    mass = 0;
+    mass = 1;
     momentofinertia = 0;
     name = "golf club";
     description = "A long stick with a heavy end for hitting small balls with.";
@@ -195,7 +195,7 @@ public:
     }
   }
 
-  void render() {     /// draw the terrain using an indexed VBO with VAA and VAO
+  void render() {     /// draw the object using an indexed VBO with VAA and VAO
     if(held_by == NULL) {
       // only draw objects that aren't held by someone (leave it to their own renderer otherwise)
       glPushMatrix();
@@ -218,14 +218,20 @@ public:
           glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
           glBindVertexArray(0);
         } else {
-          // TODO
+          glBindBuffer(GL_ARRAY_BUFFER, vbo);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+          glEnableVertexAttribArray(0);
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+          glDisableVertexAttribArray(0);
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
       glPopMatrix();
     }
   }
 
-
-  void renderlocal() {      /// draw the terrain using an indexed VBO with VAA and VAO
+  void renderlocal() {  /// draw the object using an indexed VBO with VAA and VAO
     // we have no position, just render where we are
     glColor4f(1, 1, 1, 1);
     if(hasvao) {
@@ -245,5 +251,134 @@ public:
   }
 };
 
+class golfball : public holdable {
+public:
 
+  golfball(world *parentplanet) {
+    held_by = NULL;
+    at_rest = true;
+    mass = 1;
+    momentofinertia = 0;
+    name = "golf ball";
+    description = "A small hard white ball with strong elastic properties.";
+
+    currentplanet = parentplanet;
+    currentplanet->items.push_back(this);
+
+    // rendering data
+    // body:
+    float top    = 0.9;
+    float bottom = -0.1;
+    float left   = -0.01;
+    float right  = 0.01;
+    float front  = 0.01;
+    float back   = -0.01;
+    float headlength = 0.1;
+    float headdepth = 0.05;
+    GLfloat vbodata[] = {
+      left,  bottom, back,    // 0
+      left,  bottom, front,   // 1
+      left,  top,    back,    // 2
+      left,  top,    front,   // 3
+      right, bottom, back,    // 4
+      right, bottom, front,   // 5
+      right, top,    back,    // 6
+      right, top,    front,   // 7
+
+      left,  top+headdepth, back,        // 8
+      left,  top+headdepth, headlength,  // 9
+      left,  top,           back,        // 10
+      left,  top,           headlength,  // 11
+      right, top+headdepth, back,        // 12
+      right, top+headdepth, headlength,  // 13
+      right, top,           back,        // 14
+      right, top,           headlength   // 15
+    };
+    GLuint ibodata[] = {
+      6,4,0, 0,2,6,   // front
+      3,1,5, 5,7,3,   // back
+      2,0,1, 1,3,2,   // left
+      7,5,4, 4,6,7,   // right
+      2,6,7, 7,3,2,   // top
+      5,4,0, 0,1,5,   // bottom
+
+      14,12, 8,  8,10,14,  // front
+      10, 8, 9,  9,11,10,  // left
+      15,13,12, 12,14,15,  // right
+      10,14,13, 15,11,10,  // top
+      13,12, 8,  8, 9,13,  // bottom
+    };
+    numtris = 22;
+
+    // rendering setup
+    vao = vbo = ibo = 0;
+    if(hasvao) {
+      glGenVertexArrays(1, &vao);
+    }
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ibo);
+
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    if(hasvao) {
+      glBindVertexArray(vao);             // set up the VAO's state
+    }
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    if(hasvao) {
+      glBindVertexArray(0);
+    }
+  }
+
+  void render() {       /// draw the ball using an indexed VBO with VAA and VAO
+    if(held_by == NULL) {
+      glPushMatrix();
+        glTranslated(position.x, position.y, position.z);
+        glMultMatrixd(rotation.transform());
+        if(hasvao) {
+          glColor4f(1, 1, 1, 1);
+          glBindVertexArray(vao);
+          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+          glBindVertexArray(0);
+        } else {
+          glBindBuffer(GL_ARRAY_BUFFER, vbo);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+          glEnableVertexAttribArray(0);
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+          glDisableVertexAttribArray(0);
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
+      glPopMatrix();
+    }
+  }
+
+
+  void renderlocal() {  /// draw the ball using an indexed VBO with VAA and VAO
+    // we have no position, just render where we are
+    glColor4f(1, 1, 1, 1);
+    if(hasvao) {
+      glBindVertexArray(vao);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glDisableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+  }
+};
 #endif // HOLDABLE_H_INCLUDED
