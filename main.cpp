@@ -61,6 +61,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   int winfinalposy = 25;
   glfwSetWindowPos(winfinalposx,winfinalposy);
   #else
+  cout << "Starting in " << windowwidth << "x" << windowheight << " with bit depth " << desktopmode.RedBits << "," << desktopmode.GreenBits << "," << desktopmode.BlueBits << endl;
   if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
   int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
   int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
@@ -83,6 +84,25 @@ void init() {       /// all the one-time initialisation we need for the engine
   // globalise the opengl extensions we want to use
   glewExperimental = GL_TRUE;
   if(glewInit() != GLEW_OK) shutdown(1, "GLEW failed to initialise");
+  glewExperimental = GL_TRUE;
+  cout << "GL_VERSION:  " << glGetString(GL_VERSION) << endl;
+  cout << "GL_VENDOR:   " << glGetString(GL_VENDOR) << endl;
+  cout << "GL_RENDERER: " << glGetString(GL_RENDERER) << endl;
+  //cout << "GL_ARB_vertex_array_object:     " << GL_ARB_vertex_array_object << endl;
+  //cout << "GL_ATI_vertex_array_object:     " << GL_ATI_vertex_array_object << endl;
+  //cout << "GL_VERTEX_ARRAY_OBJECT_AMD:     " << GL_VERTEX_ARRAY_OBJECT_AMD << endl;
+  if(!GLEW_ARB_vertex_array_object) {
+    cout << "GLEW_ARB_vertex_array_object not available..." << endl;
+    if(!GLEW_ATI_vertex_array_object) {
+      if(!GLEW_APPLE_vertex_array_object) {
+        hasvao = false;
+      }
+    }
+  }
+  if(glGenVertexArrays == 0) {
+    std::cout << "glGenVertexArrays does not appear to be supported." << std::endl;
+    hasvao = false;
+  }
 
   // set up the frustum
   glMatrixMode(GL_PROJECTION);
@@ -149,8 +169,10 @@ void init() {       /// all the one-time initialisation we need for the engine
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
 
+  cout << "Setting the hole position" << endl;
   root->planet[0]->course[0]->holeposition = Vector3d(25, 0, 25);
 
+  glfwSetWindowTitle("GolfXTRM alpha: Walking to the course...");
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
                       root->planet[0]->course[0]->teeposition.y,
@@ -161,27 +183,32 @@ void init() {       /// all the one-time initialisation we need for the engine
   randomgroundclub->rotate(golfclub::AXIS_X, 90);
   randomgroundclub->position.x = 1;
   randomgroundclub->position.z = 22;
+  glfwSetWindowTitle("GolfXTRM alpha: Polishing clubs...");
   player->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = player;
+  glfwSetWindowTitle("GolfXTRM alpha: Tipping the caddy...");
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
   caddy->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = caddy;
 
-  firtree *thistree = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD);
+  glfwSetWindowTitle("GolfXTRM alpha: Planting trees...");
+  firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
+  ashtree *thistree2 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
 
+  srand(1337);
+  glfwSetWindowTitle("GolfXTRM alpha: Planting ash trees...");
   for(int i = 0; i < 40; ++i) {
     double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
     double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
-    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM);
+    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM, rand());
   }
-
+  glfwSetWindowTitle("GolfXTRM alpha: Planting fir trees...");
   for(int i = 0; i < 2000; ++i) {
     double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
     double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*3) - root->planet[0]->course[0]->landscape->bounds.z*1.5;
-    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM);
+    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM, rand());
   }
-
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
@@ -351,7 +378,6 @@ void physics(double timedelta) {    /// update entity and player locations
 
 void draw() {
   // clear the buffer
-  glClearColor(skyred, skygreen, skyblue, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // reset view matrix

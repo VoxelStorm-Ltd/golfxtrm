@@ -24,11 +24,28 @@ void world::update(double timedelta) {
       timeofday = (int)timeofday % 86400;
       //++calendardate;
       calendardate += dayspassed;
+
+      // update seasons if appropriate
+      int dayofyear = calendardate % 365;
+      if(dayofyear > 90 && dayofyear < 330) { // consider snow december to march
+        grasscolour   = summergrasscolour;
+        skycolour     = summerskycolour;
+        fogcolour     = summerfogcolour;
+        clearcolour   = summerclearcolour;
+        ambientcolour = summerambientcolour;
+      } else {
+        grasscolour   = wintergrasscolour;
+        skycolour     = winterskycolour;
+        fogcolour     = winterfogcolour;
+        clearcolour   = winterclearcolour;
+        ambientcolour = winterambientcolour;
+      }
     }
 
     double skybrightness = sin(timeofday / (double)86400 * M_PI);
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
+    glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);
 
     // search the universe for worlds to update
     // iterate through the courses
@@ -42,11 +59,14 @@ void world::update(double timedelta) {
     std::cout << "FPS " << (int)(1 / timedeltaaverage) << " Time: " << (int)((int)timeofday / 3600) << ":" << (int)(((int)timeofday / 60) % 60) << ":" << (int)((int)timeofday % 60) << " Day: " << calendardate << " Rate: " << timespeed << "x" << std::endl;
 
     // intro time zoom
-    if(timespeed > 3600) {
-      timespeed -= (timespeed * 0.5 * updatetime);
-    } else {
-      timespeed = 1;
-      updatetime = 5;
+    if(introon) {
+      if(timespeed > 3600) {
+        timespeed -= (timespeed * 0.5 * updatetime);
+      } else {
+        timespeed = 1;
+        updatetime = 5;
+        introon = false;
+      }
     }
   }
 

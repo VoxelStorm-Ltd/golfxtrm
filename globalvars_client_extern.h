@@ -44,6 +44,9 @@ extern float ambientblue;
 
 extern GLfloat sundirection[];
 
+// backwards compatibility
+extern bool hasvao;
+
 // dynamic global variables
 extern bool keeprunning;
 

@@ -22,8 +22,10 @@ public:
 
   golfcourse(world *parent, Vector3d tee, Vector3d hole)
     : teeposition(tee), holeposition(hole) {                      /// default constructor
+    std::cout << "      Initialising new golf course..." << std::endl;
     parentplanet = parent;
     landscape = new terrain(teeposition, holeposition);
+    std::cout << "      Golf course initialised" << std::endl;
   }
 
   void update(double timedelta);
@@ -57,48 +59,90 @@ public:
   double timeofday;               // in seconds since midnight
   int calendardate;               // days since we started
 
+  bool introon;                   // whether to run a world-gen intro period
+
   double gravity;                       // downward acceleration in m/s^2
   double airdensity;                    // ya rly, for drag calculations (kg/m^3)
   Vector3d windvelocity;                // also used for air resistance (m/s)
 
-  Vector4f groundcolour;                // colour of the grass / snow / whatever
+  Vector4f grasscolour;                // colour of the grass / snow / whatever
   Vector4f skycolour;                   // colour of the sky lid
+  Vector4f clearcolour;                 // colour of the opengl background
   Vector4f fogcolour;                   // colour of the distance fog
-  Vector4f ambientcolour;               // colour of the background light
+  Vector4f ambientcolour;               // colour of the backgrass light
+
+  Vector4f summergrasscolour;          // seasonal colours
+  Vector4f summerskycolour;
+  Vector4f summerfogcolour;
+  Vector4f summerclearcolour;
+  Vector4f summerambientcolour;
+  Vector4f wintergrasscolour;
+  Vector4f winterskycolour;
+  Vector4f winterfogcolour;
+  Vector4f winterclearcolour;
+  Vector4f winterambientcolour;
 
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
   boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
 
   world() {                                 /// default constructor
-    //featureupdatefreq = (double)1/(double)5;
-    featureupdatefreq = (double)60;
-    updatetime = 1 / featureupdatefreq; // time from frequency
+    std::cout << "    Initialising new planet..." << std::endl;
     updatenexttime = 0;                 // this is ready for an update asap
 
     gravity = 9.800;
     airdensity = 1.2041;
     horizondistance = 1200;
 
-    //timespeed = 1;          // realtime
-    //timespeed = 60;         // 1 minute per second
-    //timespeed = 3600;       // 1 hour per second
-    //timespeed = 86400;      // 1 day per second
-    //timespeed = 2592000;    // 1 month per second
-    timespeed = 31556926;   // 1 year per second
-    //timeofday = 8 * 60 * 60;    // 8am
-    timeofday = 0;
-    calendardate = 0;
+    #ifdef INTRO
+    introon = true;
+    #else
+    introon = false;
+    #endif
 
-    groundcolour  = Vector4f(0.75, 0.75, 0.25, 1);
-    skycolour     = Vector4f(0.90, 0.95, 0.67, 1);
-    fogcolour     = Vector4f(0.98, 0.92, 0.50, 1);
-    ambientcolour = Vector4f(0.7, 0.7, 0.7, 1);
+    if(introon) {
+      timespeed = 31556926;   // 1 year per second
+      timeofday = 0;
+      calendardate = 100;
+
+      //featureupdatefreq = (double)1/(double)5;
+      featureupdatefreq = (double)60;
+    } else {
+      //timespeed = 1;          // realtime
+      timespeed = 60;         // 1 minute per second
+      //timespeed = 3600;       // 1 hour per second
+      //timespeed = 86400;      // 1 day per second
+      //timespeed = 2592000;    // 1 month per second
+      //timespeed = 31556926;   // 1 year per second
+      timeofday = 8 * 60 * 60;    // 8am
+      calendardate = 150;
+
+      featureupdatefreq = (double)1/(double)5;
+    }
+    updatetime = 1 / featureupdatefreq; // time from frequency
+
+    summergrasscolour   = Vector4f(0.75, 0.75, 0.25, 1);
+    summerskycolour     = Vector4f(0.90, 0.95, 0.67, 1);
+    summerfogcolour     = Vector4f(0.98, 0.92, 0.50, 1);
+    summerclearcolour   = summerskycolour;
+    summerambientcolour = Vector4f(0.7, 0.7, 0.7, 1);
+    wintergrasscolour   = Vector4f(1, 1, 1, 1);
+    winterskycolour     = Vector4f(0.3, 0.6, 1, 1);
+    winterfogcolour     = Vector4f(0.9, 0.95, 1, 1);
+    winterclearcolour   = winterfogcolour;
+    winterambientcolour = Vector4f(0.9, 0.9, 0.85, 1);
+
+    grasscolour   = summergrasscolour;
+    skycolour     = summerskycolour;
+    fogcolour     = summerfogcolour;
+    clearcolour   = summerclearcolour;
+    ambientcolour = summerambientcolour;
 
     //windvelocity.x = 10;
 
     numcourses = 0;
     addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
+    std::cout << "    Planet initialised" << std::endl;
   }
 
   void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition) {
@@ -122,11 +166,13 @@ public:
   double updatenexttime;          // what time the next update is due
 
   universe() {                              /// default constructor
+    std::cout << "  Initialising the universe" << std::endl;
     // big bang!
     numplanets = 0;
 
     updatetime = 1 / updatefreq;  // set this from the global
     updatenexttime = 0;           // this is ready for an update asap
+    std::cout << "  Universe initialised" << std::endl;
   }
 
   void addplanet(int worldnum) {            /// add a planet to this universe

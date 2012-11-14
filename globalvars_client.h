@@ -42,6 +42,8 @@ float skyred   = 0.90;
 float skygreen = 0.95;
 float skyblue  = 1.0;*/
 
+// backwards compatibility
+bool hasvao = true;       // whether to disable use of vertex array objects
 
 GLfloat sundirection[] = {0.5,1,0.25,0};
 

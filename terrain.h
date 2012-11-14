@@ -6,6 +6,7 @@
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include "vmath.h"
+#include "globalvars_client_extern.h"
 
 class terrain {                 /// object for handling the terrain heightmap
 public:
@@ -23,6 +24,7 @@ public:
   GLuint numtris;             // number of triangles in the index
 
   terrain(Vector3d teeposition, Vector3d holeposition) {  /// default constructor
+    std::cout << "        Initialising terrain..." << std::endl;
     origin.x = 0;
     origin.y = 0;
     origin.z = 0;
@@ -34,6 +36,7 @@ public:
     randomseed = 1337;
 
     // initialise the heightmap
+    std::cout << "          Generating heightmap..." << std::endl;
     srand(randomseed);                  // seed the random generator predictably
     double xcentre = gridwidth / 2;
     double zcentre = gridwidth / 2;
@@ -61,17 +64,33 @@ public:
     }
 
     vao = vbo = ibo = 0;
-    glGenVertexArrays(1, &vao);
+    if(hasvao) {
+      std::cout << "          Creating VAO..." << std::endl;
+      glGenVertexArrays(1, &vao);
+    }
+    std::cout << "          Creating VBO..." << std::endl;
     glGenBuffers(1, &vbo);
+    std::cout << "          Creating IBO..." << std::endl;
     glGenBuffers(1, &ibo);
+    std::cout << "            Updating VBO..." << std::endl;
     update_vbo(); // generate the vbo ready for first run
 
-    glBindVertexArray(vao);             // set up the VAO's state
+    if(hasvao) {
+      std::cout << "          Binding vertex array..." << std::endl;
+      glBindVertexArray(vao);             // set up the VAO's state
+    }
+    std::cout << "          Binding VBO..." << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER,             vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, ibo);
+    std::cout << "          Binding IBO..." << std::endl;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    std::cout << "          Enabling attrib array..." << std::endl;
     glEnableVertexAttribArray(0);
+    std::cout << "          Setting attrib pointer..." << std::endl;
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindVertexArray(0);
+    if(hasvao) {
+      glBindVertexArray(0);
+    }
+    std::cout << "        Terrain initialised" << std::endl;
   }
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
@@ -151,15 +170,19 @@ public:
     return 0.0409;    // from physics forum for ball on golf green
   }
 
-  void render() {
+  void render(Vector4f basecolour) {
     /// alias function to render the terrain using the preferred method
-    render5();
+    if(hasvao) {
+      render5(basecolour);
+    } else {
+      render4(basecolour);
+    }
   }
 
-  void render1() {      /// draw the terrain based on world coords (immediate mode)
+  void render1(Vector4f basecolour) {      /// draw the terrain based on world coords (immediate mode)
     double xpolysize = bounds.x / gridwidth;
     double zpolysize = bounds.z / gridwidth;
-    glColor4f(0.75, 0.75, 0.25, 1);
+    glColor4fv(basecolour);
     for(double x = origin.x; x < origin.x + bounds.x - xpolysize; x += xpolysize) {
       glBegin(GL_TRIANGLE_STRIP);
       glNormal3i(0, 1, 0);
@@ -171,8 +194,8 @@ public:
     }
   }
 
-  void render2() {      /// draw the terrain based on grid coords (immediate mode)
-    glColor4f(0.75, 0.75, 0.25, 1);
+  void render2(Vector4f basecolour) {      /// draw the terrain based on grid coords (immediate mode)
+    glColor4fv(basecolour);
     for(int xgrid = 0; xgrid < gridwidth - 1; ++xgrid) {
       double xpolysize = bounds.x / gridwidth;
       double x = origin.x + (xgrid * xpolysize);
@@ -190,8 +213,8 @@ public:
     }
   }
 
-  void render3() {      /// draw the terrain using an indexed VBO
-    glColor4f(0.75, 0.75, 0.25, 1);
+  void render3(Vector4f basecolour) {      /// draw the terrain using an indexed VBO
+    glColor4fv(basecolour);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -207,8 +230,8 @@ public:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
-  void render4() {      /// draw the terrain using an indexed VBO with VAA
-    glColor4f(0.75, 0.75, 0.25, 1);
+  void render4(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAA
+    glColor4fv(basecolour);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -224,8 +247,8 @@ public:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
-  void render5() {      /// draw the terrain using an indexed VBO with VAA and VAO
-    glColor4f(0.75, 0.75, 0.25, 1);
+  void render5(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAA and VAO
+    glColor4fv(basecolour);
 
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);

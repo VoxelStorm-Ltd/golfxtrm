@@ -26,6 +26,8 @@ public:
   Quatd angularvelocity;    // rotational velocity
 
   GLuint vao;               // vertex array object
+  GLuint vbo;
+  GLuint ibo;
   GLuint numtris;           // number of triangles in the VBO
 
   enum axistype {
@@ -167,10 +169,10 @@ public:
     numtris = 22;
 
     // rendering setup
-    vao = 0;
-    GLuint vbo = 0;
-    GLuint ibo = 0;
-    glGenVertexArrays(1, &vao);
+    vao = vbo = ibo = 0;
+    if(hasvao) {
+      glGenVertexArrays(1, &vao);
+    }
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
 
@@ -181,12 +183,16 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    glBindVertexArray(vao);             // set up the VAO's state
+    if(hasvao) {
+      glBindVertexArray(vao);             // set up the VAO's state
+    }
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindVertexArray(0);
+    if(hasvao) {
+      glBindVertexArray(0);
+    }
   }
 
   void render() {     /// draw the terrain using an indexed VBO with VAA and VAO
@@ -206,20 +212,36 @@ public:
         //std::cout << temp[12] << " " << temp[13] << " " << temp[14] << " " << temp[15] << " " << std::endl;
         //std::cout << "---" << std::endl;
         //std::cout << rotation.rotMatrix().toString() << std::endl;
-        glColor4f(1, 1, 1, 1);
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        if(hasvao) {
+          glColor4f(1, 1, 1, 1);
+          glBindVertexArray(vao);
+          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+          glBindVertexArray(0);
+        } else {
+          // TODO
+        }
       glPopMatrix();
     }
   }
 
+
   void renderlocal() {      /// draw the terrain using an indexed VBO with VAA and VAO
     // we have no position, just render where we are
     glColor4f(1, 1, 1, 1);
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    if(hasvao) {
+      glBindVertexArray(vao);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glDisableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
   }
 };
 
