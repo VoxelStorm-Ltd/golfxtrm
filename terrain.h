@@ -20,6 +20,7 @@ public:
 
   GLuint vao;                 // vertex array object
   GLuint vbo;                 // vertex buffer object
+  GLuint vbo_n;               // vertex buffer object for normals
   GLuint ibo;                 // element buffer object (index buffer object)
   GLuint numtris;             // number of triangles in the index
 
@@ -63,38 +64,40 @@ public:
       }
     }
 
-    vao = vbo = ibo = 0;
+    vao = vbo = vbo_n = ibo = 0;
     if(hasvao) {
       std::cout << "          Creating VAO..." << std::endl;
       glGenVertexArrays(1, &vao);
     }
-    std::cout << "          Creating VBO..." << std::endl;
     glGenBuffers(1, &vbo);
-    std::cout << "          Creating IBO..." << std::endl;
+    glGenBuffers(1, &vbo_n);
     glGenBuffers(1, &ibo);
-    std::cout << "            Updating VBO..." << std::endl;
     update_vbo(); // generate the vbo ready for first run
 
     if(hasvao) {
-      std::cout << "          Binding vertex array..." << std::endl;
       glBindVertexArray(vao);             // set up the VAO's state
-    }
-    std::cout << "          Binding VBO..." << std::endl;
-    glBindBuffer(GL_ARRAY_BUFFER,             vbo);
-    std::cout << "          Binding IBO..." << std::endl;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    std::cout << "          Enabling attrib array..." << std::endl;
-    glEnableVertexAttribArray(0);
-    std::cout << "          Setting attrib pointer..." << std::endl;
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    if(hasvao) {
+
+      /*glBindBuffer(GL_ARRAY_BUFFER,             vbo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);*/
+
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+
       glBindVertexArray(0);
     }
     std::cout << "        Terrain initialised" << std::endl;
   }
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
-    GLfloat  vbodata[gridwidth * gridwidth * 3];
+    GLfloat vbodata[gridwidth * gridwidth * 3];
+    GLfloat vbodata_n[gridwidth * gridwidth * 3];
     std::vector<GLuint> indices;
     numtris = 0;
 
@@ -105,7 +108,11 @@ public:
         vbodata[vbo_offset    ] = origin.x + ((double)xgrid / gridwidth * bounds.x);
         vbodata[vbo_offset + 1] = heightmap[(xgrid * gridwidth) + zgrid];
         vbodata[vbo_offset + 2] = origin.z + ((double)zgrid / gridwidth * bounds.z);
-        //std::cout << "DEBUG: " << vbodata[vbo_offset    ] << " " << vbodata[vbo_offset + 1] << " " << vbodata[vbo_offset + 2] << std::endl;
+
+        // populate the normals
+        vbodata_n[vbo_offset    ] = 0;
+        vbodata_n[vbo_offset + 1] = 1;
+        vbodata_n[vbo_offset + 2] = 0;
 
         // populate the triangles
         if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
@@ -121,11 +128,28 @@ public:
     }
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    if(hasvao) {
+      glBindVertexArray(vao);             // set up the VAO's state
+
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+
+      glBindVertexArray(0);
+    }
   }
 
   double get_height_at(double x, double z) {
@@ -175,7 +199,7 @@ public:
     if(hasvao) {
       render5(basecolour);
     } else {
-      render4(basecolour);
+      render3(basecolour);
     }
   }
 
@@ -247,7 +271,7 @@ public:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
-  void render5(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAA and VAO
+  void render5(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAO
     glColor4fv(basecolour);
 
     glBindVertexArray(vao);
