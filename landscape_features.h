@@ -142,7 +142,7 @@ public:
       10, 8,12,        // front
       8,  9,12,        // left
       9, 11,12,        // back
-      11, 8,12         // right
+      11,10,12         // right
 
     };
     numtris = 18;
@@ -244,34 +244,34 @@ public:
     position.z = z;
     rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
 
-    maxwidth = 40;
-    maxheight = 50;
-    //growthrate = 0.000002;  // reaches full height in about 60 days
-    growthrate = 0.00000006;  // reaches full height in about 6 years
-    //growthrate = 0.000000006;  // reaches full height in about 60 years
+    maxwidth = 15;
+    maxheight = 20;
+    //growthrate = 0.000001;  // reaches full height in about 30 days
+    growthrate = 0.00000003;  // reaches full height in about 9 years
+    //growthrate = 0.000000001;  // reaches full height in about 90 years
 
     if(treetype == OAKTREE_STANDARD) {
-      height     = 5;   // default sizes
-      bottom     = 1;
-      width      = 1;
+      height     = 4;   // default sizes
+      bottom     = 0.5;
+      width      = 3;
       trunkwidth = width / 5;
     } else if(treetype == OAKTREE_RANDOM) {
       // set its size to something random
       height     = 4 + ((float)rand() / RAND_MAX * 8) - 1;
-      bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
+      bottom     = 0.5 + ((float)rand() / RAND_MAX * 0.5);
       width      = 3 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
       trunkwidth = width / 5;
     } else if(treetype == OAKTREE_SAPLING) {
       // make it tiny
-      height     = 0.5;
-      bottom     = 0.1;
-      width      = 0.1;
+      height     = 0.4;
+      bottom     = 0.05;
+      width      = 0.3;
       trunkwidth = width / 5;
     } else if(treetype == OAKTREE_SAPLING_RANDOM) {
       // make it tiny and random
-      height     = 0.5 + ((float)rand() / RAND_MAX * 0.8) - 0.1;
-      bottom     = 0.1 + ((float)rand() / RAND_MAX * 0.05);
-      width      = 0.1 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
+      height     = 0.4 + ((float)rand() / RAND_MAX * 0.8) - 0.1;
+      bottom     = 0.025 + ((float)rand() / RAND_MAX * 0.025);
+      width      = 0.3 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
       trunkwidth = width / 5;
     }
     // rendering setup
@@ -359,10 +359,10 @@ public:
     srand(randomseed);
     /// grow "rate" percent of this tree's height per second
     if(height < maxheight) {
-      height += (height * amount);
+      height += (height * amount) + (amount*0.5);
       width += (width * amount);
       trunkwidth += (trunkwidth * amount);
-      bottom += (bottom * amount);
+      bottom += (bottom * amount) + (amount*0.5);
       updatevbo();
     } else if(width < maxwidth) {
       width += (width * amount);

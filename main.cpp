@@ -198,7 +198,8 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   glfwSetWindowTitle("GolfXTRM alpha: Planting trees...");
   firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
-  //ashtree *thistree2 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
+  //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
+  //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
 
   srand(1337);
   glfwSetWindowTitle("GolfXTRM alpha: Planting fir trees...");
@@ -215,7 +216,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   for(int i = 0; i < 40; ++i) {
     double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.z*0.5;
     double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z*0.5;
-    new oaktree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_RANDOM, rand());
+    new oaktree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_SAPLING_RANDOM, rand());
   }
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
