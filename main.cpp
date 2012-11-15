@@ -175,7 +175,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
                       root->planet[0]->course[0]->teeposition.y,
-                      root->planet[0]->course[0]->teeposition.z);   // our player
+                      root->planet[0]->course[0]->teeposition.z-2);   // our player
   player->bodyyaw = 155;
   player->isplayer = true;    // give us control
   golfclub *randomgroundclub = new golfclub(root->planet[0]);
@@ -185,11 +185,16 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Polishing clubs...");
   player->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = player;
+  player->swinglength = player->armlength + player->helditem->bbox_end.y;
   glfwSetWindowTitle("GolfXTRM alpha: Tipping the caddy...");
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
   caddy->helditem = new golfclub(root->planet[0]);
-  player->helditem->held_by = caddy;
+  caddy->helditem->held_by = caddy;
+  caddy->swinglength = player->armlength + caddy->helditem->bbox_end.y;
+
+  golfball *ball = new golfball(root->planet[0]);
+  ball->position.y = ball->radius;
 
   glfwSetWindowTitle("GolfXTRM alpha: Planting trees...");
   firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);

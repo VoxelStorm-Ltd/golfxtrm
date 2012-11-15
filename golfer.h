@@ -84,6 +84,7 @@ public:
   world *currentplanet;       // what planet, is this? ;)
   bool isplayer;              // is this controlled by the player?
   holdable *helditem;         // what we're holding (NULL for empty hand)
+  double swinglength;         // our current swing length, determined by club
 
   GLuint vao_body;            // vertex array object for the body
   GLuint vao_hands;           // vertex array object for the hands
@@ -116,6 +117,7 @@ public:
     yawtorque = 0;
     pitchtorque = 0;
     helditem = NULL;
+    swinglength = armlength;
 
     // biometrics
     bodymass = 70.8;                            // official biometric average for Europe
@@ -147,7 +149,7 @@ public:
     straferunspeed = walkrunspeed * 0.75;       // generous guess
     walkspeed_sq = walkspeed * walkspeed;       // caching
     walkrunspeed_sq = walkrunspeed * walkrunspeed;
-    maxforce_walk = bodymass * walkspeed / 1; // calculated from accelerating to top speed in n seconds
+    maxforce_walk = bodymass * walkspeed / 1;   // calculated from accelerating to top speed in n seconds
     maxforce_walkstrafe = maxforce_walk * 0.75; // as above
     maxforce_run = bodymass * walkrunspeed / 2; // calculated from accelerating to top speed in n seconds
     maxforce_runstrafe = maxforce_run * 0.75;   // as above
@@ -347,177 +349,7 @@ public:
     // why won't the above work?
   }
 
-  void update(double timedelta) {
-    /// update position and velocity based on force and time delta
-    // come on and move your body... impulse application
-    bodyvelocity += (moveforce * timedelta) / bodymass;   // impulse
-
-    if(isplayer) {
-      if(inputmode == INPUTMODE_MOVING_HEAD_AND_BODY) {
-        // default walk-around mode - move the head
-        headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-        headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-        // put our arms down and centered
-        armsyawvelocity   += ((0                  - armsyaw)   / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-        armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-        // attempt to center the body on the head
-        if(headyaw > headyawdeadzone || headyaw < -headyawdeadzone || state == GOLFER_WALKING || state == GOLFER_RUNNING) {
-          double thistorque = headyaw / 90 * bodyyawtorquelimit;
-          if(thistorque > bodyyawtorquelimit) {
-            thistorque = bodyyawtorquelimit;
-          } else if(thistorque < -bodyyawtorquelimit) {
-            thistorque = -bodyyawtorquelimit;
-          }
-          bodyyawvelocity += (thistorque * timedelta) / bodymomentofinertia;
-        }
-      } else if(inputmode == INPUTMODE_MOVING_HEAD_AND_ARMS) {
-        // swing / aim / interact mode - move the arms and head
-        armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-        armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-        // head follows arms precisely
-        headyawvelocity   += ((armsyaw   - headyaw)   / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-        headpitchvelocity += ((armspitch - headpitch) / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-
-        //std::cout << "Arms yaw: " << armsyaw << " pitch: " << armspitch << " yawvel: " << armsyawvelocity << " pitchvel: " << armspitchvelocity << std::endl;
-        // body stays still
-      } else if(inputmode == INPUTMODE_MOVING_ARMS) {  // INPUTMODE_MOVING_ARMS
-        // swing / interact with fixed view - move the arms only
-        armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-        armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-        // body stays still
-        // head stays still
-      } else {          // INPUTMODE_MOVING_HEAD
-        // like default mode but leave body frozen and arms where they are
-        headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-        headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-      }
-    } else {
-      // default walk-around mode - move the head
-      headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
-      // put our arms down and centered
-      armsyawvelocity   += ((0                  - armsyaw)   / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-      armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-      // attempt to center the body on the head
-      if(headyaw > headyawdeadzone || headyaw < -headyawdeadzone || state == GOLFER_WALKING || state == GOLFER_RUNNING) {
-        double thistorque = headyaw / 90 * bodyyawtorquelimit;
-        if(thistorque > bodyyawtorquelimit) {
-          thistorque = bodyyawtorquelimit;
-        } else if(thistorque < -bodyyawtorquelimit) {
-          thistorque = -bodyyawtorquelimit;
-        }
-        bodyyawvelocity += (thistorque * timedelta) / bodymomentofinertia;
-      }
-    }
-
-    // gravitational force
-    bodyvelocity.y -= (currentplanet->gravity * timedelta);     // acceleration
-
-    // the inertially driven motions
-    //std::cout << "DEBUGv:" << bodyvelocity.x << ":" << bodyvelocity.y << ":" << bodyvelocity.z << ":" << std::endl;
-    //std::cout << "DEBUGp:" << bodyposition.x << ":" << bodyposition.y << ":" << bodyposition.z << ":" << std::endl;
-    bodyposition += bodyvelocity      * timedelta;
-    bodyyaw      += bodyyawvelocity   * timedelta;
-    headyaw      += (headyawvelocity - bodyyawvelocity) * timedelta;   // compensate for body rotation
-    armsyaw      += armsyawvelocity   * timedelta;
-    armspitch    += armspitchvelocity * timedelta;
-    if(headpitch > 0) {
-      headpitch += (headpitchvelocity - (abs(bodyyawvelocity) * headpitch      * 0.01)) * timedelta;
-    } else {
-      headpitch += (headpitchvelocity + (abs(bodyyawvelocity) * abs(headpitch) * 0.01)) * timedelta;
-    }
-
-    // internal damping
-    double thisheaddampingamount = 1 - (headdampingcoefficient * timedelta);
-    headyawvelocity   *= thisheaddampingamount;
-    headpitchvelocity *= thisheaddampingamount;
-    armsyawvelocity   *= thisheaddampingamount;
-    armspitchvelocity *= thisheaddampingamount;
-    headyawvelocity   *= thisheaddampingamount;
-    bodyyawvelocity   *= 1 - (bodyyawdampingcoefficient * timedelta);
-
-    // air resistance and wind effect (combined)
-    Vector3d thisveldiff = bodyvelocity - currentplanet->windvelocity;
-    if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
-      if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
-        // no calculations necessary
-      } else {
-        double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
-        Vector3d thisdragdecel;
-        thisdragdecel = currentplanet->windvelocity;
-        thisdragdecel.normalize();
-        thisdragdecel *= thisdragimpulse;
-        //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
-        bodyvelocity += thisdragdecel;
-      }
-    } else {
-      double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
-      Vector3d thisdragdecel;
-      thisdragdecel = thisveldiff;
-      thisdragdecel.normalize();
-      thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
-      //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
-      bodyvelocity += thisdragdecel;
-    }
-
-    // ground collision
-    double groundheight = currentcourse->get_height_at(bodyposition.x, bodyposition.z);
-    if(bodyposition.y <= groundheight) {
-      //bodyposition.y = groundheight;
-      // smoothly bring us back up to the ground
-      bodyposition.y = bodyposition.y + ((groundheight - bodyposition.y) * currentcourse->get_hardness_at(bodyposition.x, bodyposition.y) * timedelta);
-      if(bodyvelocity.y < 0) {                // stop downwards motion
-        bodyvelocity.y = 0;
-      }
-      // apply ground friction
-      if(((state == GOLFER_STANDING) && (bodyvelocity.lengthSq() > 0.0001 )) ||
-         ((state == GOLFER_WALKING) && (bodyvelocity.lengthSq() > walkspeed_sq)) ||
-         ((state == GOLFER_RUNNING) && (bodyvelocity.lengthSq() > walkrunspeed_sq))) {
-        double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta;  // mass cancels
-        Vector3d thisdragdecel = bodyvelocity;
-        thisdragdecel.normalize();
-        thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisfrictionimpulse);
-        //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
-        //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
-        bodyvelocity += thisdragdecel;
-      } else if(state == GOLFER_JUMPING) {    // apply an impulse upwards
-        bodyvelocity.y += (maximpulse_jump / bodymass);
-        state = GOLFER_FREEFALL;              // the natural conclusion to jumping
-      }
-    }
-
-    // wrapping and clamping
-    if(bodyyaw > 360) {                       // wrap body rotation
-      bodyyaw -= 360;
-    } else if(bodyyaw < 0) {
-      bodyyaw += 360;
-    }
-    if(headyaw > headyawlimit) {                       // clamp head rotation
-      headyaw = headyawlimit;
-    } else if(headyaw < -headyawlimit) {
-      headyaw = -headyawlimit;
-    }
-    if(headpitch > headpitchdownlimit) {
-      headpitch = headpitchdownlimit;
-    } else if(headpitch < -headpitchuplimit) {
-      headpitch = -headpitchuplimit;
-    }
-    if(armsyaw > armsyawlimit) {                       // clamp arms rotation
-      armsyaw = armsyawlimit;
-    } else if(armsyaw < -armsyawlimit) {
-      armsyaw = -armsyawlimit;
-    }
-    if(armspitch > armspitchdownlimit) {
-      armspitch = armspitchdownlimit;
-    } else if(armspitch < -armspitchuplimit) {
-      armspitch = -armspitchuplimit;
-    }
-
-    moveforce.x = 0;
-    moveforce.y = 0;
-    moveforce.z = 0;
-  }
-
+  void update(double timedelta);
 
   void render() {           /// alias function for preferred render method
     render5();

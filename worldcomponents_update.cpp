@@ -15,9 +15,8 @@ void world::update(double timedelta) {
   // check if we're due for an update yet for the less critical actions
   double timenow = glfwGetTime();
   if(timenow > updatenexttime) {
+    // do some timekeeping
     updatenexttime = timenow + updatetime;
-
-    // update meteorological visuals here
     timeofday += timespeed * updatetime;
     if(timeofday > 86400) {
       int dayspassed = timeofday / 86400;
@@ -42,13 +41,13 @@ void world::update(double timedelta) {
       }
     }
 
+    // update meteorological visuals here
     double skybrightness = sin(timeofday / (double)86400 * M_PI);
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
     glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);
     glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
 
-    // search the universe for worlds to update
     // iterate through the courses
     for(int i=0; i < numcourses; ++i) {
       course[i]->update(updatetime);
@@ -85,6 +84,7 @@ void world::update(double timedelta) {
 
 void universe::update(double timedelta) {
   /// Runs physics update for every planet in this universe
+  // search the universe for worlds to update
   for (int p = 0; p < numplanets; ++p) {
     planet[p]->update(timedelta);
   }

@@ -95,7 +95,8 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
     {
       glColor4f(skincolour.r, skincolour.g, skincolour.b, 1);
       glTranslated(armfulcrum.x, armfulcrum.y, armfulcrum.z);
-      glRotated(armspitch, -1,  0, 0);
+      //glRotated(armspitch, -1,  0, 0);
+      glRotated(((armspitch-75)*0.8)+75, -1,  0, 0);
       glRotated(armsyaw,    0, -1, 0);
       if(hasvao) {
         glBindVertexArray(vao_hands);
@@ -114,7 +115,10 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glPushMatrix();
         {
           glTranslated(0, 0, -armlength);
-          glRotated((armspitch+112)*0.4, -1, 0, 0);   // (75/0.4)-75 = 112
+          //glRotated((armspitch+112.5)*0.4, -1, 0, 0);   // (75/0.4)-75 = 112.5
+          //glRotated((armspitch+135)*0.4, -1, 0, 0);   // (90/0.4)-90 = 135
+          //glRotated((armspitch+97.5)*0.4, -1, 0, 0);   // (75/0.4)-90 = 97.5
+          glRotated((armspitch+150)*0.4, -1, 0, 0);   // (90/0.4)-75 = 150
           //std::cout << armspitch << std::endl;
           helditem->renderlocal();
         }
@@ -130,7 +134,8 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
       double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
       glTranslated(armfulcrum.x + armshoulderoffset, armfulcrum.y, armfulcrum.z);
-      glRotated(armspitch, -1, 0, 0);
+      //glRotated(armspitch, -1, 0, 0);
+      glRotated(((armspitch-75)*0.8)+75, -1, 0, 0);
       glRotated(armangle + elbowangle, 0, -1, 0);
       if(hasvao) {
         glBindVertexArray(vao_arms);
@@ -173,7 +178,8 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       double armangle = atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
       double elbowangle = acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
       glTranslated(armfulcrum.x - armshoulderoffset, armfulcrum.y, armfulcrum.z);
-      glRotated(armspitch, -1, 0, 0);
+      //glRotated(armspitch, -1, 0, 0);
+      glRotated(((armspitch-75)*0.8)+75, -1, 0, 0);
       glRotated(armangle - elbowangle, 0, -1, 0);
       if(hasvao) {
         glBindVertexArray(vao_arms);

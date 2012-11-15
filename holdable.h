@@ -83,7 +83,13 @@ public:
     /// update position and velocity based on time delta
     // only update if it's free in the air, not hand-held
     if(held_by == NULL) {
+      // gravity
+
       position += (velocity * timedelta);
+      // ground collision
+      // slope effects
+
+      // friction
 
       // TODO: apply quaternion rotation
     }
@@ -122,6 +128,9 @@ public:
 
     currentplanet = parentplanet;
     currentplanet->items.push_back(this);
+
+    bbox_start = Vector3d(-0.01,-0.1,-0.01);
+    bbox_end = Vector3d(0.01,0.95,0.1);
 
     // rendering data
     // body:
@@ -178,7 +187,7 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -253,62 +262,48 @@ public:
 
 class golfball : public holdable {
 public:
+  double radius;
 
   golfball(world *parentplanet) {
     held_by = NULL;
     at_rest = true;
-    mass = 1;
+    mass = 0.04593;             // official maximum
+    radius = 0.04267 / 2;       // official minimum
+    radius *= 2;            // but let's make it bigger for aesthetic reasons
     momentofinertia = 0;
     name = "golf ball";
     description = "A small hard white ball with strong elastic properties.";
 
+    bbox_start = Vector3d(-radius, -radius, -radius);
+    bbox_end   = Vector3d( radius,  radius,  radius);
+
     currentplanet = parentplanet;
     currentplanet->items.push_back(this);
 
-    // rendering data
-    // body:
-    float top    = 0.9;
-    float bottom = -0.1;
-    float left   = -0.01;
-    float right  = 0.01;
-    float front  = 0.01;
-    float back   = -0.01;
-    float headlength = 0.1;
-    float headdepth = 0.05;
+    // icosahedron!
+    float t = (1 + sqrt(5)) / 2;
+    float scale = radius / sqrt(1 + (t * t));
     GLfloat vbodata[] = {
-      left,  bottom, back,    // 0
-      left,  bottom, front,   // 1
-      left,  top,    back,    // 2
-      left,  top,    front,   // 3
-      right, bottom, back,    // 4
-      right, bottom, front,   // 5
-      right, top,    back,    // 6
-      right, top,    front,   // 7
-
-      left,  top+headdepth, back,        // 8
-      left,  top+headdepth, headlength,  // 9
-      left,  top,           back,        // 10
-      left,  top,           headlength,  // 11
-      right, top+headdepth, back,        // 12
-      right, top+headdepth, headlength,  // 13
-      right, top,           back,        // 14
-      right, top,           headlength   // 15
+      t * scale, 1 * scale, 0 * scale,
+      -t * scale, 1 * scale, 0 * scale,
+      t * scale, -1 * scale, 0 * scale,
+      -t * scale, -1 * scale, 0 * scale,
+      1 * scale, 0 * scale, t * scale,
+      1 * scale, 0 * scale, -t * scale,
+      -1 * scale, 0 * scale, t * scale,
+      -1 * scale, 0 * scale, -t * scale,
+      0 * scale, t * scale, 1 * scale,
+      0 * scale, -t * scale, 1 * scale,
+      0 * scale, t * scale, -1 * scale,
+      0 * scale, -t * scale, -1 * scale
     };
     GLuint ibodata[] = {
-      6,4,0, 0,2,6,   // front
-      3,1,5, 5,7,3,   // back
-      2,0,1, 1,3,2,   // left
-      7,5,4, 4,6,7,   // right
-      2,6,7, 7,3,2,   // top
-      5,4,0, 0,1,5,   // bottom
-
-      14,12, 8,  8,10,14,  // front
-      10, 8, 9,  9,11,10,  // left
-      15,13,12, 12,14,15,  // right
-      10,14,13, 15,11,10,  // top
-      13,12, 8,  8, 9,13,  // bottom
+      0,8,4,  0,5,10, 2,4,9,  2,11,15, 1,6,8,
+      1,10,7, 3,9,6,  2,9,11, 3,9,11,  4,2,0,
+      5,0,2,  6,1,3,  7,3,1,  8,6,4,   3,7,11,
+      0,10,8, 1,8,10, 9,4,6,  10,5,7,  11,7,5
     };
-    numtris = 22;
+    numtris = 20;
 
     // rendering setup
     vao = vbo = ibo = 0;
@@ -320,7 +315,7 @@ public:
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,             sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

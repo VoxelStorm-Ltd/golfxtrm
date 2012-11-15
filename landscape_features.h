@@ -330,7 +330,7 @@ public:
       13,12,8,   8, 9,13,   // bottom
       8, 10,11, 11, 9, 8,   // bottom
     };
-    numtris = 36;
+    numtris = 24;
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

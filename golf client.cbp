@@ -21,6 +21,7 @@
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="1" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
@@ -42,6 +43,7 @@
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
+					<Add option="-DINTRO" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -76,6 +78,7 @@
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
+					<Add option="-DINTRO" />
 					<Add option="-DWINDOW_FULLSCREEN" />
 				</Compiler>
 				<Linker>
@@ -111,6 +114,7 @@
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
+					<Add option="-DINTRO" />
 					<Add option="-DWINDOW_LARGE" />
 				</Compiler>
 				<Linker>
@@ -148,6 +152,7 @@
 		<Unit filename="globalvars_client.h" />
 		<Unit filename="globalvars_client_extern.h" />
 		<Unit filename="golfer.h" />
+		<Unit filename="golfer_update.cpp" />
 		<Unit filename="holdable.h" />
 		<Unit filename="landscape_features.h" />
 		<Unit filename="main.cpp">
