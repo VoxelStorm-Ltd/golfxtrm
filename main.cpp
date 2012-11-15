@@ -200,6 +200,9 @@ void init() {       /// all the one-time initialisation we need for the engine
   firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
+  //firtree *thistree4 = new firtree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, firtree::FIRTREE_STANDARD, 1);
+  oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
+  oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
   srand(1337);
   glfwSetWindowTitle("GolfXTRM alpha: Planting fir trees...");

@@ -46,7 +46,7 @@ void world::update(double timedelta) {
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
     glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);
-    glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
+    //glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
 
     // iterate through the courses
     for(int i=0; i < numcourses; ++i) {

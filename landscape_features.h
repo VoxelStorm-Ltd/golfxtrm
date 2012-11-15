@@ -14,6 +14,7 @@ public:
 
   GLuint vao;                   // vertex array object
   GLuint vbo;                   // vertex buffer object
+  GLuint vbo_n;                 // vertex buffer object for normals
   GLuint ibo;                   // index buffer object
   GLuint numtris;               // number of triangles in the VBO
 
@@ -92,13 +93,12 @@ public:
       trunkwidth = width / 5;
     }
     // rendering setup
-    vao = 0;
-    vbo = 0;
-    ibo = 0;
+    vao = vbo = vbo_n = ibo = 0;
     if(hasvao) {
       glGenVertexArrays(1, &vao);
     }
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &vbo_n);
     glGenBuffers(1, &ibo);
 
     updatevbo();
@@ -126,42 +126,76 @@ public:
       width,  bottom, -width,     // 10
       width,  bottom, width,      // 11
 
-      0,      height, 0           // 12
+      0,      height, 0,          // 12
 
+      -width, bottom, -width,    // 13
+      -width, bottom, width,     // 14
+      width,  bottom, -width,    // 15
+      width,  bottom, width,     // 16
+    };
+    GLfloat vbodata_n[] = {   // the last vertex of a triangle defines its normal
+      0, 0, -1, // 0    front
+      -1,0, 0,  // 1    left
+      -1,0, 0,  // 2    left
+      0, 0, 1,  // 3    back
+      1, 0, 0,  // 4    right
+      0, 0, 1,  // 5    back
+      0, 0, -1, // 6    front
+      1, 0, 0,  // 7    right
+
+      0, 0, -1, // 8    front
+      -1,0, 0,  // 9    left
+      1, 0, 0,  // 10   right
+      0, 0, 1,  // 11   back
+
+      0, 1, 0,  // 12
+
+      0, -1, 0,  // 13    bottom
+      0, -1, 0,  // 14
+      0, -1, 0,  // 15
+      0, -1, 0,  // 16
     };
     GLuint ibodata[] = {
       6,4,0, 0,2,6,   // front
       3,1,5, 5,7,3,   // back
       2,0,1, 1,3,2,   // left
       7,5,4, 4,6,7,   // right
-      2,6,7, 7,3,2,   // top
-      5,4,0, 0,1,5,   // bottom
 
-      8, 10,11, 11, 9, 8,   // bottom
+      13,15,16, 16,14,13,   // bottom
 
-      10, 8,12,        // front
-      8,  9,12,        // left
-      9, 11,12,        // back
-      11,10,12         // right
-
+      12,10, 8,       // front
+      12,8,  9,       // left
+      12,11,10,       // right
+      12,9, 11,       // back
     };
-    numtris = 18;
+    numtris = 14;
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     if(hasvao) {
       glBindVertexArray(vao);             // set up the VAO's state
-    }
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    if(hasvao) {
+      /*
+      glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      */
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+
       glBindVertexArray(0);
     }
   }
@@ -199,12 +233,15 @@ public:
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
       } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+        glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
+        glDisableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
@@ -242,7 +279,6 @@ public:
     position.x = x;
     position.y = y;
     position.z = z;
-    rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
 
     maxwidth = 15;
     maxheight = 20;
@@ -251,8 +287,8 @@ public:
     //growthrate = 0.000000001;  // reaches full height in about 90 years
 
     if(treetype == OAKTREE_STANDARD) {
-      height     = 4;   // default sizes
-      bottom     = 0.5;
+      height     = 7;   // default sizes
+      bottom     = 2;
       width      = 3;
       trunkwidth = width / 5;
     } else if(treetype == OAKTREE_RANDOM) {
@@ -261,9 +297,10 @@ public:
       bottom     = 0.5 + ((float)rand() / RAND_MAX * 0.5);
       width      = 3 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
       trunkwidth = width / 5;
+      rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
     } else if(treetype == OAKTREE_SAPLING) {
       // make it tiny
-      height     = 0.4;
+      height     = 0.7;
       bottom     = 0.05;
       width      = 0.3;
       trunkwidth = width / 5;
@@ -273,6 +310,7 @@ public:
       bottom     = 0.025 + ((float)rand() / RAND_MAX * 0.025);
       width      = 0.3 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
       trunkwidth = width / 5;
+      rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
     }
     // rendering setup
     vao = 0;
@@ -282,6 +320,7 @@ public:
       glGenVertexArrays(1, &vao);
     }
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &vbo_n);
     glGenBuffers(1, &ibo);
 
     updatevbo();
@@ -295,7 +334,7 @@ public:
     // rendering data
     // body:
     GLfloat vbodata[] = {
-      -trunkwidth, 0,      -trunkwidth,    // 0
+      -trunkwidth, 0,      -trunkwidth,    // 0   // sides of trunk
       -trunkwidth, 0,      trunkwidth,     // 1
       -trunkwidth, bottom, -trunkwidth,    // 2
       -trunkwidth, bottom, trunkwidth,     // 3
@@ -304,7 +343,7 @@ public:
       trunkwidth,  bottom, -trunkwidth,    // 6
       trunkwidth,  bottom, trunkwidth,     // 7
 
-      -width, bottom, -width,     // 8
+      -width, bottom, -width,     // 8    // sides of crown
       -width, bottom, width,      // 9
       width,  bottom, -width,     // 10
       width,  bottom, width,      // 11
@@ -313,40 +352,82 @@ public:
       width,  height, -width,     // 14
       width,  height, width,      // 15
 
+      -width, bottom, -width,     // 16   // bottom of crown
+      -width, bottom, width,      // 17
+      width,  bottom, -width,     // 18
+      width,  bottom, width,      // 19
+
+      -width, height, -width,     // 20   // top of crown
+      -width, height, width,      // 21
+      width,  height, -width,     // 22
+      width,  height, width,      // 23
+    };
+    GLfloat vbodata_n[] = {   // the last vertex of a triangle defines its normal
+      0, 0, -1,   // 0    front
+      -1,0, 0,    // 1    left
+      -1,0, 0,    // 2    left
+      0, 0, 1,    // 3    back
+      1, 0, 0,    // 4    right
+      0, 0, 1,    // 5    back
+      0, 0, -1,   // 6    front
+      1, 0, 0,    // 7    right
+
+      0, 0, -1,   // 8    front
+      -1,0, 0,    // 9    left
+      1, 0, 0,    // 10   right
+      0, 0, 1,    // 11   back
+      -1,0, 0,    // 12   left
+      0, 0, 1,    // 13   back
+      0, 0, -1,   // 14   front
+      1, 0, 0,    // 15   right
+
+      0, -1, 0,   // 16   bottom
+      0, -1, 0,   // 17
+      0, -1, 0,   // 18
+      0, -1, 0,   // 19
+
+      0,  1, 0,   // 20   top
+      0,  1, 0,   // 21
+      0,  1, 0,   // 22
+      0,  1, 0,   // 23
     };
     GLuint ibodata[] = {
       6,4,0, 0,2,6,   // front
       3,1,5, 5,7,3,   // back
       2,0,1, 1,3,2,   // left
       7,5,4, 4,6,7,   // right
-      2,6,7, 7,3,2,   // top
-      5,4,0, 0,1,5,   // bottom
 
       14,12, 8,  8,10,14,   // front
       11, 9,13, 13,15,11,   // back
-      10, 8, 9,  9,11,10,   // left
-      15,13,12, 12,14,15,   // right
-      10,14,15, 15,11,10,   // top
-      13,12,8,   8, 9,13,   // bottom
-      8, 10,11, 11, 9, 8,   // bottom
+      10,14,15, 15,11,10,   // right
+      9, 13,12, 12, 8, 9,   // left
+
+      19,18,16, 16,17,19,   // bottom
+      23,22,20, 20,21,23,   // top
     };
-    numtris = 24;
+    numtris = 20;
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     if(hasvao) {
       glBindVertexArray(vao);             // set up the VAO's state
-    }
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    if(hasvao) {
+
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+
       glBindVertexArray(0);
     }
   }

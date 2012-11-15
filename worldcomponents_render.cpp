@@ -17,24 +17,23 @@ void world::render() {
   // give us a basic horizon, sky, atmospheric stuff
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
-  // ground
-  glColor4fv(grasscolour);
-  glBegin(GL_TRIANGLE_STRIP);
-  glNormal3i(0, 1, 0);
-  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z + horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z + horizondistance);
-  glEnd();
   // sky
   glColor4fv(skycolour);
-  //glColor4f(0, 0, 1, 1);
   glBegin(GL_TRIANGLE_STRIP);
-  glNormal3i(0, -1, 0);
+  glNormal3f(0, -1, 0);
   glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z + horizondistance);
   glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z + horizondistance);
+  glEnd();
+  // ground
+  glColor4fv(grasscolour);
+  glBegin(GL_TRIANGLE_STRIP);
+  glNormal3f(0, 1, 0);
+  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z + horizondistance);
   glEnd();
 
   // iterate through the courses

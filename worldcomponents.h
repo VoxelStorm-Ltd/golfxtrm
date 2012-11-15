@@ -108,6 +108,7 @@ public:
       //featureupdatefreq = (double)1/(double)5;
       featureupdatefreq = (double)60;
     } else {
+      //timespeed = 0;          // frozen
       //timespeed = 1;          // realtime
       timespeed = 60;         // 1 minute per second
       //timespeed = 3600;       // 1 hour per second
