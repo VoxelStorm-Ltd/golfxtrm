@@ -14,6 +14,8 @@ void golfcourse::render() {
 }
 
 void world::render() {
+  // sort out lighting
+  glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
   // give us a basic horizon, sky, atmospheric stuff
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);

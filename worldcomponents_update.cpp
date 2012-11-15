@@ -41,12 +41,34 @@ void world::update(double timedelta) {
       }
     }
 
+    if(timeofday > 21600) {
+      if(timeofday < 64800) {
+        float thisangle = (timeofday + 21600) / (float)43200 * M_PI;
+        sundirection.z = -cos(thisangle);
+        sundirection.y = -sin(thisangle);
+      } else {
+        sundirection.z = -1;
+        sundirection.y = 0;
+        sundiffuse.r = sundiffuse.g = sundiffuse.b = sin((timeofday - 32400) / (float)43200 * M_PI);
+        sunspecular = sundiffuse;
+      }
+    } else {
+      sundirection.z = 1;
+      sundirection.y = 0;
+      sundiffuse.r = sundiffuse.g = sundiffuse.b = sin(timeofday / (float)43200 * M_PI);
+      sunspecular = sundiffuse;
+    }
+    std::cout << "Sun coords " << sundirection.z << " " << sundirection.y << " " << " brightness " << (float)sundiffuse.r << std::endl;
+
     // update meteorological visuals here
-    double skybrightness = sin(timeofday / (double)86400 * M_PI);
+    float skybrightness = sin(timeofday / (float)86400 * M_PI);
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
     glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);
     //glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  sunambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  sundiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, sunspecular);
 
     // iterate through the courses
     for(int i=0; i < numcourses; ++i) {

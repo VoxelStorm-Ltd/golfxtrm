@@ -42,8 +42,6 @@ extern float ambientred;
 extern float ambientgreen;
 extern float ambientblue;
 
-extern GLfloat sundirection[];
-
 // backwards compatibility
 extern bool hasvao;
 

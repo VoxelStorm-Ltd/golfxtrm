@@ -79,6 +79,7 @@ public:
       bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
       width      = 1 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
       trunkwidth = width / 5;
+      rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
     } else if(treetype == FIRTREE_SAPLING) {
       // make it tiny
       height     = 0.5;
@@ -91,6 +92,7 @@ public:
       bottom     = 0.1 + ((float)rand() / RAND_MAX * 0.05);
       width      = 0.1 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
       trunkwidth = width / 5;
+      rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
     }
     // rendering setup
     vao = vbo = vbo_n = ibo = 0;
@@ -227,6 +229,7 @@ public:
     glPushMatrix();
     {
       glTranslated(position.x, position.y, position.z);
+      glMultMatrixd(rotation.transform());
       glColor4f(0.75, 0.75, 0.25, 1);
       if(hasvao) {
         glBindVertexArray(vao);

@@ -201,8 +201,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
   //firtree *thistree4 = new firtree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, firtree::FIRTREE_STANDARD, 1);
-  oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
-  oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
+  //oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
+  //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
   srand(1337);
   glfwSetWindowTitle("GolfXTRM alpha: Planting fir trees...");
@@ -231,7 +231,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
 
-  //glfwSwapInterval(1);    // activate vsync
+  glfwSwapInterval(1);    // activate vsync
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
@@ -272,8 +272,8 @@ void mainloop() {   /// the main rendering loop
     physics(timedeltatotal);  // run the physics for this tick, if it's time
 
     // framerate capping - don't do this if we're using vsync
-    /*double timetowait = 0;
-    if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
+    double timetowait = 0;
+    /*if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
       timetowait = timedeltamincap - timedeltatotal;
       glfwSleep(timetowait);
     }*/

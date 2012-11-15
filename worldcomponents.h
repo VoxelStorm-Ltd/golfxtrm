@@ -82,6 +82,11 @@ public:
   Vector4f winterclearcolour;
   Vector4f winterambientcolour;
 
+  Vector3f sundirection;                // vector representing sun angle
+  Vector4f sunambient;                  // sun light colours
+  Vector4f sundiffuse;
+  Vector4f sunspecular;
+
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
   boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
@@ -102,7 +107,7 @@ public:
 
     if(introon) {
       timespeed = 31556926;   // 1 year per second
-      timeofday = 0;
+      timeofday = 18 * 60 * 60;
       calendardate = 100;
 
       //featureupdatefreq = (double)1/(double)5;
@@ -112,13 +117,15 @@ public:
       //timespeed = 1;          // realtime
       timespeed = 60;         // 1 minute per second
       //timespeed = 3600;       // 1 hour per second
+      //timespeed = 7200;       // 2 hours per second
       //timespeed = 86400;      // 1 day per second
       //timespeed = 2592000;    // 1 month per second
       //timespeed = 31556926;   // 1 year per second
-      timeofday = 8 * 60 * 60;    // 8am
+      timeofday = 5 * 60 * 60;    // 8am
       calendardate = 150;
 
       featureupdatefreq = (double)1/(double)5;
+      //featureupdatefreq = 10;
     }
     updatetime = 1 / featureupdatefreq; // time from frequency
 
@@ -138,6 +145,11 @@ public:
     fogcolour     = summerfogcolour;
     clearcolour   = summerclearcolour;
     ambientcolour = summerambientcolour;
+
+    sundirection = Vector3f(0, 0, 1);
+    sunambient   = Vector4f(0, 0, 0, 1);
+    sundiffuse   = Vector4f(1, 1, 1, 1);
+    sunspecular  = Vector4f(1, 1, 1, 1);
 
     //windvelocity.x = 10;
 

@@ -32,7 +32,7 @@ public:
     bounds.x = 200;
     bounds.z = 200;
     bounds.y = 60;
-    gridwidth = 256;
+    gridwidth = 128;
 
     randomseed = 1337;
 
@@ -41,6 +41,9 @@ public:
     srand(randomseed);                  // seed the random generator predictably
     double xcentre = gridwidth / 2;
     double zcentre = gridwidth / 2;
+
+    double heightscale = 20;
+
     for(int x = 0; x < gridwidth; ++x) {
       for(int z = 0; z < gridwidth; ++z) {
         if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
@@ -48,7 +51,7 @@ public:
         } else {
           //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
           double centredist_sq = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
-          double offsetheight = 20 - ((centredist_sq / gridwidth * 40 ) / (gridwidth / 2));
+          double offsetheight = heightscale - ((centredist_sq / gridwidth * heightscale * 2) / (gridwidth / 2));
 
           double holedist_sq = pow(x - holeposition.x, (double)2) + pow(z - holeposition.z, (double)2);
           if(holedist_sq < 100) {
@@ -96,39 +99,56 @@ public:
   }
 
   void update_vbo() {   /// update the VBO from the current grid heightmap
-    GLfloat vbodata[gridwidth * gridwidth * 3];
-    GLfloat vbodata_n[gridwidth * gridwidth * 3];
+    GLfloat vbodata[gridwidth * gridwidth * 6];
+    GLfloat vbodata_n[gridwidth * gridwidth * 6];
     std::vector<GLuint> indices;
     numtris = 0;
 
     for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
       for(int zgrid = 0; zgrid < gridwidth; ++zgrid) {
         // populate the vertex locations
-        int vbo_offset = (xgrid * gridwidth * 3) + (zgrid * 3);
+        int vbo_offset = ((xgrid * gridwidth * 3) + (zgrid * 3)) * 2;
         vbodata[vbo_offset    ] = origin.x + ((double)xgrid / gridwidth * bounds.x);
         vbodata[vbo_offset + 1] = heightmap[(xgrid * gridwidth) + zgrid];
         vbodata[vbo_offset + 2] = origin.z + ((double)zgrid / gridwidth * bounds.z);
+        vbodata[vbo_offset + 3] = origin.x + ((double)(xgrid + 1) / gridwidth * bounds.x);
+        if(xgrid == gridwidth - 1 || zgrid == gridwidth - 1) {
+          vbodata[vbo_offset + 4] = 1;
+        } else {
+          vbodata[vbo_offset + 4] = heightmap[((xgrid + 1) * gridwidth) + (zgrid + 1)];
+        }
+        vbodata[vbo_offset + 5] = origin.z + ((double)(zgrid + 1 ) / gridwidth * bounds.z);
 
         // populate the normals (z vector cross product x vector)
         Vector3f thisnormal;
-        if(xgrid > 0 && zgrid > 0) {
-          thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid-1], 1).crossProduct(Vector3f(1, heightmap[(xgrid * gridwidth) + zgrid] - heightmap[((xgrid - 1) * gridwidth) + zgrid], 0));    // normal is z cross x
-          thisnormal.normalize();
-        } else {
+        if(xgrid == gridwidth - 1 || zgrid == gridwidth - 1) {
           thisnormal = Vector3f(0,1,0);
+        } else {
+          thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + (zgrid + 1)] - heightmap[(xgrid * gridwidth) + zgrid], 1)
+            .crossProduct(Vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0));    // normal is z cross x
+          thisnormal.normalize();
         }
         vbodata_n[vbo_offset    ] = thisnormal.x;
         vbodata_n[vbo_offset + 1] = thisnormal.y;
         vbodata_n[vbo_offset + 2] = thisnormal.z;
+        vbodata_n[vbo_offset + 3] = thisnormal.x;
+        vbodata_n[vbo_offset + 4] = thisnormal.y;
+        vbodata_n[vbo_offset + 5] = thisnormal.z;
 
         // populate the triangles
         if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
-          indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
+          /*indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
           indices.push_back(( xgrid      * (gridwidth)) + (zgrid + 1));
           indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
           indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
           indices.push_back(((xgrid + 1) * (gridwidth)) +  zgrid     );
-          indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
+          indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );*/
+          indices.push_back((((xgrid + 1) * (gridwidth)) + (zgrid    )) * 2);
+          indices.push_back((( xgrid      * (gridwidth)) + (zgrid + 1)) * 2);
+          indices.push_back((( xgrid      * (gridwidth)) +  zgrid     ) * 2);
+          indices.push_back((( xgrid      * (gridwidth)) + (zgrid + 1)) * 2    );
+          indices.push_back((((xgrid + 1) * (gridwidth)) + (zgrid    )) * 2    );
+          indices.push_back((( xgrid      * (gridwidth)) +  zgrid     ) * 2 + 1);
           numtris += 2;
         }
       }
@@ -203,6 +223,7 @@ public:
 
   void render(Vector4f basecolour) {
     /// alias function to render the terrain using the preferred method
+    //render2(basecolour); // DEBUG
     if(hasvao) {
       render5(basecolour);
     } else {
