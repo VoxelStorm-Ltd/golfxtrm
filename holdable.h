@@ -18,6 +18,8 @@ public:
   Vector3d bbox_start;      // one corner of the bounding box
   Vector3d bbox_end;        // other corner of the bounding box
 
+  double boundingradius;    // collision radius for sphere type collisions
+
   world *currentplanet;     // what planet are you even on?
 
   Vector3d position;        // location in space
@@ -276,6 +278,7 @@ public:
 
     bbox_start = Vector3d(-radius, -radius, -radius);
     bbox_end   = Vector3d( radius,  radius,  radius);
+    boundingradius = radius;
 
     currentplanet = parentplanet;
     currentplanet->items.push_back(this);

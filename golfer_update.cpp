@@ -88,29 +88,29 @@ void golfer::update(double timedelta) {
         //std::cout << i->name << " at " << difference.x << " " << difference.y << " " << difference.z << std::endl;
         //std::cout << i->name << " at " << targetyaw << " " << targetpitch << " " << std::endl;
         if(armsyawvelocity < 0) {   // right to left
-          if(targetyaw > armsyaw - bbox_angle + (armsyawvelocity * timedelta) && targetyaw < armsyaw + bbox_angle) {
+          if(targetyaw > armsyaw - bbox_angle + (armsyawvelocity * timedelta) - i->boundingradius && targetyaw < armsyaw + bbox_angle + i->boundingradius) {
             //std::cout << i->name << " < " << armsyawvelocity << " target " << targetyaw << " " << targetpitch << " us [" << armsyaw - bbox_angle + (armsyawvelocity * timedelta) << "-" << armsyaw + bbox_angle << "] [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
             //std::cout << "off by " << targetpitch-armspitch << " targetpitch " << targetpitch << " our pitch " << armspitch << std::endl;
             if(armspitchvelocity > 0) {   // up or down
-              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) && targetpitch < armspitch + bbox_angle) {
+              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
                 //std::cout << i->name << " <V " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
               }
             } else {
-              if(targetpitch > armspitch - bbox_angle_up && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta)) {
+              if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
                 //std::cout << i->name << " <^ " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
               }
             }
           }
         } else {                    // left to right
-          if(targetyaw > armsyaw - bbox_angle && targetyaw < armsyaw + bbox_angle + (armsyawvelocity * timedelta)) {
+          if(targetyaw > armsyaw - bbox_angle - i->boundingradius && targetyaw < armsyaw + bbox_angle + (armsyawvelocity * timedelta) + i->boundingradius) {
             //std::cout << i->name << " > " << armsyawvelocity << " target " << targetyaw << " " << targetpitch << " us [" << armsyaw - bbox_angle << "-" << armsyaw + bbox_angle + (armsyawvelocity * timedelta) << "] [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
             //std::cout << "off by " << targetpitch-armspitch << " targetpitch " << targetpitch << " our pitch " << armspitch << std::endl;
             if(armspitchvelocity > 0) {   // up or down
-              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) && targetpitch < armspitch + bbox_angle) {
+              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
                 //std::cout << i->name << " V> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
               }
             } else {
-              if(targetpitch > armspitch - bbox_angle_up && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta)) {
+              if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
                 //std::cout << i->name << " ^> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
               }
             }
