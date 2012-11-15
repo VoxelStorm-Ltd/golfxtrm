@@ -94,10 +94,31 @@ void golfer::update(double timedelta) {
             if(armspitchvelocity > 0) {   // up or down
               if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
                 //std::cout << i->name << " <V " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
+                // rotational velocity -> linear velocity
+                double pushleft = armsyawvelocity * difference.length();
+                double pushdown = armspitchvelocity * difference.length();
+                Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+                pushvector.rotate(-20, 0, 0);   // club loft effect
+                pushvector.rotate(0, 0, armsyaw);
+                pushvector.rotate(armspitch, 0, 0);
+                pushvector.rotate(0, -bodyyaw, 0);
+                std::cout << "Pushed the ball <V " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+                i->at_rest = false;
+                i->push(pushvector);
               }
             } else {
               if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
                 //std::cout << i->name << " <^ " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
+                double pushleft = armsyawvelocity * difference.length();
+                double pushdown = armspitchvelocity * difference.length();
+                Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+                pushvector.rotate(-20, 0, 0);   // club loft effect
+                pushvector.rotate(0, 0, armsyaw);
+                pushvector.rotate(armspitch, 0, 0);
+                pushvector.rotate(0, -bodyyaw, 0);
+                std::cout << "Pushed the ball <^ " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+                i->at_rest = false;
+                i->push(pushvector);
               }
             }
           }
@@ -108,10 +129,28 @@ void golfer::update(double timedelta) {
             if(armspitchvelocity > 0) {   // up or down
               if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
                 //std::cout << i->name << " V> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
+                double pushleft = armsyawvelocity * difference.length();
+                double pushdown = armspitchvelocity * difference.length();
+                Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+                pushvector.rotate(0, 0, armsyaw);
+                pushvector.rotate(armspitch, 0, 0);
+                pushvector.rotate(0, -bodyyaw, 0);
+                std::cout << "Pushed the ball V> " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+                i->at_rest = false;
+                i->push(pushvector);
               }
             } else {
               if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
                 //std::cout << i->name << " ^> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
+                double pushleft = armsyawvelocity * difference.length();
+                double pushdown = armspitchvelocity * difference.length();
+                Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+                pushvector.rotate(0, 0, armsyaw);
+                pushvector.rotate(armspitch, 0, 0);
+                pushvector.rotate(0, -bodyyaw, 0);
+                std::cout << "Pushed the ball ^> " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+                i->at_rest = false;
+                i->push(pushvector);
               }
             }
           }
@@ -183,7 +222,7 @@ void golfer::update(double timedelta) {
       double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta;  // mass cancels
       Vector3d thisdragdecel = bodyvelocity;
       thisdragdecel.normalize();
-      thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisfrictionimpulse);
+      thisdragdecel = thisdragdecel * -1 * thisfrictionimpulse;
       //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
       //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
       bodyvelocity += thisdragdecel;

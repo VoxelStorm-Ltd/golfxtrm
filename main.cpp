@@ -272,8 +272,8 @@ void mainloop() {   /// the main rendering loop
     physics(timedeltatotal);  // run the physics for this tick, if it's time
 
     // framerate capping - don't do this if we're using vsync
-    double timetowait = 0;
-    /*if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
+    /*double timetowait = 0;
+    if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
       timetowait = timedeltamincap - timedeltatotal;
       glfwSleep(timetowait);
     }*/

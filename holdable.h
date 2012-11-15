@@ -12,6 +12,8 @@ public:
   double airresistance;     // how much its flight is slowed by atmospheric drag
   double slideresistance;   // how much its slide along the ground is slowed
 
+  double cda;               // coefficient of drag * crossectional area
+
   std::string name;         // what it's called
   std::string description;  // longer description
 
@@ -69,11 +71,11 @@ public:
   }
 
   virtual void push(Vector3d impulse) {  /// apply a one-off impulse to this object
-    // TODO: apply max holding force, enable knocking out of hand
+    // TODO: if held, apply max holding force, enable knocking out of hand
     velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
   }
 
-  virtual void push(Vector3d impulse, double targetx, double targety, double targetz) {
+  virtual void push(Vector3d impulse, Vector3d impactpoint) {
     /// apply a one-off impulse offset from centre of this object
     // TODO: apply max holding force, enable knocking out of hand
     velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
@@ -85,15 +87,71 @@ public:
     /// update position and velocity based on time delta
     // only update if it's free in the air, not hand-held
     if(held_by == NULL) {
-      // gravity
+      if(!at_rest) {
+        // gravitational force
+        velocity.y -= (currentplanet->gravity * timedelta);     // acceleration
 
-      position += (velocity * timedelta);
-      // ground collision
-      // slope effects
+        position += (velocity * timedelta);
 
-      // friction
+        // air resistance and wind effect (combined)
+        Vector3d thisveldiff = velocity - currentplanet->windvelocity;
+        if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
+          if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
+            // no calculations necessary
+          } else {
+            double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
+            Vector3d thisdragdecel;
+            thisdragdecel = currentplanet->windvelocity;
+            thisdragdecel.normalize();
+            thisdragdecel *= thisdragimpulse;
+            velocity += thisdragdecel;
+          }
+        } else {
+          double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
+          Vector3d thisdragdecel;
+          thisdragdecel = thisveldiff;
+          thisdragdecel.normalize();
+          thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
+          velocity += thisdragdecel;
+        }
 
-      // TODO: apply quaternion rotation
+        // ground collision
+        double groundheight = currentplanet->get_height_at(position.x, position.z);
+        if(position.y - boundingradius <= groundheight) {
+          // smoothly bring us back up to the ground
+          double distancebelowground = (groundheight - (position.y - boundingradius));
+          if(distancebelowground > 0) {
+            double amounttomove = (distancebelowground * currentplanet->get_hardness_at(position.x, position.y) * timedelta);
+            if(amounttomove > distancebelowground || std::isnan(amounttomove)) {
+              amounttomove = distancebelowground;
+            }
+            position.y += amounttomove;
+          }
+          if(velocity.y < 0) {                // stop downwards motion
+            velocity.y = 0;
+          }
+          // apply rolling resistance (different to sliding friction)
+          double thisfrictionimpulse = mass * currentplanet->get_friction_at(position.x, position.z) * timedelta;  // mass cancels
+          Vector3d thisdragdecel = velocity;
+          thisdragdecel.normalize();
+          thisdragdecel = thisdragdecel * -1 * (thisfrictionimpulse
+                                                + ((currentplanet->get_grass_depth_at(position.x,position.z)
+                                                    * 4) * velocity.length()));
+          if(!std::isnan(thisdragdecel.y)) {
+            std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
+            std::cout << "Vel: " << velocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
+            velocity += thisdragdecel;
+            if(velocity.length() < currentplanet->get_min_velocity_at(position.x, position.z)) {
+              velocity.x = velocity.y = velocity.z = 0;
+              at_rest = true;
+            }
+          }
+        }
+        //std::cout << "height: " << position.y << "velocity: " << velocity.y << std::endl;
+        // TODO: slope effects
+
+        // TODO: apply quaternion rotation
+      }
     }
   }
 
@@ -271,8 +329,9 @@ public:
     at_rest = true;
     mass = 0.04593;             // official maximum
     radius = 0.04267 / 2;       // official minimum
-    radius *= 2;            // but let's make it bigger for aesthetic reasons
+    radius *= 1;            // but let's make it bigger for aesthetic reasons
     momentofinertia = 0;
+    cda = 0.001716;             // guesstimate based on Cd = 0.3
     name = "golf ball";
     description = "A small hard white ball with strong elastic properties.";
 

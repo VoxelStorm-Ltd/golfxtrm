@@ -42,6 +42,14 @@ public:
   double get_hardness_at(double x, double z) {
     return landscape->get_hardness_at(x, z);
   }
+
+  double get_grass_depth_at(double x, double z) {
+    return landscape->get_grass_depth_at(x, z);
+  }
+
+  double get_min_velocity_at(double x, double z) {
+    return landscape->get_min_velocity_at(x, z);
+  }
 };
 
 
@@ -162,6 +170,62 @@ public:
     /// add a golf course to this planet
     course[coursenum] = new golfcourse(this, teeposition, holeposition);
     ++numcourses;
+  }
+
+  golfcourse *get_course_at(double x, double z) {
+    // iterate through the courses
+    for(int i=0; i < numcourses; ++i) {
+      // check the bounding coordinates
+      double courseoriginx = course[i]->landscape->origin.x;
+      double courseoriginz = course[i]->landscape->origin.z;
+      if(x > courseoriginx &&
+         z > courseoriginz &&
+         x < course[i]->landscape->bounds.x - courseoriginx &&
+         z < course[i]->landscape->bounds.z - courseoriginz) {
+        return course[i];
+      }
+    }
+    return NULL;
+  }
+
+  double get_height_at(double x, double z) {
+    golfcourse *thiscourse = get_course_at(x, z);
+    if(thiscourse != NULL) {
+      return thiscourse->get_height_at(x, z);
+    }
+    return 0;
+  }
+
+  double get_friction_at(double x, double z) {
+    golfcourse *thiscourse = get_course_at(x, z);
+    if(thiscourse != NULL) {
+      return thiscourse->get_friction_at(x, z);
+    }
+    return 0.0409;
+  }
+
+  double get_hardness_at(double x, double z) {
+    golfcourse *thiscourse = get_course_at(x, z);
+    if(thiscourse != NULL) {
+      return thiscourse->get_hardness_at(x, z);
+    }
+    return 10;
+  }
+
+  double get_grass_depth_at(double x, double z) {
+    golfcourse *thiscourse = get_course_at(x, z);
+    if(thiscourse != NULL) {
+      return thiscourse->get_grass_depth_at(x, z);
+    }
+    return 0.1;
+  }
+
+  double get_min_velocity_at(double x, double z) {
+    golfcourse *thiscourse = get_course_at(x, z);
+    if(thiscourse != NULL) {
+      return thiscourse->get_min_velocity_at(x, z);
+    }
+    return 0.1;
   }
 
   void update(double timedelta);

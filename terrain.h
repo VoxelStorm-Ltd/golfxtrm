@@ -221,6 +221,16 @@ public:
     return 0.0409;    // from physics forum for ball on golf green
   }
 
+  double get_grass_depth_at(double x, double z) {
+    /// return the depth of grass, for friction calculations as well as visuals
+    return 0.01;    // placeholder
+  }
+
+  double get_min_velocity_at(double x, double z) {
+    /// return the depth of grass, for friction calculations as well as visuals
+    return 0.1;    // placeholder
+  }
+
   void render(Vector4f basecolour) {
     /// alias function to render the terrain using the preferred method
     //render2(basecolour); // DEBUG

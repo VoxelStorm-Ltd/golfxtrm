@@ -58,7 +58,7 @@ void world::update(double timedelta) {
       sundiffuse.r = sundiffuse.g = sundiffuse.b = sin(timeofday / (float)43200 * M_PI);
       sunspecular = sundiffuse;
     }
-    std::cout << "Sun coords " << sundirection.z << " " << sundirection.y << " " << " brightness " << (float)sundiffuse.r << std::endl;
+    //std::cout << "Sun coords " << sundirection.z << " " << sundirection.y << " " << " brightness " << (float)sundiffuse.r << std::endl;
 
     // update meteorological visuals here
     float skybrightness = sin(timeofday / (float)86400 * M_PI);
