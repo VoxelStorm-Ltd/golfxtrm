@@ -109,10 +109,17 @@ public:
         vbodata[vbo_offset + 1] = heightmap[(xgrid * gridwidth) + zgrid];
         vbodata[vbo_offset + 2] = origin.z + ((double)zgrid / gridwidth * bounds.z);
 
-        // populate the normals
-        vbodata_n[vbo_offset    ] = 0;
-        vbodata_n[vbo_offset + 1] = 1;
-        vbodata_n[vbo_offset + 2] = 0;
+        // populate the normals (z vector cross product x vector)
+        Vector3f thisnormal;
+        if(xgrid > 0 && zgrid > 0) {
+          thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid-1], 1).crossProduct(Vector3f(1, heightmap[(xgrid * gridwidth) + zgrid] - heightmap[((xgrid - 1) * gridwidth) + zgrid], 0));    // normal is z cross x
+          thisnormal.normalize();
+        } else {
+          thisnormal = Vector3f(0,1,0);
+        }
+        vbodata_n[vbo_offset    ] = thisnormal.x;
+        vbodata_n[vbo_offset + 1] = thisnormal.y;
+        vbodata_n[vbo_offset + 2] = thisnormal.z;
 
         // populate the triangles
         if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
