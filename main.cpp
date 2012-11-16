@@ -19,7 +19,9 @@
 #include "worldcomponents.h"
 #include "landscape_features.h"
 #include "golfer.h"
+#include "particle.h"
 #include "holdable.h"
+
 
 #include "global_objects.h"
 #include "objloader.h"

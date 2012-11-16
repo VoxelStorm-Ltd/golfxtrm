@@ -78,7 +78,8 @@ void world::update(double timedelta) {
       i->update(timespeed, updatetime);
     }
     // this is a decent place for an FPS counter because of the time delay
-    std::cout << "FPS " << (int)(1 / timedeltaaverage) << " Time: " << (int)((int)timeofday / 3600) << ":" << (int)(((int)timeofday / 60) % 60) << ":" << (int)((int)timeofday % 60) << " Day: " << calendardate << " Rate: " << timespeed << "x" << std::endl;
+    std::cout << "FPS: " << (int)(1 / timedeltaaverage) << " Time: " << (int)((int)timeofday / 3600) << ":" << (int)(((int)timeofday / 60) % 60) << ":" << (int)((int)timeofday % 60) << " Day: " << calendardate << " Rate: " << timespeed << "x" << std::endl;
+    std::cout << "Coords: " << player->bodyposition.x << " " << player->bodyposition.y << " " << player->bodyposition.z << std::endl;
 
     // intro time zoom
     if(introon) {
@@ -100,6 +101,7 @@ void world::update(double timedelta) {
   // iterate through the items and update those
   for(boost::ptr_vector<holdable>::iterator i = items.begin(); i != items.end(); ++i) {
     i->update(timedelta);
+    //i->update(timedelta / 100);   // DEBUG
   }
 
 }

@@ -55,6 +55,10 @@ void world::render() {
   for(boost::ptr_vector<holdable>::iterator i = items.begin(); i != items.end(); ++i) {
     i->render();
   }
+  // iterate through the particles last and draw those that we have time for
+  for(boost::ptr_vector<particle>::iterator i = particles.begin(); i != particles.end(); ++i) {
+    i->render();
+  }
 }
 
 void universe::render() {

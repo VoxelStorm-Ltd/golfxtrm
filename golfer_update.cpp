@@ -94,17 +94,7 @@ void golfer::update(double timedelta) {
             if(armspitchvelocity > 0) {   // up or down
               if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
                 //std::cout << i->name << " <V " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
-                // rotational velocity -> linear velocity
-                double pushleft = armsyawvelocity * difference.length();
-                double pushdown = armspitchvelocity * difference.length();
-                Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
-                pushvector.rotate(-20, 0, 0);   // club loft effect
-                pushvector.rotate(0, 0, armsyaw);
-                pushvector.rotate(armspitch, 0, 0);
-                pushvector.rotate(0, -bodyyaw, 0);
-                std::cout << "Pushed the ball <V " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-                i->at_rest = false;
-                i->push(pushvector);
+                helditem->impact(&(*i), this, difference.length());
               }
             } else {
               if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
