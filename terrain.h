@@ -185,9 +185,45 @@ public:
     if(x >= origin.x && x <= origin.x + bounds.x &&
        z >= origin.z && z <= origin.z + bounds.z) {
       // interpolate real x and z coords to the grid
-      int xgrid = (x - origin.x) / bounds.x * gridwidth;
-      int zgrid = (z - origin.z) / bounds.z * gridwidth;
-      return origin.y + heightmap[(xgrid * gridwidth) + zgrid];
+      //double xgridinterp = (x - origin.x) / bounds.x * gridwidth;
+      //double zgridinterp = (z - origin.z) / bounds.z * gridwidth;
+      double gridsquarewidth = bounds.x / gridwidth;
+      //int xgrid = xgridinterp / gridsquarewidth;
+      //int zgrid = zgridinterp / gridsquarewidth;
+      int xgrid = (x - origin.x) / gridsquarewidth;
+      int zgrid = (z - origin.z) / gridsquarewidth;
+      //double xgridremainder = fmod((x - origin.x), gridsquarewidth) / gridsquarewidth;
+      //double zgridremainder = fmod((z - origin.z), gridsquarewidth) / gridsquarewidth;
+
+      double g    = heightmap[ (xgrid      * gridwidth) +  zgrid   ];
+      double gx   = heightmap[((xgrid + 1) * gridwidth) +  zgrid   ];
+      double gz   = heightmap[ (xgrid      * gridwidth) + (zgrid+1)];
+      double gxz  = heightmap[((xgrid + 1) * gridwidth) + (zgrid+1)];
+      //double igx  = ((gx   - g  ) * xgridremainder) + g;
+      //double igzx = ((gxz  - gz ) * xgridremainder) + gz;
+      //double ig   = ((igzx - igx) * zgridremainder) + igx;
+
+      //std::cout << "coords " << x << " " << z << " ";
+      //std::cout << "grid " << xgrid << " " << zgrid << " ";
+      //std::cout << "remainder " << xgridremainder << " " << zgridremainder << std::endl;
+      //std::cout << "g, gx, gz, gxz " << g << " " << gx << " " << gz << " " << gxz << std::endl;
+      //std::cout << "igx, igzx, ig " << igx << " " << igzx << " " << ig << std::endl;
+
+      //return ig;
+      double largestvalue = 0;
+      if(g > largestvalue) {
+        largestvalue = g;
+      }
+      if(gx > largestvalue) {
+        largestvalue = gx;
+      }
+      if(gz > largestvalue) {
+        largestvalue = gz;
+      }
+      if(gxz > largestvalue) {
+        largestvalue = gxz;
+      }
+      return largestvalue;
     } else {
       return origin.y;
     }

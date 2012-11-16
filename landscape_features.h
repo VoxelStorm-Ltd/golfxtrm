@@ -114,12 +114,12 @@ public:
     // rendering data
     // body:
     GLfloat vbodata[] = {
-      -trunkwidth, 0,      -trunkwidth,    // 0
-      -trunkwidth, 0,      trunkwidth,     // 1
+      -trunkwidth, -1,      -trunkwidth,    // 0
+      -trunkwidth, -1,      trunkwidth,     // 1
       -trunkwidth, bottom, -trunkwidth,    // 2
       -trunkwidth, bottom, trunkwidth,     // 3
-      trunkwidth,  0,      -trunkwidth,    // 4
-      trunkwidth,  0,      trunkwidth,     // 5
+      trunkwidth,  -1,      -trunkwidth,    // 4
+      trunkwidth,  -1,      trunkwidth,     // 5
       trunkwidth,  bottom, -trunkwidth,    // 6
       trunkwidth,  bottom, trunkwidth,     // 7
 
@@ -337,12 +337,12 @@ public:
     // rendering data
     // body:
     GLfloat vbodata[] = {
-      -trunkwidth, 0,      -trunkwidth,    // 0   // sides of trunk
-      -trunkwidth, 0,      trunkwidth,     // 1
+      -trunkwidth, -1,      -trunkwidth,    // 0   // sides of trunk
+      -trunkwidth, -1,      trunkwidth,     // 1
       -trunkwidth, bottom, -trunkwidth,    // 2
       -trunkwidth, bottom, trunkwidth,     // 3
-      trunkwidth,  0,      -trunkwidth,    // 4
-      trunkwidth,  0,      trunkwidth,     // 5
+      trunkwidth,  -1,      -trunkwidth,    // 4
+      trunkwidth,  -1,      trunkwidth,     // 5
       trunkwidth,  bottom, -trunkwidth,    // 6
       trunkwidth,  bottom, trunkwidth,     // 7
 

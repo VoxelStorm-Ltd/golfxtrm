@@ -31,6 +31,7 @@ public:
 
   GLuint vao;               // vertex array object
   GLuint vbo;
+  GLuint vbo_n;
   GLuint ibo;
   GLuint numtris;           // number of triangles in the VBO
 
@@ -81,6 +82,9 @@ public:
     velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
 
     // TODO: calculate offset from COG and apply rotational acceleration
+  }
+
+  virtual void impact(holdable *target, golfer *actor, double distance) {
   }
 
   virtual void update(double timedelta) {
@@ -136,13 +140,14 @@ public:
           thisdragdecel.normalize();
           thisdragdecel = thisdragdecel * -1 * (thisfrictionimpulse
                                                 + ((currentplanet->get_grass_depth_at(position.x,position.z)
-                                                    * 4) * velocity.length()));
+                                                    * 120) * velocity.length() * timedelta));
           if(!std::isnan(thisdragdecel.y)) {
-            std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
-            std::cout << "Vel: " << velocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
+            //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
+            //std::cout << "Vel: " << velocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
             velocity += thisdragdecel;
             if(velocity.length() < currentplanet->get_min_velocity_at(position.x, position.z)) {
               velocity.x = velocity.y = velocity.z = 0;
+              std::cout << name << " came to rest at " << position.x << " " << position.y << " " << position.z << std::endl;
               at_rest = true;
             }
           }
@@ -238,11 +243,12 @@ public:
     numtris = 22;
 
     // rendering setup
-    vao = vbo = ibo = 0;
+    vao = vbo = vbo_n = ibo = 0;
     if(hasvao) {
       glGenVertexArrays(1, &vao);
     }
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &vbo_n);
     glGenBuffers(1, &ibo);
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
@@ -318,6 +324,30 @@ public:
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
   }
+
+  void impact(holdable *target, golfer *actor, double distance) {
+    // rotational velocity -> linear velocity
+    double pushleft = actor->armsyawvelocity * distance;
+    double pushdown = actor->armspitchvelocity * distance;
+    Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+    if(pushvector.length() > 70 * target->mass) {  // cap the launch speed
+      pushvector.normalize();
+      pushvector *= 70 * target->mass;  // momentum - from average golf launch speeds
+    }
+    std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+    pushvector.rotate(0, 0, actor->armsyaw);
+    std::cout << "vector 2        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+    pushvector.rotate(actor->armspitch, 0, 0);
+    std::cout << "vector 3        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+    pushvector.rotate(0, -actor->bodyyaw, 0);
+    if(actor->armsyawvelocity < 0) {  // club loft effect (only on lofted side)
+      //pushvector.rotate(-45, 0, 0);
+      pushvector.y = pushvector.y + (pushvector.length());
+    }
+    target->at_rest = false;
+    target->push(pushvector);
+    std::cout << "Impacted " << target->name << " " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+  }
 };
 
 class golfball : public holdable {
@@ -329,7 +359,7 @@ public:
     at_rest = true;
     mass = 0.04593;             // official maximum
     radius = 0.04267 / 2;       // official minimum
-    radius *= 1;            // but let's make it bigger for aesthetic reasons
+    radius *= 2;            // but let's make it bigger for aesthetic reasons
     momentofinertia = 0;
     cda = 0.001716;             // guesstimate based on Cd = 0.3
     name = "golf ball";
@@ -346,21 +376,35 @@ public:
     float t = (1 + sqrt(5)) / 2;
     float scale = radius / sqrt(1 + (t * t));
     GLfloat vbodata[] = {
-      t * scale, 1 * scale, 0 * scale,
-      -t * scale, 1 * scale, 0 * scale,
-      t * scale, -1 * scale, 0 * scale,
-      -t * scale, -1 * scale, 0 * scale,
-      1 * scale, 0 * scale, t * scale,
-      1 * scale, 0 * scale, -t * scale,
-      -1 * scale, 0 * scale, t * scale,
-      -1 * scale, 0 * scale, -t * scale,
-      0 * scale, t * scale, 1 * scale,
-      0 * scale, -t * scale, 1 * scale,
-      0 * scale, t * scale, -1 * scale,
-      0 * scale, -t * scale, -1 * scale
+      t  * scale, 1  * scale, 0  * scale,
+      -t * scale, 1  * scale, 0  * scale,
+      t  * scale, -1 * scale, 0  * scale,
+      -t * scale, -1 * scale, 0  * scale,
+      1  * scale, 0  * scale, t  * scale,
+      1  * scale, 0  * scale, -t * scale,
+      -1 * scale, 0  * scale, t  * scale,
+      -1 * scale, 0  * scale, -t * scale,
+      0  * scale, t  * scale, 1  * scale,
+      0  * scale, -t * scale, 1  * scale,
+      0  * scale, t  * scale, -1 * scale,
+      0  * scale, -t * scale, -1 * scale
+    };
+    GLfloat vbodata_n[] = {
+      t,1,0,
+      -t,1,0,
+      t,-1,0,
+      -t,-1,0,
+      1,0,t,
+      1,0,-t,
+      -1,0,t,
+      -1,0,-t,
+      0,t,1,
+      0,-t,1,
+      0,t,-1,
+      0,-t,-1,
     };
     GLuint ibodata[] = {
-      0,8,4,  0,5,10, 2,4,9,  2,11,15, 1,6,8,
+      0,8,4,  0,5,10, 2,4,9,  2,11,5,  1,6,8,
       1,10,7, 3,9,6,  2,9,11, 3,9,11,  4,2,0,
       5,0,2,  6,1,3,  7,3,1,  8,6,4,   3,7,11,
       0,10,8, 1,8,10, 9,4,6,  10,5,7,  11,7,5
@@ -368,28 +412,33 @@ public:
     numtris = 20;
 
     // rendering setup
-    vao = vbo = ibo = 0;
+    vao = vbo = vbo_n = ibo = 0;
     if(hasvao) {
       glGenVertexArrays(1, &vao);
     }
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &vbo_n);
     glGenBuffers(1, &ibo);
 
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
+    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER,         0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     if(hasvao) {
       glBindVertexArray(vao);             // set up the VAO's state
-    }
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    if(hasvao) {
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
       glBindVertexArray(0);
     }
   }
@@ -405,12 +454,15 @@ public:
           glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
           glBindVertexArray(0);
         } else {
-          glBindBuffer(GL_ARRAY_BUFFER, vbo);
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-          glEnableVertexAttribArray(0);
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+          glEnableClientState(GL_VERTEX_ARRAY);
+          glBindBuffer(GL_ARRAY_BUFFER, vbo);
+          glVertexPointer(3, GL_FLOAT, 0, 0);
+          glEnableClientState(GL_NORMAL_ARRAY);
+          glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+          glNormalPointer(GL_FLOAT, 0, 0);
           glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-          glDisableVertexAttribArray(0);
+          glDisableClientState(GL_VERTEX_ARRAY);
           glBindBuffer(GL_ARRAY_BUFFER, 0);
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
@@ -427,12 +479,15 @@ public:
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
     } else {
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-      glDisableVertexAttribArray(0);
+      glDisableClientState(GL_VERTEX_ARRAY);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }

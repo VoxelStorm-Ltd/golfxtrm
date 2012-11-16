@@ -4,11 +4,13 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include "terrain.h"
 #include "globalvars_client_extern.h"
+#include "particle.h"
 
 class golfer;   // forward decs
 class holdable;
 class feature;
 class world;
+//class particle;
 
 class golfcourse {  /// the overall landscape object
 public:
@@ -98,6 +100,7 @@ public:
   boost::ptr_vector<golfer> players;    // all the players on this planet
   boost::ptr_vector<holdable> items;    // all the loose items on this planet
   boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
+  boost::ptr_vector<particle> particles;// all the particles and temporary effects
 
   world() {                                 /// default constructor
     std::cout << "    Initialising new planet..." << std::endl;
