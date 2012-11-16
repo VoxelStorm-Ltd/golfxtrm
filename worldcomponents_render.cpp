@@ -2,6 +2,9 @@
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
+#include "terrain.h"
+#include "particle.h"
+#include "globalvars_client_extern.h"
 
 extern universe *root;
 extern golfer *player;
@@ -44,20 +47,20 @@ void world::render() {
   }
 
   // iterate through the terrain features
-  for(boost::ptr_vector<feature>::iterator i = features.begin(); i != features.end(); ++i) {
-    i->render(); // no indirection needed since this is boost's ptr_vector
+  for(std::vector<feature*>::iterator i = features.begin(); i != features.end(); ++i) {
+    (*i)->render();
   }
   // iterate through the players on this planet
-  for(boost::ptr_vector<golfer>::iterator i = players.begin(); i != players.end(); ++i) {
-    i->render(); // no indirection needed since this is boost's ptr_vector
+  for(std::vector<golfer*>::iterator i = players.begin(); i != players.end(); ++i) {
+    (*i)->render();
   }
   // iterate through the items and draw those
-  for(boost::ptr_vector<holdable>::iterator i = items.begin(); i != items.end(); ++i) {
-    i->render();
+  for(std::vector<holdable*>::iterator i = items.begin(); i != items.end(); ++i) {
+    (*i)->render();
   }
   // iterate through the particles last and draw those that we have time for
-  for(boost::ptr_vector<particle>::iterator i = particles.begin(); i != particles.end(); ++i) {
-    i->render();
+  for(std::vector<particle*>::iterator i = particles.begin(); i != particles.end(); ++i) {
+    (*i)->render();
   }
 }
 
@@ -67,6 +70,10 @@ void universe::render() {
   for (int p = 0; p < numplanets; ++p) {
     planet[p]->render();
   }
+}
+
+void golfer::render() {           /// alias function for preferred render method
+  render5();
 }
 
 void golfer::render5() {          /// draw this fellow using an indexed VBO with VAA and VAO

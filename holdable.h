@@ -1,6 +1,13 @@
 #ifndef HOLDABLE_H_INCLUDED
 #define HOLDABLE_H_INCLUDED
 
+#include <GL/glew.h>
+#include <GL/glfw.h>
+#include "vmath.h"
+
+class golfer;   // forward dec
+class world;
+
 class holdable {
 public:
   golfer *held_by;          // who is holding this, NULL for lying/flying in the world
@@ -41,456 +48,35 @@ public:
     AXIS_Z
   };
 
-  holdable() {                                /// default constructor
-    held_by = NULL;
-    at_rest = true;
-
-    currentplanet = NULL;
-  }
-
-  holdable(world *parentplanet) {             /// specific constructor
-    held_by = NULL;
-    at_rest = true;
-    mass = 0;
-    momentofinertia = 0;
-    name = "object";
-    description = "Some sort of object that hasn't been properly defined yet.";
-
-    currentplanet = parentplanet;
-    currentplanet->items.push_back(this);
-  }
-
-  ~holdable() {
-    //currentplanet->items.erase(std::find(currentplanet->items.begin(), currentplanet->items.end(), this));
-    //currentplanet->items.release(std::find(currentplanet->items.begin(), currentplanet->items.end(), this));
-    // why won't that work?
-    //holdable* ptr = this;
-    //currentplanet->items.erase(std::find_if(currentplanet->items.begin(),
-    //                                        currentplanet->items.end(),
-    //                                        [ptr](const holdable &other)
-    //                                        {return ptr == &other;} ));
-  }
-
-  virtual void push(Vector3d impulse) {  /// apply a one-off impulse to this object
-    // TODO: if held, apply max holding force, enable knocking out of hand
-    velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
-  }
-
-  virtual void push(Vector3d impulse, Vector3d impactpoint) {
-    /// apply a one-off impulse offset from centre of this object
-    // TODO: apply max holding force, enable knocking out of hand
-    velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
-
-    // TODO: calculate offset from COG and apply rotational acceleration
-  }
-
-  virtual void impact(holdable *target, golfer *actor, double distance) {
-  }
-
-  virtual void update(double timedelta) {
-    /// update position and velocity based on time delta
-    // only update if it's free in the air, not hand-held
-    if(held_by == NULL) {
-      if(!at_rest) {
-        // gravitational force
-        velocity.y -= (currentplanet->gravity * timedelta);     // acceleration
-
-        position += (velocity * timedelta);
-
-        // air resistance and wind effect (combined)
-        Vector3d thisveldiff = velocity - currentplanet->windvelocity;
-        if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
-          if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
-            // no calculations necessary
-          } else {
-            double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
-            Vector3d thisdragdecel;
-            thisdragdecel = currentplanet->windvelocity;
-            thisdragdecel.normalize();
-            thisdragdecel *= thisdragimpulse;
-            velocity += thisdragdecel;
-          }
-        } else {
-          double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
-          Vector3d thisdragdecel;
-          thisdragdecel = thisveldiff;
-          thisdragdecel.normalize();
-          thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
-          velocity += thisdragdecel;
-        }
-
-        // ground collision
-        double groundheight = currentplanet->get_height_at(position.x, position.z);
-        if(position.y - boundingradius <= groundheight) {
-          // smoothly bring us back up to the ground
-          double distancebelowground = (groundheight - (position.y - boundingradius));
-          if(distancebelowground > 0) {
-            double amounttomove = (distancebelowground * currentplanet->get_hardness_at(position.x, position.y) * timedelta);
-            if(amounttomove > distancebelowground || std::isnan(amounttomove)) {
-              amounttomove = distancebelowground;
-            }
-            position.y += amounttomove;
-          }
-          if(velocity.y < 0) {                // stop downwards motion
-            velocity.y = 0;
-          }
-          // apply rolling resistance (different to sliding friction)
-          double thisfrictionimpulse = mass * currentplanet->get_friction_at(position.x, position.z) * timedelta;  // mass cancels
-          Vector3d thisdragdecel = velocity;
-          thisdragdecel.normalize();
-          thisdragdecel = thisdragdecel * -1 * (thisfrictionimpulse
-                                                + ((currentplanet->get_grass_depth_at(position.x,position.z)
-                                                    * 120) * velocity.length() * timedelta));
-          if(!std::isnan(thisdragdecel.y)) {
-            //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
-            //std::cout << "Vel: " << velocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
-            velocity += thisdragdecel;
-            if(velocity.length() < currentplanet->get_min_velocity_at(position.x, position.z)) {
-              velocity.x = velocity.y = velocity.z = 0;
-              std::cout << name << " came to rest at " << position.x << " " << position.y << " " << position.z << std::endl;
-              at_rest = true;
-            }
-          }
-        }
-        //std::cout << "height: " << position.y << "velocity: " << velocity.y << std::endl;
-        // TODO: slope effects
-
-        // TODO: apply quaternion rotation
-      }
-    }
-  }
-
-  virtual void rotate(axistype axis, double angle) {
-    if(axis == AXIS_X) {
-      rotation += Quaternion<double>::fromAxisRot(Vector3d(1,0,0), angle);
-      rotation.normalize();
-    } else if (axis == AXIS_Y) {
-      rotation += Quaternion<double>::fromAxisRot(Vector3d(0,1,0), angle);
-      rotation.normalize();
-    } else if (axis == AXIS_Z) {
-      rotation += Quaternion<double>::fromAxisRot(Vector3d(0,0,1), angle);
-      rotation.normalize();
-    }
-  }
-
-  virtual void render() {       /// draw this item in the world
-  }
-
-  virtual void renderlocal() {  /// draw this item in a hand or container
-  }
+  holdable();
+  holdable(world *parentplanet);
+  virtual ~holdable();
+  virtual void push(Vector3d impulse);
+  virtual void push(Vector3d impulse, Vector3d impactpoint);
+  virtual void impact(holdable *target, golfer *actor, double distance);
+  virtual void update(double timedelta);
+  virtual void rotate(axistype axis, double angle);
+  virtual void render();
+  virtual void renderlocal();
 };
 
 class golfclub : public holdable {
 public:
 
-  golfclub(world *parentplanet) {
-    held_by = NULL;
-    at_rest = true;
-    mass = 1;
-    momentofinertia = 0;
-    name = "golf club";
-    description = "A long stick with a heavy end for hitting small balls with.";
-
-    currentplanet = parentplanet;
-    currentplanet->items.push_back(this);
-
-    bbox_start = Vector3d(-0.01,-0.1,-0.01);
-    bbox_end = Vector3d(0.01,0.95,0.1);
-
-    // rendering data
-    // body:
-    float top    = 0.9;
-    float bottom = -0.1;
-    float left   = -0.01;
-    float right  = 0.01;
-    float front  = 0.01;
-    float back   = -0.01;
-    float headlength = 0.1;
-    float headdepth = 0.05;
-    GLfloat vbodata[] = {
-      left,  bottom, back,    // 0
-      left,  bottom, front,   // 1
-      left,  top,    back,    // 2
-      left,  top,    front,   // 3
-      right, bottom, back,    // 4
-      right, bottom, front,   // 5
-      right, top,    back,    // 6
-      right, top,    front,   // 7
-
-      left,  top+headdepth, back,        // 8
-      left,  top+headdepth, headlength,  // 9
-      left,  top,           back,        // 10
-      left,  top,           headlength,  // 11
-      right, top+headdepth, back,        // 12
-      right, top+headdepth, headlength,  // 13
-      right, top,           back,        // 14
-      right, top,           headlength   // 15
-    };
-    GLuint ibodata[] = {
-      6,4,0, 0,2,6,   // front
-      3,1,5, 5,7,3,   // back
-      2,0,1, 1,3,2,   // left
-      7,5,4, 4,6,7,   // right
-      2,6,7, 7,3,2,   // top
-      5,4,0, 0,1,5,   // bottom
-
-      14,12, 8,  8,10,14,  // front
-      10, 8, 9,  9,11,10,  // left
-      15,13,12, 12,14,15,  // right
-      10,14,13, 15,11,10,  // top
-      13,12, 8,  8, 9,13,  // bottom
-    };
-    numtris = 22;
-
-    // rendering setup
-    vao = vbo = vbo_n = ibo = 0;
-    if(hasvao) {
-      glGenVertexArrays(1, &vao);
-    }
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &vbo_n);
-    glGenBuffers(1, &ibo);
-
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER,         0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    if(hasvao) {
-      glBindVertexArray(vao);             // set up the VAO's state
-    }
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    if(hasvao) {
-      glBindVertexArray(0);
-    }
-  }
-
-  void render() {     /// draw the object using an indexed VBO with VAA and VAO
-    if(held_by == NULL) {
-      // only draw objects that aren't held by someone (leave it to their own renderer otherwise)
-      glPushMatrix();
-        glTranslated(position.x, position.y, position.z);
-        glMultMatrixd(rotation.transform());
-        //glRotated(bodyyaw, 0, -1, 0);
-        //Matrix3d rotmatrix = rotation.rotMatrix();
-        //glLoadMatrixd(rotation.rotMatrix());
-        //GLdouble temp[16];
-        //glGetDoublev(GL_MODELVIEW_MATRIX, temp);
-        //std::cout << temp[0] << " " << temp[1] << " " << temp[2] << " " << temp[3] << " " << std::endl;
-        //std::cout << temp[4] << " " << temp[5] << " " << temp[6] << " " << temp[7] << " " << std::endl;
-        //std::cout << temp[8] << " " << temp[9] << " " << temp[10] << " " << temp[11] << " " << std::endl;
-        //std::cout << temp[12] << " " << temp[13] << " " << temp[14] << " " << temp[15] << " " << std::endl;
-        //std::cout << "---" << std::endl;
-        //std::cout << rotation.rotMatrix().toString() << std::endl;
-        if(hasvao) {
-          glColor4f(1, 1, 1, 1);
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-          glBindVertexArray(0);
-        } else {
-          glBindBuffer(GL_ARRAY_BUFFER, vbo);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-          glEnableVertexAttribArray(0);
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-          glDisableVertexAttribArray(0);
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
-      glPopMatrix();
-    }
-  }
-
-  void renderlocal() {  /// draw the object using an indexed VBO with VAA and VAO
-    // we have no position, just render where we are
-    glColor4f(1, 1, 1, 1);
-    if(hasvao) {
-      glBindVertexArray(vao);
-      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-    } else {
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-      glDisableVertexAttribArray(0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-  }
-
-  void impact(holdable *target, golfer *actor, double distance) {
-    // rotational velocity -> linear velocity
-    double pushleft = actor->armsyawvelocity * distance;
-    double pushdown = actor->armspitchvelocity * distance;
-    Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
-    if(pushvector.length() > 70 * target->mass) {  // cap the launch speed
-      pushvector.normalize();
-      pushvector *= 70 * target->mass;  // momentum - from average golf launch speeds
-    }
-    std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-    pushvector.rotate(0, 0, actor->armsyaw);
-    std::cout << "vector 2        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-    pushvector.rotate(actor->armspitch, 0, 0);
-    std::cout << "vector 3        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-    pushvector.rotate(0, -actor->bodyyaw, 0);
-    if(actor->armsyawvelocity < 0) {  // club loft effect (only on lofted side)
-      //pushvector.rotate(-45, 0, 0);
-      pushvector.y = pushvector.y + (pushvector.length());
-    }
-    target->at_rest = false;
-    target->push(pushvector);
-    std::cout << "Impacted " << target->name << " " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-  }
+  golfclub(world *parentplanet);
+  ~golfclub();
+  void render();
+  void renderlocal();
+  void impact(holdable *target, golfer *actor, double distance);
 };
 
 class golfball : public holdable {
 public:
   double radius;
 
-  golfball(world *parentplanet) {
-    held_by = NULL;
-    at_rest = true;
-    mass = 0.04593;             // official maximum
-    radius = 0.04267 / 2;       // official minimum
-    radius *= 2;            // but let's make it bigger for aesthetic reasons
-    momentofinertia = 0;
-    cda = 0.001716;             // guesstimate based on Cd = 0.3
-    name = "golf ball";
-    description = "A small hard white ball with strong elastic properties.";
-
-    bbox_start = Vector3d(-radius, -radius, -radius);
-    bbox_end   = Vector3d( radius,  radius,  radius);
-    boundingradius = radius;
-
-    currentplanet = parentplanet;
-    currentplanet->items.push_back(this);
-
-    // icosahedron!
-    float t = (1 + sqrt(5)) / 2;
-    float scale = radius / sqrt(1 + (t * t));
-    GLfloat vbodata[] = {
-      t  * scale, 1  * scale, 0  * scale,
-      -t * scale, 1  * scale, 0  * scale,
-      t  * scale, -1 * scale, 0  * scale,
-      -t * scale, -1 * scale, 0  * scale,
-      1  * scale, 0  * scale, t  * scale,
-      1  * scale, 0  * scale, -t * scale,
-      -1 * scale, 0  * scale, t  * scale,
-      -1 * scale, 0  * scale, -t * scale,
-      0  * scale, t  * scale, 1  * scale,
-      0  * scale, -t * scale, 1  * scale,
-      0  * scale, t  * scale, -1 * scale,
-      0  * scale, -t * scale, -1 * scale
-    };
-    GLfloat vbodata_n[] = {
-      t,1,0,
-      -t,1,0,
-      t,-1,0,
-      -t,-1,0,
-      1,0,t,
-      1,0,-t,
-      -1,0,t,
-      -1,0,-t,
-      0,t,1,
-      0,-t,1,
-      0,t,-1,
-      0,-t,-1,
-    };
-    GLuint ibodata[] = {
-      0,8,4,  0,5,10, 2,4,9,  2,11,5,  1,6,8,
-      1,10,7, 3,9,6,  2,9,11, 3,9,11,  4,2,0,
-      5,0,2,  6,1,3,  7,3,1,  8,6,4,   3,7,11,
-      0,10,8, 1,8,10, 9,4,6,  10,5,7,  11,7,5
-    };
-    numtris = 20;
-
-    // rendering setup
-    vao = vbo = vbo_n = ibo = 0;
-    if(hasvao) {
-      glGenVertexArrays(1, &vao);
-    }
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &vbo_n);
-    glGenBuffers(1, &ibo);
-
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER,         0);
-    glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
-    glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER,         0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    if(hasvao) {
-      glBindVertexArray(vao);             // set up the VAO's state
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-      glEnableClientState(GL_VERTEX_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glVertexPointer(3, GL_FLOAT, 0, 0);
-      glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
-      glNormalPointer(GL_FLOAT, 0, 0);
-      glBindVertexArray(0);
-    }
-  }
-
-  void render() {       /// draw the ball using an indexed VBO with VAA and VAO
-    if(held_by == NULL) {
-      glPushMatrix();
-        glTranslated(position.x, position.y, position.z);
-        glMultMatrixd(rotation.transform());
-        if(hasvao) {
-          glColor4f(1, 1, 1, 1);
-          glBindVertexArray(vao);
-          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-          glBindVertexArray(0);
-        } else {
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-          glEnableClientState(GL_VERTEX_ARRAY);
-          glBindBuffer(GL_ARRAY_BUFFER, vbo);
-          glVertexPointer(3, GL_FLOAT, 0, 0);
-          glEnableClientState(GL_NORMAL_ARRAY);
-          glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
-          glNormalPointer(GL_FLOAT, 0, 0);
-          glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-          glDisableClientState(GL_VERTEX_ARRAY);
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
-      glPopMatrix();
-    }
-  }
-
-
-  void renderlocal() {  /// draw the ball using an indexed VBO with VAA and VAO
-    // we have no position, just render where we are
-    glColor4f(1, 1, 1, 1);
-    if(hasvao) {
-      glBindVertexArray(vao);
-      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-    } else {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-      glEnableClientState(GL_VERTEX_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glVertexPointer(3, GL_FLOAT, 0, 0);
-      glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
-      glNormalPointer(GL_FLOAT, 0, 0);
-      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-      glDisableClientState(GL_VERTEX_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-  }
+  golfball(world *parentplanet);
+  ~golfball();
+  void render();
+  void renderlocal();
 };
 #endif // HOLDABLE_H_INCLUDED

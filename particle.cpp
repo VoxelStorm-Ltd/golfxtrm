@@ -1,6 +1,6 @@
 #include "particle.h"
 #include "globalvars_client_extern.h"
-//#include "worldcomponents.h"
+#include "worldcomponents.h"
 
 particle::particle() {
 }

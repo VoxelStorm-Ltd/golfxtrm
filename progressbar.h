@@ -1,7 +1,7 @@
 #ifndef PROGRESSBAR_H_INCLUDED
 #define PROGRESSBAR_H_INCLUDED
 
-#include <iostream>
+//#include <iostream>
 //#include <GL/glfw.h>
 
 //#include "globaldefs.h"

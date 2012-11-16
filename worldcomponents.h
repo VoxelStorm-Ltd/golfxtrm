@@ -1,16 +1,15 @@
 #ifndef WORLDCOMPONENTS_H_INCLUDED
 #define WORLDCOMPONENTS_H_INCLUDED
 
-#include <boost/ptr_container/ptr_vector.hpp>
-#include "terrain.h"
-#include "globalvars_client_extern.h"
-#include "particle.h"
+#include <vector>
+#include "vmath.h"
 
 class golfer;   // forward decs
 class holdable;
 class feature;
 class world;
-//class particle;
+class particle;
+class terrain;
 
 class golfcourse {  /// the overall landscape object
 public:
@@ -22,36 +21,16 @@ public:
   Vector3d teeposition;                 // where we tee off from
   Vector3d holeposition;                // where the hole is
 
-  golfcourse(world *parent, Vector3d tee, Vector3d hole)
-    : teeposition(tee), holeposition(hole) {                      /// default constructor
-    std::cout << "      Initialising new golf course..." << std::endl;
-    parentplanet = parent;
-    landscape = new terrain(teeposition, holeposition);
-    std::cout << "      Golf course initialised" << std::endl;
-  }
+  golfcourse(world *parent, Vector3d tee, Vector3d hole);
 
   void update(double timedelta);
   void render();
 
-  double get_height_at(double x, double z) {
-    return landscape->get_height_at(x, z);
-  }
-
-  double get_friction_at(double x, double z) {
-    return landscape->get_friction_at(x, z);
-  }
-
-  double get_hardness_at(double x, double z) {
-    return landscape->get_hardness_at(x, z);
-  }
-
-  double get_grass_depth_at(double x, double z) {
-    return landscape->get_grass_depth_at(x, z);
-  }
-
-  double get_min_velocity_at(double x, double z) {
-    return landscape->get_min_velocity_at(x, z);
-  }
+  double get_height_at(double x, double z);
+  double get_friction_at(double x, double z);
+  double get_hardness_at(double x, double z);
+  double get_grass_depth_at(double x, double z);
+  double get_min_velocity_at(double x, double z);
 };
 
 
@@ -97,140 +76,19 @@ public:
   Vector4f sundiffuse;
   Vector4f sunspecular;
 
-  boost::ptr_vector<golfer> players;    // all the players on this planet
-  boost::ptr_vector<holdable> items;    // all the loose items on this planet
-  boost::ptr_vector<feature> features;  // all the permanent fixtures (trees etc)
-  boost::ptr_vector<particle> particles;// all the particles and temporary effects
+  std::vector<golfer*> players;    // all the players on this planet
+  std::vector<holdable*> items;    // all the loose items on this planet
+  std::vector<feature*> features;  // all the permanent fixtures (trees etc)
+  std::vector<particle*> particles;// all the particles and temporary effects
 
-  world() {                                 /// default constructor
-    std::cout << "    Initialising new planet..." << std::endl;
-    updatenexttime = 0;                 // this is ready for an update asap
-
-    gravity = 9.800;
-    airdensity = 1.2041;
-    horizondistance = 1200;
-
-    #ifdef INTRO
-    introon = true;
-    #else
-    introon = false;
-    #endif
-
-    if(introon) {
-      timespeed = 31556926;   // 1 year per second
-      timeofday = 18 * 60 * 60;
-      calendardate = 100;
-
-      //featureupdatefreq = (double)1/(double)5;
-      featureupdatefreq = (double)60;
-    } else {
-      //timespeed = 0;          // frozen
-      //timespeed = 1;          // realtime
-      timespeed = 60;         // 1 minute per second
-      //timespeed = 3600;       // 1 hour per second
-      //timespeed = 7200;       // 2 hours per second
-      //timespeed = 86400;      // 1 day per second
-      //timespeed = 2592000;    // 1 month per second
-      //timespeed = 31556926;   // 1 year per second
-      timeofday = 5 * 60 * 60;    // 8am
-      calendardate = 150;
-
-      featureupdatefreq = (double)1/(double)5;
-      //featureupdatefreq = 10;
-    }
-    updatetime = 1 / featureupdatefreq; // time from frequency
-
-    summergrasscolour   = Vector4f(0.75, 0.75, 0.25, 1);
-    summerskycolour     = Vector4f(0.90, 0.95, 0.67, 1);
-    summerfogcolour     = Vector4f(0.98, 0.92, 0.50, 1);
-    summerclearcolour   = summerskycolour;
-    summerambientcolour = Vector4f(0.7, 0.7, 0.7, 1);
-    wintergrasscolour   = Vector4f(1, 1, 1, 1);
-    winterskycolour     = Vector4f(0.3, 0.6, 1, 1);
-    winterfogcolour     = Vector4f(0.9, 0.95, 1, 1);
-    winterclearcolour   = winterfogcolour;
-    winterambientcolour = Vector4f(0.9, 0.9, 0.85, 1);
-
-    grasscolour   = summergrasscolour;
-    skycolour     = summerskycolour;
-    fogcolour     = summerfogcolour;
-    clearcolour   = summerclearcolour;
-    ambientcolour = summerambientcolour;
-
-    sundirection = Vector3f(0, 0, 1);
-    sunambient   = Vector4f(0, 0, 0, 1);
-    sundiffuse   = Vector4f(1, 1, 1, 1);
-    sunspecular  = Vector4f(1, 1, 1, 1);
-
-    //windvelocity.x = 10;
-
-    numcourses = 0;
-    addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
-    std::cout << "    Planet initialised" << std::endl;
-  }
-
-  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition) {
-    /// add a golf course to this planet
-    course[coursenum] = new golfcourse(this, teeposition, holeposition);
-    ++numcourses;
-  }
-
-  golfcourse *get_course_at(double x, double z) {
-    // iterate through the courses
-    for(int i=0; i < numcourses; ++i) {
-      // check the bounding coordinates
-      double courseoriginx = course[i]->landscape->origin.x;
-      double courseoriginz = course[i]->landscape->origin.z;
-      if(x > courseoriginx &&
-         z > courseoriginz &&
-         x < course[i]->landscape->bounds.x - courseoriginx &&
-         z < course[i]->landscape->bounds.z - courseoriginz) {
-        return course[i];
-      }
-    }
-    return NULL;
-  }
-
-  double get_height_at(double x, double z) {
-    golfcourse *thiscourse = get_course_at(x, z);
-    if(thiscourse != NULL) {
-      return thiscourse->get_height_at(x, z);
-    }
-    return 0;
-  }
-
-  double get_friction_at(double x, double z) {
-    golfcourse *thiscourse = get_course_at(x, z);
-    if(thiscourse != NULL) {
-      return thiscourse->get_friction_at(x, z);
-    }
-    return 0.0409;
-  }
-
-  double get_hardness_at(double x, double z) {
-    golfcourse *thiscourse = get_course_at(x, z);
-    if(thiscourse != NULL) {
-      return thiscourse->get_hardness_at(x, z);
-    }
-    return 10;
-  }
-
-  double get_grass_depth_at(double x, double z) {
-    golfcourse *thiscourse = get_course_at(x, z);
-    if(thiscourse != NULL) {
-      return thiscourse->get_grass_depth_at(x, z);
-    }
-    return 0.1;
-  }
-
-  double get_min_velocity_at(double x, double z) {
-    golfcourse *thiscourse = get_course_at(x, z);
-    if(thiscourse != NULL) {
-      return thiscourse->get_min_velocity_at(x, z);
-    }
-    return 0.1;
-  }
-
+  world();
+  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition);
+  golfcourse *get_course_at(double x, double z);
+  double get_height_at(double x, double z);
+  double get_friction_at(double x, double z);
+  double get_hardness_at(double x, double z);
+  double get_grass_depth_at(double x, double z);
+  double get_min_velocity_at(double x, double z);
   void update(double timedelta);
   void render();
 };
@@ -245,21 +103,8 @@ public:
   double updatetime;              // how long to wait between updates (1/above)
   double updatenexttime;          // what time the next update is due
 
-  universe() {                              /// default constructor
-    std::cout << "  Initialising the universe" << std::endl;
-    // big bang!
-    numplanets = 0;
-
-    updatetime = 1 / updatefreq;  // set this from the global
-    updatenexttime = 0;           // this is ready for an update asap
-    std::cout << "  Universe initialised" << std::endl;
-  }
-
-  void addplanet(int worldnum) {            /// add a planet to this universe
-    planet[worldnum] = new world();
-    ++numplanets;
-  }
-
+  universe();
+  void addplanet(int worldnum);
   void update(double timedelta);
   void render();
 };

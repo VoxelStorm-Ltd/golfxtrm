@@ -2,6 +2,8 @@
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
+#include "terrain.h"
+#include "globalvars_client_extern.h"
 
 extern universe *root;
 extern golfer *player;
@@ -74,8 +76,8 @@ void world::update(double timedelta) {
     for(int i=0; i < numcourses; ++i) {
       course[i]->update(updatetime);
     }
-    for(boost::ptr_vector<feature>::iterator i = features.begin(); i != features.end(); ++i) {
-      i->update(timespeed, updatetime);
+    for(std::vector<feature*>::iterator i = features.begin(); i != features.end(); ++i) {
+      (*i)->update(timespeed, updatetime);
     }
     // this is a decent place for an FPS counter because of the time delay
     std::cout << "FPS: " << (int)(1 / timedeltaaverage) << " Time: " << (int)((int)timeofday / 3600) << ":" << (int)(((int)timeofday / 60) % 60) << ":" << (int)((int)timeofday % 60) << " Day: " << calendardate << " Rate: " << timespeed << "x" << std::endl;
@@ -94,14 +96,14 @@ void world::update(double timedelta) {
   }
 
   // iterate through the players on this planet
-  for(boost::ptr_vector<golfer>::iterator i = players.begin(); i != players.end(); ++i) {
-    i->update(timedelta); // no indirection needed since this is boost's ptr_vector
+  for(std::vector<golfer*>::iterator i = players.begin(); i != players.end(); ++i) {
+    (*i)->update(timedelta);
   }
 
   // iterate through the items and update those
-  for(boost::ptr_vector<holdable>::iterator i = items.begin(); i != items.end(); ++i) {
-    i->update(timedelta);
-    //i->update(timedelta / 100);   // DEBUG
+  for(std::vector<holdable*>::iterator i = items.begin(); i != items.end(); ++i) {
+    (*i)->update(timedelta);
+    //(*i)->update(timedelta / 100);   // DEBUG
   }
 
 }

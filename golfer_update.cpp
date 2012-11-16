@@ -1,6 +1,8 @@
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
+#include "worldcomponents.h"
+#include "globalvars_client_extern.h"
 
 void golfer::update(double timedelta) {
   /// update position and velocity based on force and time delta
@@ -71,9 +73,9 @@ void golfer::update(double timedelta) {
   // perform collision detection here before we make the motions
   // check for club swing area
   // first see what objects, if any, are within our swing radius
-  for(boost::ptr_vector<holdable>::iterator i = currentplanet->items.begin(); i != currentplanet->items.end(); ++i) {
-    if(i->held_by == NULL) {    // only check those loose on the ground
-      Vector3d difference = i->position - (bodyposition + armfulcrum);
+  for(std::vector<holdable*>::iterator i = currentplanet->items.begin(); i != currentplanet->items.end(); ++i) {
+    if((*i)->held_by == NULL) {    // only check those loose on the ground
+      Vector3d difference = (*i)->position - (bodyposition + armfulcrum);
       if(difference.length() < (swinglength + (bodyvelocity.length() * timedelta))) {
         // this is within our sphere of influence for this frame, so check for collision
         difference.rotate(0, bodyyaw, 0);    // first centre this on our body
@@ -88,16 +90,17 @@ void golfer::update(double timedelta) {
         //std::cout << i->name << " at " << difference.x << " " << difference.y << " " << difference.z << std::endl;
         //std::cout << i->name << " at " << targetyaw << " " << targetpitch << " " << std::endl;
         if(armsyawvelocity < 0) {   // right to left
-          if(targetyaw > armsyaw - bbox_angle + (armsyawvelocity * timedelta) - i->boundingradius && targetyaw < armsyaw + bbox_angle + i->boundingradius) {
+          if(targetyaw > armsyaw - bbox_angle + (armsyawvelocity * timedelta) - (*i)->boundingradius && targetyaw < armsyaw + bbox_angle + (*i)->boundingradius) {
             //std::cout << i->name << " < " << armsyawvelocity << " target " << targetyaw << " " << targetpitch << " us [" << armsyaw - bbox_angle + (armsyawvelocity * timedelta) << "-" << armsyaw + bbox_angle << "] [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
             //std::cout << "off by " << targetpitch-armspitch << " targetpitch " << targetpitch << " our pitch " << armspitch << std::endl;
             if(armspitchvelocity > 0) {   // up or down
-              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
+              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - (*i)->boundingradius && targetpitch < armspitch + bbox_angle + (*i)->boundingradius) {
                 //std::cout << i->name << " <V " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
-                helditem->impact(&(*i), this, difference.length());
+                //helditem->impact(&(*i), this, difference.length());
+                helditem->impact(*i, this, difference.length());
               }
             } else {
-              if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
+              if(targetpitch > armspitch - bbox_angle_up - (*i)->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + (*i)->boundingradius) {
                 //std::cout << i->name << " <^ " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
                 double pushleft = armsyawvelocity * difference.length();
                 double pushdown = armspitchvelocity * difference.length();
@@ -107,17 +110,17 @@ void golfer::update(double timedelta) {
                 pushvector.rotate(armspitch, 0, 0);
                 pushvector.rotate(0, -bodyyaw, 0);
                 std::cout << "Pushed the ball <^ " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-                i->at_rest = false;
-                i->push(pushvector);
+                (*i)->at_rest = false;
+                (*i)->push(pushvector);
               }
             }
           }
         } else {                    // left to right
-          if(targetyaw > armsyaw - bbox_angle - i->boundingradius && targetyaw < armsyaw + bbox_angle + (armsyawvelocity * timedelta) + i->boundingradius) {
+          if(targetyaw > armsyaw - bbox_angle - (*i)->boundingradius && targetyaw < armsyaw + bbox_angle + (armsyawvelocity * timedelta) + (*i)->boundingradius) {
             //std::cout << i->name << " > " << armsyawvelocity << " target " << targetyaw << " " << targetpitch << " us [" << armsyaw - bbox_angle << "-" << armsyaw + bbox_angle + (armsyawvelocity * timedelta) << "] [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
             //std::cout << "off by " << targetpitch-armspitch << " targetpitch " << targetpitch << " our pitch " << armspitch << std::endl;
             if(armspitchvelocity > 0) {   // up or down
-              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - i->boundingradius && targetpitch < armspitch + bbox_angle + i->boundingradius) {
+              if(targetpitch > armspitch - bbox_angle_up - (armspitchvelocity * timedelta) - (*i)->boundingradius && targetpitch < armspitch + bbox_angle + (*i)->boundingradius) {
                 //std::cout << i->name << " V> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
                 double pushleft = armsyawvelocity * difference.length();
                 double pushdown = armspitchvelocity * difference.length();
@@ -126,11 +129,11 @@ void golfer::update(double timedelta) {
                 pushvector.rotate(armspitch, 0, 0);
                 pushvector.rotate(0, -bodyyaw, 0);
                 std::cout << "Pushed the ball V> " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-                i->at_rest = false;
-                i->push(pushvector);
+                (*i)->at_rest = false;
+                (*i)->push(pushvector);
               }
             } else {
-              if(targetpitch > armspitch - bbox_angle_up - i->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + i->boundingradius) {
+              if(targetpitch > armspitch - bbox_angle_up - (*i)->boundingradius && targetpitch < armspitch + bbox_angle - (armspitchvelocity * timedelta) + (*i)->boundingradius) {
                 //std::cout << i->name << " ^> " << armspitchvelocity << " target " << targetyaw << " " << targetpitch << armsyaw << " us [" << armspitch - bbox_angle - (armspitchvelocity * timedelta) << "-" << armspitch + bbox_angle << "] " << std::endl;
                 double pushleft = armsyawvelocity * difference.length();
                 double pushdown = armspitchvelocity * difference.length();
@@ -139,8 +142,8 @@ void golfer::update(double timedelta) {
                 pushvector.rotate(armspitch, 0, 0);
                 pushvector.rotate(0, -bodyyaw, 0);
                 std::cout << "Pushed the ball ^> " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
-                i->at_rest = false;
-                i->push(pushvector);
+                (*i)->at_rest = false;
+                (*i)->push(pushvector);
               }
             }
           }
@@ -158,9 +161,9 @@ void golfer::update(double timedelta) {
   armsyaw      += armsyawvelocity   * timedelta;
   armspitch    += armspitchvelocity * timedelta;
   if(headpitch > 0) {
-    headpitch += (headpitchvelocity - (abs(bodyyawvelocity) * headpitch      * 0.01)) * timedelta;
+    headpitch += (headpitchvelocity - (std::abs(bodyyawvelocity) * headpitch      * 0.01)) * timedelta;
   } else {
-    headpitch += (headpitchvelocity + (abs(bodyyawvelocity) * abs(headpitch) * 0.01)) * timedelta;
+    headpitch += (headpitchvelocity + (std::abs(bodyyawvelocity) * std::abs(headpitch) * 0.01)) * timedelta;
   }
 
   // internal damping

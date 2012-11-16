@@ -1,8 +1,8 @@
 #ifndef GLOBALVARS_CLIENT_H_INCLUDED
 #define GLOBALVARS_CLIENT_H_INCLUDED
 
+#include <GL/glew.h>
 #include <GL/glfw.h>
-
 #include "globaldefs.h"
 
 // user settings
