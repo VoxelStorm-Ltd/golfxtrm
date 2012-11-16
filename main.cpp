@@ -173,9 +173,9 @@ void init() {       /// all the one-time initialisation we need for the engine
   root->planet[0]->course[0]->holeposition = Vector3d(25, 0, 25);
 
   glfwSetWindowTitle("GolfXTRM alpha: Loading prehistoric fauna...");
-  objloader raptor = objloader("assets/raptor.obj");
-  cout << "Loading raptor." << endl;
-  raptor.load();
+  objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
+  cout << "Loading raptor..." << endl;
+  raptor->load();
   cout << "Raptor loaded." << endl;
 
 
