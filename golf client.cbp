@@ -158,6 +158,10 @@
 		<Unit filename="main.cpp">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="objloader.cpp" />
+		<Unit filename="objloader.h" />
+		<Unit filename="particle.cpp" />
+		<Unit filename="particle.h" />
 		<Unit filename="progressbar.h" />
 		<Unit filename="terrain.h" />
 		<Unit filename="version.h" />
