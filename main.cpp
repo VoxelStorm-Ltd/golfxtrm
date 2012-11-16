@@ -49,12 +49,6 @@ int main() {
 }
 
 void init() {       /// all the one-time initialisation we need for the engine
-  // load models:
-  objloader raptorload = objloader("assets/raptor.obj");
-  cout << "Loading raptor." << endl;
-  raptorload.load();
-  cout << "Raptor loaded." << endl;
-
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
   GLFWvidmode desktopmode;
@@ -241,6 +235,12 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
 
   glfwSwapInterval(1);    // activate vsync
+
+  // load raptor:
+  objloader raptor = objloader("assets/raptor.obj");
+  cout << "Loading raptor." << endl;
+  raptor.load();
+  cout << "Raptor loaded." << endl;
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
