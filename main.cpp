@@ -22,6 +22,7 @@
 #include "holdable.h"
 
 #include "global_objects.h"
+#include "objloader.h"
 
 //#include "progressbar.h"
 
@@ -46,6 +47,12 @@ int main() {
 }
 
 void init() {       /// all the one-time initialisation we need for the engine
+  // load models:
+  objloader raptorload = objloader("assets/raptor.obj");
+  cout << "Loading raptor." << endl;
+  raptorload.load();
+  cout << "Raptor loaded." << endl;
+
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
   GLFWvidmode desktopmode;
