@@ -22,12 +22,10 @@
 #include "particle.h"
 #include "holdable.h"
 
-
 #include "global_objects.h"
 #include "objloader.h"
 
 //#include "progressbar.h"
-
 
 
 using namespace std;
@@ -174,6 +172,13 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   root->planet[0]->course[0]->holeposition = Vector3d(25, 0, 25);
 
+  glfwSetWindowTitle("GolfXTRM alpha: Loading prehistoric fauna...");
+  objloader raptor = objloader("assets/raptor.obj");
+  cout << "Loading raptor." << endl;
+  raptor.load();
+  cout << "Raptor loaded." << endl;
+
+
   glfwSetWindowTitle("GolfXTRM alpha: Walking to the course...");
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
@@ -235,12 +240,6 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
 
   glfwSwapInterval(1);    // activate vsync
-
-  // load raptor:
-  objloader raptor = objloader("assets/raptor.obj");
-  cout << "Loading raptor." << endl;
-  raptor.load();
-  cout << "Raptor loaded." << endl;
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
