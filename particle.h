@@ -34,8 +34,7 @@ public:
 
 class golfballtrail : particle {
 public:
-  golfballtrail();
-  golfballtrail(Vector3d start, Vector3d end);
+  golfballtrail(world *parentplanet, Vector3d start, Vector3d end);
   virtual ~golfballtrail();
 };
 

@@ -147,24 +147,36 @@
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
+		<Unit filename="ashtree.cpp" />
+		<Unit filename="firtree.cpp" />
 		<Unit filename="global_objects.h" />
 		<Unit filename="globaldefs.h" />
 		<Unit filename="globalvars_client.h" />
 		<Unit filename="globalvars_client_extern.h" />
+		<Unit filename="golfball.cpp" />
+		<Unit filename="golfclub.cpp" />
+		<Unit filename="golfcourse.cpp" />
+		<Unit filename="golfer.cpp" />
 		<Unit filename="golfer.h" />
 		<Unit filename="golfer_update.cpp" />
+		<Unit filename="holdable.cpp" />
 		<Unit filename="holdable.h" />
+		<Unit filename="landscape_feature.cpp" />
 		<Unit filename="landscape_features.h" />
 		<Unit filename="main.cpp">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="oaktree.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
 		<Unit filename="progressbar.h" />
+		<Unit filename="terrain.cpp" />
 		<Unit filename="terrain.h" />
+		<Unit filename="universe.cpp" />
 		<Unit filename="version.h" />
+		<Unit filename="world.cpp" />
 		<Unit filename="worldcomponents.h" />
 		<Unit filename="worldcomponents_render.cpp" />
 		<Unit filename="worldcomponents_update.cpp" />

@@ -55,10 +55,7 @@ void particle::render() {
   glPopMatrix();
 }
 
-golfballtrail::golfballtrail() {
-}
-
-golfballtrail::golfballtrail(Vector3d start, Vector3d end) {
+golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) {
   size = 0.04;
   Vector3d offset = end - start;
 
@@ -127,6 +124,9 @@ golfballtrail::golfballtrail(Vector3d start, Vector3d end) {
     glNormalPointer(GL_FLOAT, 0, 0);
     glBindVertexArray(0);
   }
+
+  currentplanet = parentplanet;
+  currentplanet->particles.push_back(this);
 }
 
 golfballtrail::~golfballtrail() {

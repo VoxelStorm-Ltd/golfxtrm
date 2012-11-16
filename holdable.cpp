@@ -1,5 +1,6 @@
 #include "holdable.h"
 #include "worldcomponents.h"
+#include "particle.h"
 
 holdable::holdable() {                                /// default constructor
   held_by = NULL;
@@ -55,7 +56,10 @@ void holdable::update(double timedelta) {
       // gravitational force
       velocity.y -= (currentplanet->gravity * timedelta);     // acceleration
 
-      position += (velocity * timedelta);
+      Vector3d newposition = position + (velocity * timedelta);
+      new golfballtrail(currentplanet, position, newposition);
+      position = newposition;
+      // create a trail particle
 
       // air resistance and wind effect (combined)
       Vector3d thisveldiff = velocity - currentplanet->windvelocity;
