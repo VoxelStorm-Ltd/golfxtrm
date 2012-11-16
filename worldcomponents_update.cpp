@@ -3,6 +3,7 @@
 #include "holdable.h"
 #include "landscape_features.h"
 #include "terrain.h"
+#include "particle.h"
 #include "globalvars_client_extern.h"
 
 extern universe *root;
@@ -103,9 +104,27 @@ void world::update(double timedelta) {
   // iterate through the items and update those
   for(std::vector<holdable*>::iterator i = items.begin(); i != items.end(); ++i) {
     (*i)->update(timedelta);
-    //(*i)->update(timedelta / 100);   // DEBUG
+    //(*i)->update(timedelta / 10);   // DEBUG
+    //(*i)->update(timedelta / 10);   // DEBUG
   }
 
+  // finally update particles, assuming there's enough time
+  //std::cout << "particles.size() u " << particles.size() << std::endl;
+  //if(particles.size() > 0) {
+    for(std::vector<particle*>::iterator i = particles.begin(); i != particles.end(); ++i) {
+      //std::cout << "Checking " << *i << std::endl;
+      if((*i)->age > (*i)->lifespan) {
+        //std::cout << "  Erasing " << *i << std::endl;
+        //items.erase(i);
+        //particles.erase(i);
+        //delete *i;
+      } else {
+        //std::cout << "  Updating " << *i << std::endl;
+        (*i)->update(timedelta);
+        //(*i)->update(timedelta / 100);   // DEBUG
+      }
+    }
+  //}
 }
 
 void universe::update(double timedelta) {

@@ -1,3 +1,4 @@
+#include <vector>
 #include "particle.h"
 #include "globalvars_client_extern.h"
 #include "worldcomponents.h"
@@ -29,6 +30,21 @@ particle::~particle() {
   //dtor
 }
 
+void particle::update(double timedelta) {
+  age += timedelta;
+  //if(age > lifespan) {
+    //currentplanet->particles.erase(std::find(currentplanet->particles.begin(), currentplanet->particles.end(), this));
+    //currentplanet->items.release(std::find(currentplanet->items.begin(), currentplanet->items.end(), this));
+    // why won't that work?
+    //holdable* ptr = this;
+    //currentplanet->items.erase(std::find_if(currentplanet->items.begin(),
+    //                                        currentplanet->items.end(),
+    //                                        [ptr](const holdable &other)
+    //                                        {return ptr == &other;} ));
+    //delete this;
+  //}
+}
+
 void particle::render() {
   /// draw the particle using an indexed VBO with VAA and VAO
   glPushMatrix();
@@ -56,25 +72,32 @@ void particle::render() {
 }
 
 golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) {
+  age = 0;
+  lifespan = 3;
+
   size = 0.04;
-  Vector3d offset = end - start;
+  position = end;
+  Vector3d offset = start - end;
+  //std::cout << "start:  " << start.x << " " << start.y << " " << start.z << " " << std::endl;
+  //std::cout << "end:    " << end.x << " " << end.y << " " << end.z << " " << std::endl;
+  //std::cout << "offset: " << offset.x << " " << offset.y << " " << offset.z << " " << std::endl;
 
   GLfloat vbodata[] = {
-    start.x,  start.y  - size,  start.z,
-    start.x,  start.y  + size,  start.z,
+    0,  0  - size,  0,
+    0,  0  + size,  0,
     offset.x, offset.y - size, offset.z,
     offset.x, offset.y + size, offset.z,
-    start.x  - size,  start.y,  start.z,
-    start.x  + size,  start.y,  start.z,
+    0  - size,  0,  0,
+    0  + size,  0,  0,
     offset.x - size, offset.y, offset.z,
     offset.x + size, offset.y, offset.z,
-    start.x,  start.y,  start.z  - size,
-    start.x,  start.y,  start.z  + size,
+    0,  0,  0  - size,
+    0,  0,  0  + size,
     offset.x, offset.y, offset.z - size,
     offset.x, offset.y, offset.z + size,
   };
   GLfloat vbodata_n[] = {
-    0, -1,0,
+    /*0, -1,0,
     0, 1, 0,
     0, -1,0,
     0, 1, 0,
@@ -85,7 +108,19 @@ golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) 
     0, 0, -1,
     0, 0, 1,
     0, 0, -1,
-    0, 0, 1,
+    0, 0, 1,*/
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
+    1,1,1,
   };
   GLuint ibodata[] = {
     0, 1, 2,  2, 3, 0,
@@ -133,3 +168,31 @@ golfballtrail::~golfballtrail() {
   //dtor
 }
 
+void golfballtrail::render() {
+  /// draw the particle using an indexed VBO with VAA and VAO
+  glPushMatrix();
+    glTranslated(position.x, position.y, position.z);
+    glMultMatrixd(rotation.transform());
+    //float size = 1 - (age / lifespan);
+    float size = 2.1 - (2 * age / lifespan);
+    glScalef(size, size, size);
+    if(hasvao) {
+      glColor4f(1, 1, 1, 1);
+      glBindVertexArray(vao);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+  glPopMatrix();
+}

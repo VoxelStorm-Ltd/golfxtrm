@@ -29,6 +29,7 @@ public:
   particle();
   particle(world *parentplanet);
   virtual ~particle();
+  virtual void update(double timedelta);
   virtual void render();
 };
 
@@ -36,6 +37,7 @@ class golfballtrail : particle {
 public:
   golfballtrail(world *parentplanet, Vector3d start, Vector3d end);
   virtual ~golfballtrail();
+  void render();
 };
 
 

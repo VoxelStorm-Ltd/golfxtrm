@@ -64,7 +64,7 @@ world::world() {                                 /// default constructor
   //windvelocity.x = 10;
 
   numcourses = 0;
-  addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
+  //addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
   std::cout << "    Planet initialised" << std::endl;
 }
 

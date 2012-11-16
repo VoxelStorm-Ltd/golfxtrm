@@ -57,9 +57,9 @@ void holdable::update(double timedelta) {
       velocity.y -= (currentplanet->gravity * timedelta);     // acceleration
 
       Vector3d newposition = position + (velocity * timedelta);
-      new golfballtrail(currentplanet, position, newposition);
+      std::cout << "DEBUG last settings " << position.x << " " << position.y << " " << position.z << " " << newposition.x << " " << newposition.y << " " <<newposition.z << std::endl;
+      new golfballtrail(currentplanet, position, newposition);  // particle trails
       position = newposition;
-      // create a trail particle
 
       // air resistance and wind effect (combined)
       Vector3d thisveldiff = velocity - currentplanet->windvelocity;

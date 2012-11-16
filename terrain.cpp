@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include "terrain.h"
 #include "globalvars_client_extern.h"
+#include "perlin.h"
 
 terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default constructor
   std::cout << "        Initialising terrain..." << std::endl;
@@ -17,27 +18,54 @@ terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default con
   // initialise the heightmap
   std::cout << "          Generating heightmap..." << std::endl;
   srand(randomseed);                  // seed the random generator predictably
+
+  Perlin *perlin = new Perlin(4,            // octaves - 1 to 16 (~4-8)
+                              4,            // noise freq (~1-8)
+                              1,            // amplitude (1 returns -1 to 1)
+                              randomseed);  // seed
+
   double xcentre = gridwidth / 2;
   double zcentre = gridwidth / 2;
 
   double heightscale = 20;
+
+  double holepositiongridx = holeposition.x / bounds.x * (double)gridwidth;
+  double holepositiongridz = holeposition.z / bounds.z * (double)gridwidth;
+
+  double greensize = 10;
+  double greenmargin = 20;
 
   for(int x = 0; x < gridwidth; ++x) {
     for(int z = 0; z < gridwidth; ++z) {
       if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
         heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
       } else {
+        double randfactor = 0.2;
+
         //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
         double centredist_sq = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
         double offsetheight = heightscale - ((centredist_sq / gridwidth * heightscale * 2) / (gridwidth / 2));
 
-        double holedist_sq = pow(x - holeposition.x, (double)2) + pow(z - holeposition.z, (double)2);
-        if(holedist_sq < 100) {
+        double holedist = sqrt(pow(x - holepositiongridx, (double)2) + pow(z - holepositiongridz, (double)2));
+        if(holedist < greensize / bounds.x * (double)gridwidth) {
           offsetheight = holeposition.y;
+          randfactor = 0.01;
+        } else if(holedist < (greensize + greenmargin) / bounds.x * (double)gridwidth) {
+          double difference = (holedist - (greensize / bounds.x * (double)gridwidth)) / (greenmargin / bounds.x * (double)gridwidth);
+          if(difference > 1) {
+            difference = 1;
+          }
+          double thisoffsetheight = offsetheight;
+          if(thisoffsetheight < 0) {
+            thisoffsetheight = 0;
+          }
+          double thisdifference = holeposition.y - thisoffsetheight;
+          offsetheight = holeposition.y - (difference * thisdifference);
+          randfactor = 0.06;
         }
 
         if(offsetheight > 0) {
-          heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * 0.25);
+          heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor);
         } else {
           heightmap[(x * gridwidth) + z] = 0;
         }

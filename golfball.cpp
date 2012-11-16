@@ -7,7 +7,7 @@ golfball::golfball(world *parentplanet) {
   at_rest = true;
   mass = 0.04593;             // official maximum
   radius = 0.04267 / 2;       // official minimum
-  radius *= 2;            // but let's make it bigger for aesthetic reasons
+  radius *= 2;                // but let's make it bigger for aesthetic reasons
   momentofinertia = 0;
   cda = 0.001716;             // guesstimate based on Cd = 0.3
   name = "golf ball";

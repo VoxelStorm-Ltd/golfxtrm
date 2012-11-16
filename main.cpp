@@ -168,8 +168,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
-
-  root->planet[0]->course[0]->holeposition = Vector3d(25, 0, 25);
+  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(40,2,30));  // add the default course
+  //root->planet[0]->course[0]->holeposition = Vector3d(25, 10, 25);  // this does nothing here
 
   glfwSetWindowTitle("GolfXTRM alpha: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
@@ -335,10 +335,6 @@ void controls() {
   if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
     player->state = golfer::GOLFER_JUMPING;
   }
-  //if(glfwGetKey('X') == GLFW_PRESS) {                 //crouch/fly down
-    // we can't actually produce downwards motion...
-    //player->moveforce.y -= thismoveforce;
-  //}
 
   if(keyspressed > 1) {     //allow for relatively smooth diagonal strafe
     player->moveforce /= keyspressed;
@@ -389,7 +385,7 @@ void GLFWCALL controlcallback(int key, int action) {
 
 void physics(double timedelta) {    /// update entity and player locations
   if(timedelta > 0.1) {
-     root->update(0.1);             // clamp our time delta
+    root->update(0.1);             // clamp our time delta
   } else {
     root->update(timedelta);        // carry out the global physics update
   }

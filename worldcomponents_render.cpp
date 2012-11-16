@@ -59,9 +59,12 @@ void world::render() {
     (*i)->render();
   }
   // iterate through the particles last and draw those that we have time for
-  for(std::vector<particle*>::iterator i = particles.begin(); i != particles.end(); ++i) {
-    (*i)->render();
-  }
+  //std::cout << "particles.size() r " << particles.size() << std::endl;
+  //if(particles.size() > 0) {
+    for(std::vector<particle*>::iterator i = particles.begin(); i != particles.end(); ++i) {
+      (*i)->render();
+    }
+  //}
 }
 
 void universe::render() {

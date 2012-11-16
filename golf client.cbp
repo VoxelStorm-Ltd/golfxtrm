@@ -171,6 +171,8 @@
 		<Unit filename="objloader.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
+		<Unit filename="perlin.cpp" />
+		<Unit filename="perlin.h" />
 		<Unit filename="progressbar.h" />
 		<Unit filename="terrain.cpp" />
 		<Unit filename="terrain.h" />

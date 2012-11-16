@@ -157,11 +157,11 @@ void golfclub::impact(holdable *target, golfer *actor, double distance) {
     pushvector.normalize();
     pushvector *= 70 * target->mass;  // momentum - from average golf launch speeds
   }
-  std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+  //std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
   pushvector.rotate(0, 0, actor->armsyaw);
-  std::cout << "vector 2        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+  //std::cout << "vector 2        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
   pushvector.rotate(actor->armspitch, 0, 0);
-  std::cout << "vector 3        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
+  //std::cout << "vector 3        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
   pushvector.rotate(0, -actor->bodyyaw, 0);
   if(actor->armsyawvelocity < 0) {  // club loft effect (only on lofted side)
     //pushvector.rotate(-45, 0, 0);
