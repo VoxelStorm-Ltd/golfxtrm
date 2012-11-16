@@ -21,12 +21,16 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
   //growthrate = 0.000000003;  // reaches full height in about 30 years
 
   if(treetype == FIRTREE_STANDARD) {
+    name = "perfect fir tree";
+    description = "A narrow tall triangular tree that has green foliage all year round, and grows relatively quickly.  This one has perfect proportions.";
     height     = 5;   // default sizes
     bottom     = 1;
     width      = 1;
     trunkwidth = width / 5;
   } else if(treetype == FIRTREE_RANDOM) {
     // set its size to something random
+    name = "fir tree";
+    description = "A narrow tall triangular tree that has green foliage all year round, and grows relatively quickly.";
     height     = 5 + ((float)rand() / RAND_MAX * 8) - 1;
     bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
     width      = 1 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
@@ -34,18 +38,30 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
     rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
   } else if(treetype == FIRTREE_SAPLING) {
     // make it tiny
+    name = "perfect fir tree sapling";
+    description = "A narrow tall triangular tree that has green foliage all year round, and grows relatively quickly.  This one grew from a sapling of perfect proportions.";
     height     = 0.5;
     bottom     = 0.1;
     width      = 0.1;
     trunkwidth = width / 5;
   } else if(treetype == FIRTREE_SAPLING_RANDOM) {
     // make it tiny and random
+    name = "fir tree sapling";
+    description = "A narrow tall triangular tree that has green foliage all year round, and grows relatively quickly.  This one grew from a sapling.";
     height     = 0.5 + ((float)rand() / RAND_MAX * 0.8) - 0.1;
     bottom     = 0.1 + ((float)rand() / RAND_MAX * 0.05);
     width      = 0.1 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
     trunkwidth = width / 5;
     rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
   }
+  if(bottom < 1.5) {
+    collisionoffset.y = bottom;
+    boundingradius = width * 1.6;
+  } else {  // it's tall enough for us to only collide with the trunk
+    collisionoffset.y = 1;
+    boundingradius = trunkwidth;
+  }
+
   // rendering setup
   vao = vbo = vbo_n = ibo = 0;
   if(hasvao) {
@@ -174,6 +190,13 @@ void firtree::grow(double amount) {
     updatevbo();
   } else {
     // time to fall over
+  }
+  if(bottom < 1.5) {
+    collisionoffset.y = bottom;
+    boundingradius = width * 1.6;
+  } else {  // it's tall enough for us to only collide with the trunk
+    collisionoffset.y = 1;
+    boundingradius = trunkwidth;
   }
 }
 

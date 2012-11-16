@@ -6,8 +6,9 @@
 golfclub::golfclub(world *parentplanet) {
   held_by = NULL;
   at_rest = true;
-  mass = 1;
+  mass = 0.300;
   momentofinertia = 0;
+  cda = 0.001716;
   name = "golf club";
   description = "A long stick with a heavy end for hitting small balls with.";
 
@@ -16,6 +17,7 @@ golfclub::golfclub(world *parentplanet) {
 
   bbox_start = Vector3d(-0.01,-0.1,-0.01);
   bbox_end = Vector3d(0.01,0.95,0.1);
+  boundingradius = 0.06;
 
   // rendering data
   // body:

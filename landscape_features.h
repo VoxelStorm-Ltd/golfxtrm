@@ -14,6 +14,12 @@ public:
   Vector3d bbox_start;          // one corner of the bounding box
   Vector3d bbox_end;            // other corner of the bounding box
 
+  Vector3d collisionoffset;     // centre of the collision sphere
+  double boundingradius;        // bounding sphere radius
+
+  std::string name;             // what it's called
+  std::string description;      // longer description
+
   world *currentplanet;         // what planet are you even on?
 
   int randomseed;               // the fixed seed for this object
@@ -23,6 +29,17 @@ public:
   GLuint vbo_n;                 // vertex buffer object for normals
   GLuint ibo;                   // index buffer object
   GLuint numtris;               // number of triangles in the VBO
+
+  enum featuretype {
+    TEE,
+    HOLE,
+    FLAG,
+    FIRTREE,
+    FIRTREESAPLING,
+    OAKTREE,
+    OAKTREESAPLING,
+    ASHTREE
+  };
 
   feature();
   virtual ~feature();

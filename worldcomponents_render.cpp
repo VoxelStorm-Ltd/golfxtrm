@@ -26,10 +26,10 @@ void world::render() {
   glColor4fv(skycolour);
   glBegin(GL_TRIANGLE_STRIP);
   glNormal3f(0, -1, 0);
-  glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x - horizondistance, 60, player->bodyposition.z + horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, 60, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
+  glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z + horizondistance);
+  glVertex3d(player->bodyposition.x + horizondistance, player->bodyposition.y + 60, player->bodyposition.z + horizondistance);
   glEnd();
   // ground
   glColor4fv(grasscolour);

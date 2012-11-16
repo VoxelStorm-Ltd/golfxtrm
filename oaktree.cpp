@@ -21,11 +21,15 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
   //growthrate = 0.000000001;  // reaches full height in about 90 years
 
   if(treetype == OAKTREE_STANDARD) {
+    name = "perfect oak tree";
+    description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.  This one has ideal proportions.";
     height     = 7;   // default sizes
     bottom     = 2;
     width      = 3;
     trunkwidth = width / 5;
   } else if(treetype == OAKTREE_RANDOM) {
+    name = "oak tree";
+    description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.";
     // set its size to something random
     height     = 4 + ((float)rand() / RAND_MAX * 8) - 1;
     bottom     = 0.5 + ((float)rand() / RAND_MAX * 0.5);
@@ -33,12 +37,16 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
     trunkwidth = width / 5;
     rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
   } else if(treetype == OAKTREE_SAPLING) {
+    name = "perfect oak tree sapling";
+    description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.  This one grew from a sapling of ideal proportions.";
     // make it tiny
     height     = 0.7;
     bottom     = 0.05;
     width      = 0.3;
     trunkwidth = width / 5;
   } else if(treetype == OAKTREE_SAPLING_RANDOM) {
+    name = "oak tree sapling";
+    description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.  This one grew from a sapling.";
     // make it tiny and random
     height     = 0.4 + ((float)rand() / RAND_MAX * 0.8) - 0.1;
     bottom     = 0.025 + ((float)rand() / RAND_MAX * 0.025);
@@ -46,6 +54,14 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
     trunkwidth = width / 5;
     rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
   }
+  if(bottom < 1.5) {
+    collisionoffset.y = ((height - bottom) / 2) + bottom;
+    boundingradius = width * 1.6;
+  } else {  // it's tall enough for us to only collide with the trunk
+    collisionoffset.y = 1;
+    boundingradius = trunkwidth;
+  }
+
   // rendering setup
   vao = 0;
   vbo = 0;
@@ -186,6 +202,13 @@ void oaktree::grow(double amount) {
     updatevbo();
   } else {
     // time to fall over
+  }
+  if(bottom < 1.5) {
+    collisionoffset.y = ((height - bottom) / 2) + bottom;
+    boundingradius = width * 1.6;
+  } else {  // it's tall enough for us to only collide with the trunk
+    collisionoffset.y = 1;
+    boundingradius = trunkwidth;
   }
 }
 

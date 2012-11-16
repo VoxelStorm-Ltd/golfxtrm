@@ -5,7 +5,7 @@ golfcourse::golfcourse(world *parent, Vector3d tee, Vector3d hole)
   : teeposition(tee), holeposition(hole) {                      /// default constructor
   std::cout << "      Initialising new golf course..." << std::endl;
   parentplanet = parent;
-  landscape = new terrain(teeposition, holeposition);
+  landscape = new terrain(this, teeposition, holeposition);
   std::cout << "      Golf course initialised" << std::endl;
 }
 

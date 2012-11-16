@@ -2,16 +2,20 @@
 #include "terrain.h"
 #include "globalvars_client_extern.h"
 #include "perlin.h"
+#include "landscape_features.h"
+#include "worldcomponents.h"
 
-terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default constructor
+terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holeposition) {  /// default constructor
   std::cout << "        Initialising terrain..." << std::endl;
   origin.x = 0;
   origin.y = 0;
   origin.z = 0;
-  bounds.x = 200;
-  bounds.z = 200;
+  bounds.x = 400;
+  bounds.z = 400;
   bounds.y = 60;
-  gridwidth = 128;
+  gridwidth = 200;
+
+  parent = parentcourse;
 
   randomseed = 1337;
 
@@ -19,20 +23,25 @@ terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default con
   std::cout << "          Generating heightmap..." << std::endl;
   srand(randomseed);                  // seed the random generator predictably
 
-  Perlin *perlin = new Perlin(4,            // octaves - 1 to 16 (~4-8)
-                              4,            // noise freq (~1-8)
-                              1,            // amplitude (1 returns -1 to 1)
-                              randomseed);  // seed
+  Perlin *testmap = new Perlin(4,            // octaves - 1 to 16 (~4-8)
+                               4,            // noise freq (~1-8)
+                               1,            // amplitude (1 returns -1 to 1)
+                               randomseed+1);  // seed
+
+  Perlin *largemap = new Perlin(4, 4, 1, randomseed);
+  Perlin *smoothmap = new Perlin(2, 4, 1, randomseed);
+  Perlin *lumpy = new Perlin(8, 8, 1, randomseed);
+  Perlin *roughnessmap = new Perlin(4, 4, 1, randomseed+1);
 
   double xcentre = gridwidth / 2;
   double zcentre = gridwidth / 2;
 
-  double heightscale = 20;
+  double heightscale = 10;
 
   double holepositiongridx = holeposition.x / bounds.x * (double)gridwidth;
   double holepositiongridz = holeposition.z / bounds.z * (double)gridwidth;
 
-  double greensize = 10;
+  double greensize = 15;
   double greenmargin = 20;
 
   for(int x = 0; x < gridwidth; ++x) {
@@ -40,11 +49,26 @@ terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default con
       if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
         heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
       } else {
-        double randfactor = 0.2;
+        double randfactor = 0;
+        ///double randfactor = 0.2;
 
         //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
         double centredist_sq = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
-        double offsetheight = heightscale - ((centredist_sq / gridwidth * heightscale * 2) / (gridwidth / 2));
+        //double offsetheight = heightscale - ((centredist_sq / gridwidth * heightscale * 2) / (gridwidth / 2));
+        double centredist_qu = centredist_sq * centredist_sq;
+        double offsetheight = heightscale - ((centredist_qu * heightscale * 2) / (gridwidth * gridwidth * gridwidth * 25));
+        //offsetheight *= heightscale;
+
+        float perlinheightresult = largemap->get((float)x / (float)gridwidth, (float)z / (float)gridwidth) + 1;
+        float perlinroughnessresult = largemap->get((float)x / (float)gridwidth, (float)z / (float)gridwidth) + 1;
+
+        //offsetheight = perlinheightresult * heightscale;
+        offsetheight *= perlinheightresult;
+        if(perlinroughnessresult < 1.1 && perlinroughnessresult > 0.9) {
+          randfactor = 0.5;
+        } else {
+          randfactor = 0;
+        }
 
         double holedist = sqrt(pow(x - holepositiongridx, (double)2) + pow(z - holepositiongridz, (double)2));
         if(holedist < greensize / bounds.x * (double)gridwidth) {
@@ -67,7 +91,7 @@ terrain::terrain(Vector3d teeposition, Vector3d holeposition) {  /// default con
         if(offsetheight > 0) {
           heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor);
         } else {
-          heightmap[(x * gridwidth) + z] = 0;
+          heightmap[(x * gridwidth) + z] = 0 + (((double)rand()/(double)RAND_MAX) * randfactor);
         }
       }
     }
@@ -186,6 +210,47 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
     glNormalPointer(GL_FLOAT, 0, 0);
 
     glBindVertexArray(0);
+  }
+}
+
+void terrain::populatefeatures(int randomseed, feature::featuretype whatfeature) {
+  /// call the feature populator with the default probability and density settings
+  float threshold = 1.3;    // minimum perlin result for a forest
+  float probability = 0.5;  // likelihood of making a tree in any one grid square
+  populatefeatures(randomseed, whatfeature, threshold, probability);
+}
+
+void terrain::populatefeatures(int randomseed, feature::featuretype whatfeature, float threshold, float probability) {
+  Perlin *testmap = new Perlin(4,            // octaves - 1 to 16 (~4-8)
+                               8,            // noise freq (~1-8)
+                               1,            // amplitude (1 returns -1 to 1)
+                               randomseed);  // seed
+
+
+  double gridscale = bounds.x / gridwidth;
+
+  srand(randomseed);
+
+  for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
+    for(int zgrid = 0; zgrid < gridwidth; ++zgrid) {
+      float perlinresult = testmap->get((float)xgrid / (float)gridwidth, (float)zgrid / (float)gridwidth) + 1;
+      if(perlinresult > threshold && ((float)rand() / RAND_MAX) <= probability) {
+        double xpos = (xgrid + ((double)rand() / RAND_MAX)) * gridscale;
+        double zpos = (zgrid + ((double)rand() / RAND_MAX)) * gridscale;
+
+        if(whatfeature == feature::FIRTREE) {
+          new firtree(parent->parentplanet, xpos, get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM, rand());
+        } else if(whatfeature == feature::FIRTREESAPLING) {
+          new firtree(parent->parentplanet, xpos, get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM, rand());
+        } else if(whatfeature == feature::OAKTREE) {
+          new oaktree(parent->parentplanet, xpos, get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_RANDOM, rand());
+        } else if(whatfeature == feature::OAKTREESAPLING) {
+          new oaktree(parent->parentplanet, xpos, get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_SAPLING_RANDOM, rand());
+        } else if(whatfeature == feature::ASHTREE) {
+          new ashtree(parent->parentplanet, xpos, get_height_at(xpos, zpos), zpos, rand());
+        }
+      }
+    }
   }
 }
 

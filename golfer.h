@@ -73,6 +73,8 @@ public:
 
   Vector3f skincolour;        // keep this adjustable per golfer
 
+  double boundingradius;      // bounding sphere radius for world collisions
+
   enum golferstatetype {
     GOLFER_STANDING,
     GOLFER_WALKING,

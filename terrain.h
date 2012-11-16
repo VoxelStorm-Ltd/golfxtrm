@@ -5,13 +5,18 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include "vmath.h"
+#include "landscape_features.h"
+
+class golfcourse;   // forward dec
 
 class terrain {                 /// object for handling the terrain heightmap
 public:
+  golfcourse *parent;         // what course this belongs to
+
   Vector3d origin;            // the map's origin's coordinates
   Vector3d bounds;            // the map's bounding box
 
-  double heightmap[256*256];  // the heightmap data
+  double heightmap[200*200];  // the heightmap data
   int gridwidth;              // the x and z resolution of the heightmap as above
 
   int randomseed;             // the fixed seed for this course
@@ -22,9 +27,11 @@ public:
   GLuint ibo;                 // element buffer object (index buffer object)
   GLuint numtris;             // number of triangles in the index
 
-  terrain(Vector3d teeposition, Vector3d holeposition);
+  terrain(golfcourse *parent, Vector3d teeposition, Vector3d holeposition);
   ~terrain();
   void update_vbo();
+  void populatefeatures(int randomseed, feature::featuretype whatfeature);
+  void populatefeatures(int randomseed, feature::featuretype whatfeature, float threshold, float probability);
   double get_height_at(double x, double z);
   Vector3d get_slope_at(double x, double z);
   double get_hardness_at(double x, double z);

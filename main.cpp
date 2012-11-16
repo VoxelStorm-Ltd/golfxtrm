@@ -168,7 +168,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
-  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(40,2,30));  // add the default course
+  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227));  // add the default course
   //root->planet[0]->course[0]->holeposition = Vector3d(25, 10, 25);  // this does nothing here
 
   glfwSetWindowTitle("GolfXTRM alpha: Loading prehistoric fauna...");
@@ -203,7 +203,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   golfball *ball = new golfball(root->planet[0]);
   ball->position.y = ball->radius;
 
-  glfwSetWindowTitle("GolfXTRM alpha: Planting trees...");
+  glfwSetWindowTitle("GolfXTRM alpha: Planting specific trees...");
   firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
@@ -212,21 +212,28 @@ void init() {       /// all the one-time initialisation we need for the engine
   //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
   srand(1337);
-  glfwSetWindowTitle("GolfXTRM alpha: Planting fir trees...");
+  glfwSetWindowTitle("GolfXTRM alpha: Planting random trees...");
   for(int i = 0; i < 40; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*2) - root->planet[0]->course[0]->landscape->bounds.z*1;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*2) - root->planet[0]->course[0]->landscape->bounds.z*1;
+    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
+    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
     new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM, rand());
   }
-  for(int i = 0; i < 2000; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x*2) - root->planet[0]->course[0]->landscape->bounds.z*1;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z*2) - root->planet[0]->course[0]->landscape->bounds.z*1;
+  for(int i = 0; i < 1000; ++i) {
+    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
+    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
     new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM, rand());
   }
   for(int i = 0; i < 40; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.z*0.5;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z*0.5;
+    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
+    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
     new oaktree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_SAPLING_RANDOM, rand());
+  }
+  if(root->planet[0]->introon) {
+    root->planet[0]->course[0]->landscape->populatefeatures(2, feature::FIRTREESAPLING, 1.4, 0.5);
+    root->planet[0]->course[0]->landscape->populatefeatures(3, feature::OAKTREESAPLING, 1.6, 0.1);
+  } else {
+    root->planet[0]->course[0]->landscape->populatefeatures(2, feature::FIRTREE, 1.4, 0.5);
+    root->planet[0]->course[0]->landscape->populatefeatures(3, feature::OAKTREE, 1.6, 0.1);
   }
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
@@ -370,15 +377,24 @@ void controls() {
 
 void GLFWCALL controlcallback(int key, int action) {
   if(action == GLFW_PRESS) {   // here are all the down-presses we care about
-    if(key == GLFW_KEY_ESC) {         // escape to quit
-      keeprunning = false;
-      cout << "Stop requested..." << endl;
-    } else if(key == 'O') {        // O and P switch render modes
+    if(key == 'O') {        // O and P switch render modes
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
       cout << "Switched to filled render mode" << endl;
     } else if(key == 'P') {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
       cout << "Switched to wireframe render mode" << endl;
+    } else if(key == 'B') {
+      golfball *ball = new golfball(root->planet[0]);
+      Vector3d positionvector = Vector3d(0,0,-0.6);
+      positionvector.rotate(0,-player->bodyyaw,0);
+      ball->position = player->bodyposition + positionvector;
+      //ball->position.y += ball->radius;
+      ball->position.y += 1.5;
+      ball->at_rest = false;
+      cout << "Dropped another ball" << endl;
+    } else if(key == GLFW_KEY_ESC) {         // escape to quit
+      keeprunning = false;
+      cout << "Stop requested..." << endl;
     }
   }
 }

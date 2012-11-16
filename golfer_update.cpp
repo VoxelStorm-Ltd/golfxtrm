@@ -200,6 +200,26 @@ void golfer::update(double timedelta) {
     }
   }
 
+  // course feature collision (trees etc)
+  for(std::vector<feature*>::iterator i = currentplanet->features.begin(); i != currentplanet->features.end(); ++i) {
+    // check if it's within our bounding sphere
+    Vector3d difference = ((*i)->position + (*i)->collisionoffset) - (bodyposition + (armfulcrum / 2));   // about waist height
+    if(difference.length() < boundingradius + (*i)->boundingradius) {
+      std::cout << "Collided with " << (*i)->name << std::endl;
+      // TODO: add finer checks here
+      // our radii are overlapping so bounce us back, directly away from the centre
+      double interference = 1-(difference.length() / (boundingradius + (*i)->boundingradius));
+      difference.normalize();
+      difference *= -1;
+      double pushbackaccel = 100;
+      bodyvelocity += difference * (interference * pushbackaccel * timedelta);  // brackets ensure fastest computation order
+      bodyvelocity *= 1-interference;
+    }
+  }
+
+  // other golfer collision
+  // TODO
+
   // wrapping and clamping
   if(bodyyaw > 360) {                               // wrap body rotation
     bodyyaw -= 360;

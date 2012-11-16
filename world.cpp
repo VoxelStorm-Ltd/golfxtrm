@@ -9,10 +9,9 @@ world::world() {                                 /// default constructor
   airdensity = 1.2041;
   horizondistance = 1200;
 
-  #ifdef INTRO
-  introon = true;
-  #else
   introon = false;
+  #ifdef INTRO
+  //introon = true;
   #endif
 
   if(introon) {
@@ -25,7 +24,8 @@ world::world() {                                 /// default constructor
   } else {
     //timespeed = 0;          // frozen
     //timespeed = 1;          // realtime
-    timespeed = 60;         // 1 minute per second
+    //timespeed = 60;         // 1 minute per second
+    timespeed = 120;        // 2 minutes per second
     //timespeed = 3600;       // 1 hour per second
     //timespeed = 7200;       // 2 hours per second
     //timespeed = 86400;      // 1 day per second

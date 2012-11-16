@@ -14,6 +14,9 @@ ashtree::ashtree(world *parentplanet, double x, double y, double z, int rseed) {
   position.y = y;
   position.z = z;
 
+  name = "ash tree";
+  description = "A medium-sized spindly tree, on the verge of extinction in Britain due to a new fungal parasite infection.";
+
   maxwidth = 10;
   maxheight = 40;
   //growthrate = 0.000001;  // reaches full height in about 30 days
@@ -24,6 +27,13 @@ ashtree::ashtree(world *parentplanet, double x, double y, double z, int rseed) {
   bottom     = 1.5;
   width      = 3.5;
   trunkwidth = 0.1;
+  if(bottom < 1.5) {
+    collisionoffset.y = ((height - bottom) / 2) + bottom;
+    boundingradius = width * 2;
+  } else {  // it's tall enough for us to only collide with the trunk
+    collisionoffset.y = 1;
+    boundingradius = trunkwidth;
+  }
 
   // rendering setup
   vao = 0;

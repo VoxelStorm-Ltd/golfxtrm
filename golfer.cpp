@@ -65,6 +65,9 @@ golfer::golfer(golfcourse *course,
   skincolour.g = 0.815;
   skincolour.b = 0.811;
 
+  // bounds
+  boundingradius = (armfulcrum.length() / 4); // about ground to waist, same as used for collision check
+
   // rendering data
   // body:
   float top    = 1.5;
