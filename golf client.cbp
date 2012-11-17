@@ -88,7 +88,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release_largewindow">
-				<Option output="bin\Release\GolfXTRM large window" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Release\GolfXTRM window" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\Release\largewindow" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -136,6 +136,7 @@
 			<Add directory="lib" />
 		</Compiler>
 		<Linker>
+			<Add library="lib\libSOIL.a" />
 			<Add library="lib\libglew32.a" />
 			<Add library="glfw" />
 			<Add library="opengl32" />
@@ -143,6 +144,7 @@
 			<Add library="gdi32" />
 			<Add library="lib\libglu32.a" />
 			<Add library="lib\libopengl32.a" />
+			<Add library="lib\libirrKlang.a" />
 			<Add library="ws2_32" />
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
