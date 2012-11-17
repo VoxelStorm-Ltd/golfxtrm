@@ -11,6 +11,7 @@
 #include <GL/glfw.h>
 #include <GL/gl.h>
 #include <irrKlang.h>
+#include <SOIL.h>
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -55,11 +56,17 @@ void init() {       /// all the one-time initialisation we need for the engine
   #ifdef WINDOW_FULLSCREEN
   if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
   #elif defined WINDOW_LARGE
-  windowwidth  = desktopmode.Width  - 100;
-  windowheight = desktopmode.Height - 100;
+  windowwidth  = desktopmode.Width  - 80;
+  windowheight = desktopmode.Height - 80;
+  if(windowwidth < 800) {
+    windowwidth = 800;
+  }
+  if(windowheight < 750) {
+    windowheight = 750;
+  }
   if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
   int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-  int winfinalposy = 25;
+  int winfinalposy = 10;
   glfwSetWindowPos(winfinalposx,winfinalposy);
   #else
   cout << "Starting in " << windowwidth << "x" << windowheight << " with bit depth " << desktopmode.RedBits << "," << desktopmode.GreenBits << "," << desktopmode.BlueBits << endl;
@@ -163,12 +170,22 @@ void init() {       /// all the one-time initialisation we need for the engine
   //glLightfv(GL_LIGHT1, GL_SPECULAR, directionallightspec);
   //glEnable(GL_LIGHT1);
 
+  glfwSetKeyCallback(controlcallback);    // activate the control callback
+  //glfwEnable(GLFW_KEY_REPEAT);            // enable key repeats
+  glfwDisable(GLFW_KEY_REPEAT);            // enable key repeats
+
+  glfwEnable(GLFW_STICKY_KEYS);     // capture all keystrokes even if we're slow
+  glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
+  //glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
+
+  glfwSwapInterval(1);    // activate vsync
+
   cout << "Starting sound engine... " << endl;
   soundengine = irrklang::createIrrKlangDevice();
   if(soundengine) {
     cout << "Sound engine started." << endl;
     // play one of several random intro sounds
-    srand(glfwGetTime());
+    /*srand(glfwGetTime());
     short introtune = rand() % 3;
     if(introtune == 0) {
       soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
@@ -176,11 +193,74 @@ void init() {       /// all the one-time initialisation we need for the engine
       soundengine->play2D("GolfXTRM - Anton Riehl - Fresh Dew.ogg", false);    // relieved, xylophone
     } else {
       soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
-    }
-    soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
+    }*/
+    soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
   } else {
     cout << "Sound engine failed to start!" << endl;
   }
+
+  // load and display the splash screen
+  GLuint splashscreen1 = SOIL_load_OGL_texture(
+    "GolfXTRM splash screen.png",
+    SOIL_LOAD_AUTO,
+    SOIL_CREATE_NEW_ID,
+    SOIL_FLAG_POWER_OF_TWO
+    //| SOIL_FLAG_MIPMAPS
+    //| SOIL_FLAG_INVERT_Y
+    //| SOIL_FLAG_MULTIPLY_ALPHA
+    //| SOIL_FLAG_COMPRESS_TO_DXT
+    | SOIL_FLAG_DDS_LOAD_DIRECT
+    //| SOIL_FLAG_NTSC_SAFE_RGB
+    //| SOIL_FLAG_CoCg_Y
+    //| SOIL_FLAG_TEXTURE_RECTANGLE
+  );
+  float splashsize = 750 / 2;
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, splashscreen1);
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);  // optimised for inverse alpha
+  glClearColor(0, 0, 0, 1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	{
+    glLoadIdentity();
+    glOrtho(-windowwidth/2, windowwidth/2, -windowheight/2, windowheight/2, 0, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    {
+      glLoadIdentity();
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_LIGHTING);
+      //glTranslated(0,0,-1.4);
+      glBegin(GL_QUADS);
+      {
+        glTexCoord2f(0, 0);
+        glVertex3d(-splashsize, splashsize, -1);
+        glTexCoord2f(1, 0);
+        glVertex3d(splashsize, splashsize, -1);
+        glTexCoord2f(1, 1);
+        glVertex3d(splashsize, -splashsize, -1);
+        glTexCoord2f(0, 1);
+        glVertex3d(-splashsize, -splashsize, -1);
+      }
+      glEnd();
+      // back to perspective mode
+      glDisable(GL_BLEND);
+      glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer again
+      glEnable(GL_LIGHTING);
+      glMatrixMode(GL_PROJECTION);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+	}
+	glPopMatrix();
+  glfwDisable(GLFW_AUTO_POLL_EVENTS);   // don't poll the controls on this draw
+  glfwSwapBuffers();
+  glBindTexture(GL_TEXTURE_2D, NULL);
+  glDisable(GL_TEXTURE_2D);
+  double splashtime = 12;  // how long to show it for
+
 
   srand(1337);   // seed the random generator predictably
 
@@ -213,12 +293,12 @@ void init() {       /// all the one-time initialisation we need for the engine
   player->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = player;
   player->swinglength = player->armlength + player->helditem->bbox_end.y;
-  glfwSetWindowTitle("GolfXTRM beta: Tipping the caddy...");
-  golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
-  caddy->bodyyaw = -15;
-  caddy->helditem = new golfclub(root->planet[0]);
-  caddy->helditem->held_by = caddy;
-  caddy->swinglength = player->armlength + caddy->helditem->bbox_end.y;
+  //glfwSetWindowTitle("GolfXTRM beta: Tipping the caddy...");
+  //golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
+  //caddy->bodyyaw = -15;
+  //caddy->helditem = new golfclub(root->planet[0]);
+  //caddy->helditem->held_by = caddy;
+  //caddy->swinglength = player->armlength + caddy->helditem->bbox_end.y;
 
   golfball *ball = new golfball(root->planet[0]);
   ball->position.y = ball->radius;
@@ -258,19 +338,18 @@ void init() {       /// all the one-time initialisation we need for the engine
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
-  glfwSetKeyCallback(controlcallback);    // activate the control callback
-  //glfwEnable(GLFW_KEY_REPEAT);            // enable key repeats
-  glfwDisable(GLFW_KEY_REPEAT);            // enable key repeats
-
-  glfwEnable(GLFW_STICKY_KEYS);     // capture all keystrokes even if we're slow
-  glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
+  cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
+  glfwSleep(splashtime - glfwGetTime()); // show the splash screen for the rest of our splash time
+  //while(glfwGetTime() < splashtime) {
+  //  // lazy-wait while refreshing through the splash screen
+  //  glfwSleep(0.1);
+  //}
+  glfwEnable(GLFW_AUTO_POLL_EVENTS);
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
-
-  glfwSwapInterval(1);    // activate vsync
+  soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
-  cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
 }
 

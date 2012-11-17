@@ -6,8 +6,8 @@
 #include "globaldefs.h"
 
 // user settings
-int windowwidth = 800;
-int windowheight = 600;
+int windowwidth = 1000;
+int windowheight = 750;
 bool fullscreen = false;
 int mouseinvert = 1;      // multiplier: -1 to invert
 double camyawperpixel   = 8;     // mouse sensitivity
