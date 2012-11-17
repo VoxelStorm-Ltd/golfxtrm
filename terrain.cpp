@@ -13,7 +13,7 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
   bounds.x = 400;
   bounds.z = 400;
   bounds.y = 60;
-  gridwidth = 256;
+  gridwidth = 200;
 
   parent = parentcourse;
 
@@ -95,7 +95,8 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
           heightmap.push_back(offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor));
         } else {
           //heightmap[(x * gridwidth) + z] = ((double)rand()/(double)RAND_MAX) * randfactor;
-          heightmap.push_back(((double)rand()/(double)RAND_MAX) * randfactor);
+          //heightmap.push_back(((double)rand()/(double)RAND_MAX) * randfactor);
+          heightmap.push_back(0);
         }
       }
     }

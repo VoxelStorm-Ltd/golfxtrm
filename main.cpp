@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <GL/gl.h>
+#include <irrKlang.h>
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -68,7 +69,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowPos(winfinalposx,winfinalposy);
   #endif
 
-  char titleprefix[] = "GolfXTRM alpha ";
+  char titleprefix[] = "GolfXTRM beta ";
   char titlestring[100];
   strcpy(titlestring,titleprefix);
   strcat(titlestring,AutoVersion::FULLVERSION_STRING);
@@ -79,7 +80,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   strcat(titlestring,"/");
   strcat(titlestring,AutoVersion::YEAR);
   //glfwSetWindowTitle(titlestring);
-  glfwSetWindowTitle("GolfXTRM alpha: Loading...");
+  glfwSetWindowTitle("GolfXTRM beta: Loading...");
 
   // globalise the opengl extensions we want to use
   glewExperimental = GL_TRUE;
@@ -162,23 +163,42 @@ void init() {       /// all the one-time initialisation we need for the engine
   //glLightfv(GL_LIGHT1, GL_SPECULAR, directionallightspec);
   //glEnable(GL_LIGHT1);
 
+  cout << "Starting sound engine... " << endl;
+  soundengine = irrklang::createIrrKlangDevice();
+  if(soundengine) {
+    cout << "Sound engine started." << endl;
+    // play one of several random intro sounds
+    srand(glfwGetTime());
+    short introtune = rand() % 3;
+    if(introtune == 0) {
+      soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+    } else if(introtune == 1) {
+      soundengine->play2D("GolfXTRM - Anton Riehl - Fresh Dew.ogg", false);    // relieved, xylophone
+    } else {
+      soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
+    }
+    soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
+  } else {
+    cout << "Sound engine failed to start!" << endl;
+  }
+
   srand(1337);   // seed the random generator predictably
 
   // create and populate the universe
-  glfwSetWindowTitle("GolfXTRM alpha: Growing grass...");
+  glfwSetWindowTitle("GolfXTRM beta: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
   root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227));  // add the default course
   //root->planet[0]->course[0]->holeposition = Vector3d(25, 10, 25);  // this does nothing here
 
-  glfwSetWindowTitle("GolfXTRM alpha: Loading prehistoric fauna...");
+  glfwSetWindowTitle("GolfXTRM beta: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
-  cout << "Loading raptor..." << endl;
+  cout << "Loading raptor... " << endl;
   raptor->load();
   cout << "Raptor loaded." << endl;
 
 
-  glfwSetWindowTitle("GolfXTRM alpha: Walking to the course...");
+  glfwSetWindowTitle("GolfXTRM beta: Walking to the course...");
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
                       root->planet[0]->course[0]->teeposition.y,
@@ -189,11 +209,11 @@ void init() {       /// all the one-time initialisation we need for the engine
   randomgroundclub->rotate(golfclub::AXIS_X, 90);
   randomgroundclub->position.x = 1;
   randomgroundclub->position.z = 22;
-  glfwSetWindowTitle("GolfXTRM alpha: Polishing clubs...");
+  glfwSetWindowTitle("GolfXTRM beta: Polishing clubs...");
   player->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = player;
   player->swinglength = player->armlength + player->helditem->bbox_end.y;
-  glfwSetWindowTitle("GolfXTRM alpha: Tipping the caddy...");
+  glfwSetWindowTitle("GolfXTRM beta: Tipping the caddy...");
   golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
   caddy->bodyyaw = -15;
   caddy->helditem = new golfclub(root->planet[0]);
@@ -203,7 +223,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   golfball *ball = new golfball(root->planet[0]);
   ball->position.y = ball->radius;
 
-  glfwSetWindowTitle("GolfXTRM alpha: Planting specific trees...");
+  glfwSetWindowTitle("GolfXTRM beta: Planting specific trees...");
   firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
@@ -212,7 +232,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
   srand(1337);
-  glfwSetWindowTitle("GolfXTRM alpha: Planting random trees...");
+  glfwSetWindowTitle("GolfXTRM beta: Planting random trees...");
   for(int i = 0; i < 40; ++i) {
     double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
     double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
@@ -260,6 +280,7 @@ void shutdown(int return_code, string errorstring) {  /// close everything grace
   } else {
     cout << "Fatal error: " << errorstring << endl;
   }
+  soundengine->drop();  // shut down the sound engine
   glfwTerminate();  // shut down the window
   exit(return_code);
 }
