@@ -21,6 +21,7 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
 
   // initialise the heightmap
   std::cout << "          Generating heightmap..." << std::endl;
+  //heightmap = new double*[gridwidth*gridwidth];
   srand(randomseed);                  // seed the random generator predictably
 
   Perlin *testmap = new Perlin(4,            // octaves - 1 to 16 (~4-8)
@@ -47,7 +48,8 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
   for(int x = 0; x < gridwidth; ++x) {
     for(int z = 0; z < gridwidth; ++z) {
       if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
-        heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
+        //heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
+        heightmap.push_back(0);   // keep the edge skirt down for smoothness
       } else {
         double randfactor = 0;
         ///double randfactor = 0.2;
@@ -89,9 +91,11 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
         }
 
         if(offsetheight > 0) {
-          heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor);
+          //heightmap[(x * gridwidth) + z] = offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor);
+          heightmap.push_back(offsetheight + (((double)rand()/(double)RAND_MAX) * randfactor));
         } else {
-          heightmap[(x * gridwidth) + z] = 0 + (((double)rand()/(double)RAND_MAX) * randfactor);
+          //heightmap[(x * gridwidth) + z] = ((double)rand()/(double)RAND_MAX) * randfactor;
+          heightmap.push_back(((double)rand()/(double)RAND_MAX) * randfactor);
         }
       }
     }
@@ -102,6 +106,7 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
     std::cout << "          Creating VAO..." << std::endl;
     glGenVertexArrays(1, &vao);
   }
+  std::cout << "          Generating vertex buffer" << std::endl;
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &vbo_n);
   glGenBuffers(1, &ibo);
@@ -389,15 +394,18 @@ void terrain::render2(Vector4f basecolour) {      /// draw the terrain based on 
 void terrain::render3(Vector4f basecolour) {      /// draw the terrain using an indexed VBO
   glColor4fv(basecolour);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
   glEnableClientState(GL_VERTEX_ARRAY);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glVertexPointer(3, GL_FLOAT, 0, 0);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+  glNormalPointer(GL_FLOAT, 0, 0);
 
   glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
 
   glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

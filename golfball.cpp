@@ -114,6 +114,7 @@ void golfball::render() {       /// draw the ball using an indexed VBO with VAA 
         glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
@@ -138,6 +139,7 @@ void golfball::renderlocal() {  /// draw the ball using an indexed VBO with VAA 
     glNormalPointer(GL_FLOAT, 0, 0);
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }

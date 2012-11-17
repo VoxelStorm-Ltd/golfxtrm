@@ -239,7 +239,8 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 
   glfwSetKeyCallback(controlcallback);    // activate the control callback
-  glfwEnable(GLFW_KEY_REPEAT);            // enable key repeats
+  //glfwEnable(GLFW_KEY_REPEAT);            // enable key repeats
+  glfwDisable(GLFW_KEY_REPEAT);            // enable key repeats
 
   glfwEnable(GLFW_STICKY_KEYS);     // capture all keystrokes even if we're slow
   glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
@@ -339,9 +340,9 @@ void controls() {
     keyspressed++;
     player->state = movestate;
   }
-  if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
-    player->state = golfer::GOLFER_JUMPING;
-  }
+  //if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
+  //  player->state = golfer::GOLFER_JUMPING;
+  //}
 
   if(keyspressed > 1) {     //allow for relatively smooth diagonal strafe
     player->moveforce /= keyspressed;
@@ -377,7 +378,9 @@ void controls() {
 
 void GLFWCALL controlcallback(int key, int action) {
   if(action == GLFW_PRESS) {   // here are all the down-presses we care about
-    if(key == 'O') {        // O and P switch render modes
+    if(key == GLFW_KEY_SPACE) {        // space to jump
+      player->state = golfer::GOLFER_JUMPING;
+    } else if(key == 'O') {        // O and P switch render modes
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
       cout << "Switched to filled render mode" << endl;
     } else if(key == 'P') {

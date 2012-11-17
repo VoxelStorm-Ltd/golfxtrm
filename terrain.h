@@ -16,7 +16,9 @@ public:
   Vector3d origin;            // the map's origin's coordinates
   Vector3d bounds;            // the map's bounding box
 
-  double heightmap[200*200];  // the heightmap data
+  //double heightmap[200*200];  // the heightmap data
+  //double **heightmap;  // the heightmap data on the heap
+  std::vector<double> heightmap;  // the heightmap data as a vector
   int gridwidth;              // the x and z resolution of the heightmap as above
 
   int randomseed;             // the fixed seed for this course
