@@ -13,7 +13,7 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
   bounds.x = 400;
   bounds.z = 400;
   bounds.y = 60;
-  gridwidth = 200;
+  gridwidth = 256;
 
   parent = parentcourse;
 
@@ -108,7 +108,9 @@ terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holepo
   }
   std::cout << "          Generating vertex buffer" << std::endl;
   glGenBuffers(1, &vbo);
+  std::cout << "          Generating normal buffer" << std::endl;
   glGenBuffers(1, &vbo_n);
+  std::cout << "          Generating index buffer" << std::endl;
   glGenBuffers(1, &ibo);
   update_vbo(); // generate the vbo ready for first run
 
@@ -138,7 +140,9 @@ terrain::~terrain() {   /// destructor
 }
 
 void terrain::update_vbo() {   /// update the VBO from the current grid heightmap
+  std::cout << "          Assigning vertex buffer" << std::endl;
   GLfloat vbodata[gridwidth * gridwidth * 6];
+  std::cout << "          Assigning normal buffer" << std::endl;
   GLfloat vbodata_n[gridwidth * gridwidth * 6];
   std::vector<GLuint> indices;
   numtris = 0;
