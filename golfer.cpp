@@ -247,6 +247,9 @@ golfer::golfer(golfcourse *course,
     glBindVertexArray(0);
   }
 
+  // sound setup
+  currentsound = NULL;
+
   // add it to the pointer vector of the home planet
   currentplanet = currentcourse->parentplanet;
   currentplanet->players.push_back(this);

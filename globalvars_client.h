@@ -20,6 +20,9 @@ double timedeltamin = 1/fpsmax; // increase detail until we hit this time
 double timedeltamincap = 1/fpscap; // if we complete rendering before, just sleep
 double updatefreq = 20;     // how many times to update the world per second
 
+double timesetspeed = 120;
+double physicsspeed = 1;
+
 // non-editable interface settings
 double rotations_per_tick = .02;
 

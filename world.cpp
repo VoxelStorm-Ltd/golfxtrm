@@ -1,5 +1,6 @@
 #include "worldcomponents.h"
 #include "terrain.h"
+#include "globalvars_client_extern.h"
 
 world::world() {                                 /// default constructor
   std::cout << "    Initialising new planet..." << std::endl;
@@ -25,12 +26,13 @@ world::world() {                                 /// default constructor
     //timespeed = 0;          // frozen
     //timespeed = 1;          // realtime
     //timespeed = 60;         // 1 minute per second
-    timespeed = 120;        // 2 minutes per second
+    //timespeed = 120;        // 2 minutes per second
     //timespeed = 3600;       // 1 hour per second
     //timespeed = 7200;       // 2 hours per second
     //timespeed = 86400;      // 1 day per second
     //timespeed = 2592000;    // 1 month per second
     //timespeed = 31556926;   // 1 year per second
+    timespeed = timesetspeed;
     timeofday = 5 * 60 * 60;    // 8am
     calendardate = 150;
 

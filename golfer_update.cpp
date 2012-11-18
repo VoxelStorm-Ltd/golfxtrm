@@ -1,8 +1,12 @@
+#include <cstdlib>
+#include <irrKlang.h>
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
 #include "worldcomponents.h"
 #include "globalvars_client_extern.h"
+
+extern irrklang::ISoundEngine* soundengine;
 
 void golfer::update(double timedelta) {
   /// update position and velocity based on force and time delta
@@ -64,6 +68,31 @@ void golfer::update(double timedelta) {
         thistorque = -bodyyawtorquelimit;
       }
       bodyyawvelocity += (thistorque * timedelta) / bodymomentofinertia;
+    }
+  }
+
+  if(std::abs(armsyawvelocity) > 1000) {
+    // check if we're already playing a sound
+    if(currentsound != NULL) {
+      if(currentsound->isFinished()){
+        // clear up this sound first
+        delete currentsound;
+        currentsound = NULL;
+        // play one of several random intro sounds
+        srand(glfwGetTime());
+        short sample = rand() % 4;
+        if(sample == 0) {
+          currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true);
+        } else if(sample == 1) {
+          currentsound = soundengine->play2D("GolfXTRM - swing2.ogg", false, false, true);
+        } else if(sample == 2) {
+          currentsound = soundengine->play2D("GolfXTRM - swing3.ogg", false, false, true);
+        } else {
+          currentsound = soundengine->play2D("GolfXTRM - swing4.ogg", false, false, true);
+        }
+      }
+    } else {
+      currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true);  // our first swing
     }
   }
 

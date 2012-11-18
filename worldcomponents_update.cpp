@@ -103,9 +103,7 @@ void world::update(double timedelta) {
 
   // iterate through the items and update those
   for(std::vector<holdable*>::iterator i = items.begin(); i != items.end(); ++i) {
-    (*i)->update(timedelta);
-    //(*i)->update(timedelta / 10);   // DEBUG
-    //(*i)->update(timedelta / 10);   // DEBUG
+    (*i)->update(timedelta * physicsspeed);
   }
 
   // finally update particles, assuming there's enough time

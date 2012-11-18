@@ -21,6 +21,9 @@ extern double timedeltamincap;
 extern double updatefreq;
 extern double camfov;
 
+extern double timesetspeed;
+extern double physicsspeed;
+
 // non-editable interface settings
 extern double rotations_per_tick;
 extern double walkspeed;

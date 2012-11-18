@@ -32,7 +32,7 @@
 using namespace std;
 
 void login();
-void init();
+void init(bool fullscreen, bool largewindow, bool skipintro);
 void shutdown(int return_code, string errorstring);
 void mainloop();
 
@@ -41,40 +41,76 @@ void GLFWCALL controlcallback(int key, int action);
 void physics(double timedelta);
 void draw();
 
-int main() {
-  init();
+int main(int argc, char* argv[]) {
+  bool fullscreen, largewindow, skipintro;
+  fullscreen = false;
+  largewindow = true;
+  skipintro = false;
+  cout << "Starting up " << argv[0] << " with " << argc << " arguments" << endl;
+  for (int i = 1; i < argc; i++) {
+    cout << "Parsing commandline option " << i << endl;
+    if (i != argc) {  // Check that we haven't finished parsing already
+      cout << "arg " << i << " = " << argv[i] << endl;
+      string thisargstring = string(argv[i]);
+      if (thisargstring == "-skipintro") {
+        skipintro = true;
+        cout << "  skipping intro" << endl;
+      } else if (thisargstring == "-fullscreen") {
+        fullscreen = true;
+        largewindow = false;
+      } else if (thisargstring == "-largewindow") {
+        fullscreen = false;
+        largewindow = true;
+      } else if (thisargstring == "-smallwindow") {
+        fullscreen = false;
+        largewindow = false;
+      } else if (thisargstring == "-novao") {  // force VAO disable
+        hasvao = false;
+      } else if (thisargstring == "-width") {  // manual screen size setting
+        windowwidth = atoi(argv[i + 1]);
+      } else if (thisargstring == "-height") {
+        windowheight = atoi(argv[i + 1]);
+      } else if (thisargstring == "-timespeed") {
+        timesetspeed = atof(argv[i + 1]);
+      } else if (thisargstring == "-golfballspeed") {
+        physicsspeed = atof(argv[i + 1]);
+      }
+    }
+  }
+  init(fullscreen, largewindow, skipintro);
+
   mainloop();
   shutdown(0, "");
 }
 
-void init() {       /// all the one-time initialisation we need for the engine
+void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the one-time initialisation we need for the engine
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
   GLFWvidmode desktopmode;
   glfwGetDesktopMode(&desktopmode);
 
-  #ifdef WINDOW_FULLSCREEN
-  if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-  #elif defined WINDOW_LARGE
-  windowwidth  = desktopmode.Width  - 80;
-  windowheight = desktopmode.Height - 80;
-  if(windowwidth < 800) {
-    windowwidth = 800;
+  if(fullscreen) {
+    if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+  } else if(largewindow) {
+    windowwidth  = desktopmode.Width  - 80;
+    windowheight = desktopmode.Height - 80;
+    if(windowwidth < 800) {
+      windowwidth = 800;
+    }
+    if(windowheight < 750) {
+      windowheight = 750;
+    }
+    if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+    int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
+    int winfinalposy = 10;
+    glfwSetWindowPos(winfinalposx,winfinalposy);
+  } else {
+    cout << "Starting in " << windowwidth << "x" << windowheight << " with bit depth " << desktopmode.RedBits << "," << desktopmode.GreenBits << "," << desktopmode.BlueBits << endl;
+    if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+    int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
+    int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
+    glfwSetWindowPos(winfinalposx,winfinalposy);
   }
-  if(windowheight < 750) {
-    windowheight = 750;
-  }
-  if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-  int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-  int winfinalposy = 10;
-  glfwSetWindowPos(winfinalposx,winfinalposy);
-  #else
-  cout << "Starting in " << windowwidth << "x" << windowheight << " with bit depth " << desktopmode.RedBits << "," << desktopmode.GreenBits << "," << desktopmode.BlueBits << endl;
-  if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-  int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-  int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
-  glfwSetWindowPos(winfinalposx,winfinalposy);
-  #endif
 
   char titleprefix[] = "GolfXTRM beta ";
   char titlestring[100];
@@ -184,6 +220,7 @@ void init() {       /// all the one-time initialisation we need for the engine
   soundengine = irrklang::createIrrKlangDevice();
   if(soundengine) {
     cout << "Sound engine started." << endl;
+    if(!skipintro) {
     // play one of several random intro sounds
     /*srand(glfwGetTime());
     short introtune = rand() % 3;
@@ -195,6 +232,7 @@ void init() {       /// all the one-time initialisation we need for the engine
       soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
     }*/
     soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+    }
   } else {
     cout << "Sound engine failed to start!" << endl;
   }
@@ -259,8 +297,12 @@ void init() {       /// all the one-time initialisation we need for the engine
   glfwSwapBuffers();
   glBindTexture(GL_TEXTURE_2D, NULL);
   glDisable(GL_TEXTURE_2D);
-  double splashtime = 12;  // how long to show it for
-
+  double splashtime;
+  if(skipintro) {
+    splashtime = 0;
+  } else {
+    splashtime = 12;  // how long to show it for
+  }
 
   srand(1337);   // seed the random generator predictably
 

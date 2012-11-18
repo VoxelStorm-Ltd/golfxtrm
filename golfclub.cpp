@@ -1,7 +1,10 @@
+#include <irrKlang.h>
 #include "holdable.h"
 #include "worldcomponents.h"
 #include "golfer.h"
 #include "globalvars_client_extern.h"
+
+extern irrklang::ISoundEngine* soundengine;
 
 golfclub::golfclub(world *parentplanet) {
   held_by = NULL;
@@ -151,6 +154,7 @@ void golfclub::renderlocal() {  /// draw the object using an indexed VBO with VA
 }
 
 void golfclub::impact(holdable *target, golfer *actor, double distance) {
+  soundengine->play2D("GolfXTRM - hit1.ogg", false);  // play sounds as early as possible
   // rotational velocity -> linear velocity
   double pushleft = actor->armsyawvelocity * distance;
   double pushdown = actor->armspitchvelocity * distance;
