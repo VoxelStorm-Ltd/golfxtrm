@@ -36,7 +36,8 @@ public:
 
 class world {     /// world (planet) objects containing golf courses
 public:
-  golfcourse *course[18];
+  std::vector<golfcourse*> course;
+
   int numcourses;
   double horizondistance;
 
@@ -96,7 +97,7 @@ public:
 
 class universe {  /// universe objects - there's only one of these - contains worlds
 public:
-  world *planet[1];
+  std::vector<world*> planet;      // planets that belong to this
 
   int numplanets;
 

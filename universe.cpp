@@ -12,6 +12,6 @@ universe::universe() {                              /// default constructor
 }
 
 void universe::addplanet(int worldnum) {            /// add a planet to this universe
-  planet[worldnum] = new world();
+  planet.push_back(new world());
   ++numplanets;
 }

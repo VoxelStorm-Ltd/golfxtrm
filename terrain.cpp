@@ -141,13 +141,16 @@ terrain::~terrain() {   /// destructor
 }
 
 void terrain::update_vbo() {   /// update the VBO from the current grid heightmap
-  std::cout << "          Assigning vertex buffer" << std::endl;
-  GLfloat vbodata[gridwidth * gridwidth * 6];
-  std::cout << "          Assigning normal buffer" << std::endl;
-  GLfloat vbodata_n[gridwidth * gridwidth * 6];
+  std::cout << "          Assigning buffers" << std::endl;
+  std::vector<GLfloat> vbodata;
+  vbodata.assign(gridwidth * gridwidth * 6, (GLfloat)0);
+  std::vector<GLfloat> vbodata_n;
+  vbodata_n.assign(gridwidth * gridwidth * 6, (GLfloat)0);
   std::vector<GLuint> indices;
+
   numtris = 0;
 
+  std::cout << "          Filling buffers" << std::endl;
   for(int xgrid = 0; xgrid < gridwidth; ++xgrid) {
     for(int zgrid = 0; zgrid < gridwidth; ++zgrid) {
       // populate the vertex locations
@@ -181,12 +184,6 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
 
       // populate the triangles
       if((xgrid < gridwidth - 1) && (zgrid < gridwidth - 1)) {
-        /*indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );
-        indices.push_back(( xgrid      * (gridwidth)) + (zgrid + 1));
-        indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
-        indices.push_back(((xgrid + 1) * (gridwidth)) + (zgrid + 1));
-        indices.push_back(((xgrid + 1) * (gridwidth)) +  zgrid     );
-        indices.push_back(( xgrid      * (gridwidth)) +  zgrid     );*/
         indices.push_back((((xgrid + 1) * (gridwidth)) + (zgrid    )) * 2);
         indices.push_back((( xgrid      * (gridwidth)) + (zgrid + 1)) * 2);
         indices.push_back((( xgrid      * (gridwidth)) +  zgrid     ) * 2);
@@ -198,17 +195,21 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
     }
   }
 
+  std::cout << "          Uploading " << vbodata.size() << " vertices to vertex buffer" << std::endl;
   glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER,         0);
+  std::cout << "          Uploading " << vbodata_n.size() << " normals to normal buffer" << std::endl;
   glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER,         0);
+  std::cout << "          Uploading " << indices.size() << " indices for " << numtris << " triangles to index buffer" << std::endl;
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, numtris * 3 * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
+    std::cout << "          Setting up VAO" << std::endl;
     glBindVertexArray(vao);             // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -220,6 +221,8 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
     glNormalPointer(GL_FLOAT, 0, 0);
 
     glBindVertexArray(0);
+  } else {
+    std::cout << "          Not using VAO" << std::endl;
   }
 }
 

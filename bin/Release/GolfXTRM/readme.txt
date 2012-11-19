@@ -10,6 +10,7 @@ Controls:
     hold right mouse button to move arms and head,
     hold both mouse buttons at the same time to move just your head.
     B to drop an extra ball
+    O and P to switch between filled and wireframe rendering
 
 Commandline options:
     -skipintro        disable the splash screen and intro music

@@ -72,7 +72,7 @@ world::world() {                                 /// default constructor
 
 void world::addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition) {
   /// add a golf course to this planet
-  course[coursenum] = new golfcourse(this, teeposition, holeposition);
+  course.push_back(new golfcourse(this, teeposition, holeposition));
   ++numcourses;
 }
 

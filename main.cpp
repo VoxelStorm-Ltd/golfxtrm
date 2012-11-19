@@ -77,6 +77,9 @@ int main(int argc, char* argv[]) {
       }
     }
   }
+  #ifdef SKIPINTRO
+  skipintro = true;   // skip the intro in debug mode
+  #endif
   init(fullscreen, largewindow, skipintro);
 
   mainloop();
