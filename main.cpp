@@ -135,9 +135,9 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   cout << "GL_VERSION:  " << glGetString(GL_VERSION) << endl;
   cout << "GL_VENDOR:   " << glGetString(GL_VENDOR) << endl;
   cout << "GL_RENDERER: " << glGetString(GL_RENDERER) << endl;
-  //cout << "GL_ARB_vertex_array_object:     " << GL_ARB_vertex_array_object << endl;
-  //cout << "GL_ATI_vertex_array_object:     " << GL_ATI_vertex_array_object << endl;
-  //cout << "GL_VERTEX_ARRAY_OBJECT_AMD:     " << GL_VERTEX_ARRAY_OBJECT_AMD << endl;
+  int versionmajor, versionminor, versionrev;
+  glfwGetGLVersion(&versionmajor, &versionminor, &versionrev);
+  cout << "GL version major " << versionmajor << " minor " << versionminor << " revision " << versionrev << endl;
   if(!GLEW_ARB_vertex_array_object) {
     cout << "GLEW_ARB_vertex_array_object not available..." << endl;
     if(!GLEW_ATI_vertex_array_object) {
