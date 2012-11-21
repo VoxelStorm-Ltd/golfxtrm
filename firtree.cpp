@@ -68,9 +68,9 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
   if(hasvao) {
     glGenVertexArrays(1, &vao);
   }
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &vbo_n);
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &vbo);
+  glGenBuffersARB(1, &vbo_n);
+  glGenBuffersARB(1, &ibo);
 
   updatevbo();
 }
@@ -141,15 +141,15 @@ void firtree::updatevbo() {
   };
   numtris = 14;
 
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao);             // set up the VAO's state
@@ -212,18 +212,18 @@ void firtree::render() {
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
     } else {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
       glEnableClientState(GL_VERTEX_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo);
       glVertexPointer(3, GL_FLOAT, 0, 0);
       glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
       glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glDisableClientState(GL_VERTEX_ARRAY);
       glDisableClientState(GL_NORMAL_ARRAY);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
   }
   glPopMatrix();

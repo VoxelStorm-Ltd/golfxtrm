@@ -111,11 +111,11 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
     glGenVertexArrays(1, &vao);
   }
   std::cout << "          Generating vertex buffer" << std::endl;
-  glGenBuffers(1, &vbo);
+  glGenBuffersARB(1, &vbo);
   std::cout << "          Generating normal buffer" << std::endl;
-  glGenBuffers(1, &vbo_n);
+  glGenBuffersARB(1, &vbo_n);
   std::cout << "          Generating index buffer" << std::endl;
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &ibo);
   update_vbo(); // generate the vbo ready for first run
 
   if(hasvao) {
@@ -199,17 +199,17 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
   }
 
   std::cout << "          Uploading " << vbodata.size() << " vertices to vertex buffer" << std::endl;
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo);
-  glBufferData(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
   std::cout << "          Uploading " << vbodata_n.size() << " normals to normal buffer" << std::endl;
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
-  glBufferData(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
   std::cout << "          Uploading " << indices.size() << " indices for " << numtris << " triangles to index buffer" << std::endl;
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     std::cout << "          Setting up VAO" << std::endl;
@@ -405,12 +405,12 @@ void terrain::render2(Vector4f basecolour) {      /// draw the terrain based on 
 void terrain::render3(Vector4f basecolour) {      /// draw the terrain using an indexed VBO
   glColor4fv(basecolour);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glEnableClientState(GL_VERTEX_ARRAY);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBufferARB(GL_ARRAY_BUFFER, vbo);
   glVertexPointer(3, GL_FLOAT, 0, 0);
   glEnableClientState(GL_NORMAL_ARRAY);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+  glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
   glNormalPointer(GL_FLOAT, 0, 0);
 
   glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
@@ -418,8 +418,8 @@ void terrain::render3(Vector4f basecolour) {      /// draw the terrain using an 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void terrain::render4(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAA
