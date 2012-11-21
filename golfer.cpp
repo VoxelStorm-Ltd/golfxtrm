@@ -160,89 +160,89 @@ golfer::golfer(golfcourse *course,
     glGenVertexArrays(1, &vao_arms);
     glGenVertexArrays(1, &vao_head);
   }
-  glGenBuffers(1, &vbo_body);
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &vbo_body);
+  glGenBuffersARB(1, &ibo);
 
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_body);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_body);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao_body);             // set up the VAO's state
   }
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_body);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_body);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glEnableVertexAttribArrayARB(0);
+  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   if(hasvao) {
     glBindVertexArray(0);
   }
 
   // arm sections
-  glGenBuffers(1, &vbo_arms);
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &vbo_arms);
+  glGenBuffersARB(1, &ibo);
 
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_arms);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_arms), vbodata_arms, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_arms);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata_arms), vbodata_arms, GL_STATIC_DRAW);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao_arms);             // set up the VAO's state
   }
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_arms);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_arms);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glEnableVertexAttribArrayARB(0);
+  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   if(hasvao) {
     glBindVertexArray(0);
   }
 
   // hands
-  glGenBuffers(1, &vbo_hands);
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &vbo_hands);
+  glGenBuffersARB(1, &ibo);
 
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_hands);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_hands), vbodata_hands, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_hands);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata_hands), vbodata_hands, GL_STATIC_DRAW);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao_hands);             // set up the VAO's state
   }
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_hands);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_hands);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glEnableVertexAttribArrayARB(0);
+  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   if(hasvao) {
     glBindVertexArray(0);
   }
 
   // head
-  glGenBuffers(1, &vbo_head);
-  glGenBuffers(1, &ibo);
+  glGenBuffersARB(1, &vbo_head);
+  glGenBuffersARB(1, &ibo);
 
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_head);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_head), vbodata_head, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER,         0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_head);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata_head), vbodata_head, GL_STATIC_DRAW);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao_head);             // set up the VAO's state
   }
-  glBindBuffer(GL_ARRAY_BUFFER,         vbo_head);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_head);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glEnableVertexAttribArrayARB(0);
+  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
   if(hasvao) {
     glBindVertexArray(0);
   }
@@ -367,8 +367,8 @@ void render3() {          /// draw this fellow using an indexed VBO
   glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
   glRotated(bodyyaw, 0, -1, 0);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -377,8 +377,8 @@ void render3() {          /// draw this fellow using an indexed VBO
 
   glDisableClientState(GL_VERTEX_ARRAY);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glPopMatrix();
 }
@@ -390,18 +390,18 @@ void render4() {          /// draw this fellow using an indexed VBO with VAA
   glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
   glRotated(bodyyaw, 0, -1, 0);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArrayARB(0);
+  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
   glDisableVertexAttribArray(0);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ARRAY_BUFFER, 0);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   glPopMatrix();
 }
