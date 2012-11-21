@@ -21,7 +21,7 @@ public:
   Vector3d teeposition;                 // where we tee off from
   Vector3d holeposition;                // where the hole is
 
-  golfcourse(world *parent, Vector3d tee, Vector3d hole);
+  golfcourse(world *parent, Vector3d tee, Vector3d hole, unsigned int randomseed);
 
   void update(double timedelta);
   void render();
@@ -32,7 +32,6 @@ public:
   double get_grass_depth_at(double x, double z);
   double get_min_velocity_at(double x, double z);
 };
-
 
 class world {     /// world (planet) objects containing golf courses
 public:
@@ -83,7 +82,7 @@ public:
   std::vector<particle*> particles;// all the particles and temporary effects
 
   world();
-  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition);
+  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition, unsigned int randomseed);
   golfcourse *get_course_at(double x, double z);
   double get_height_at(double x, double z);
   double get_friction_at(double x, double z);

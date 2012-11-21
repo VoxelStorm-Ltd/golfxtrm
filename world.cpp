@@ -70,9 +70,9 @@ world::world() {                                 /// default constructor
   std::cout << "    Planet initialised" << std::endl;
 }
 
-void world::addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition) {
+void world::addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition, unsigned int randomseed) {
   /// add a golf course to this planet
-  course.push_back(new golfcourse(this, teeposition, holeposition));
+  course.push_back(new golfcourse(this, teeposition, holeposition, randomseed));
   ++numcourses;
 }
 

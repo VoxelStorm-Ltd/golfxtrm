@@ -29,7 +29,7 @@ public:
   GLuint ibo;                 // element buffer object (index buffer object)
   GLuint numtris;             // number of triangles in the index
 
-  terrain(golfcourse *parent, Vector3d teeposition, Vector3d holeposition);
+  terrain(golfcourse *parent, unsigned int randomseed, Vector3d teeposition, Vector3d holeposition, double size, double gridwidth);
   ~terrain();
   void update_vbo();
   void populatefeatures(int randomseed, feature::featuretype whatfeature);

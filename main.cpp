@@ -313,8 +313,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glfwSetWindowTitle("GolfXTRM beta: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
-  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227));  // add the default course
-  //root->planet[0]->course[0]->holeposition = Vector3d(25, 10, 25);  // this does nothing here
+  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227), 1337);  // add the default course
 
   glfwSetWindowTitle("GolfXTRM beta: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
@@ -355,31 +354,6 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //firtree *thistree4 = new firtree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
   //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
-
-  srand(1337);
-  glfwSetWindowTitle("GolfXTRM beta: Planting random trees...");
-  for(int i = 0; i < 40; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
-    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM, rand());
-  }
-  for(int i = 0; i < 1000; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
-    new firtree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM, rand());
-  }
-  for(int i = 0; i < 40; ++i) {
-    double xpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.x) - root->planet[0]->course[0]->landscape->bounds.x * 0.5;
-    double zpos = (rand() % (int)root->planet[0]->course[0]->landscape->bounds.z) - root->planet[0]->course[0]->landscape->bounds.z * 0.5;
-    new oaktree(root->planet[0], xpos, root->planet[0]->course[0]->landscape->get_height_at(xpos, zpos), zpos, oaktree::OAKTREE_SAPLING_RANDOM, rand());
-  }
-  if(root->planet[0]->introon) {
-    root->planet[0]->course[0]->landscape->populatefeatures(2, feature::FIRTREESAPLING, 1.4, 0.5);
-    root->planet[0]->course[0]->landscape->populatefeatures(3, feature::OAKTREESAPLING, 1.6, 0.1);
-  } else {
-    root->planet[0]->course[0]->landscape->populatefeatures(2, feature::FIRTREE, 1.4, 0.5);
-    root->planet[0]->course[0]->landscape->populatefeatures(3, feature::OAKTREE, 1.6, 0.1);
-  }
 
   glfwSetWindowTitle(titlestring);  // set the title to the main run's title
 

@@ -5,19 +5,22 @@
 #include "landscape_features.h"
 #include "worldcomponents.h"
 
-terrain::terrain(golfcourse *parentcourse, Vector3d teeposition, Vector3d holeposition) {  /// default constructor
+terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
+                 Vector3d teeposition, Vector3d holeposition,
+                 double terrainsize, double terraingridwidth) {
+  /// default constructor
   std::cout << "        Initialising terrain..." << std::endl;
   origin.x = 0;
   origin.y = 0;
   origin.z = 0;
-  bounds.x = 400;
-  bounds.z = 400;
+  bounds.x = terrainsize;
+  bounds.z = terrainsize;
   bounds.y = 60;
-  gridwidth = 200;
+  gridwidth = terraingridwidth;
 
   parent = parentcourse;
 
-  randomseed = 1337;
+  //randomseed = 1337;
 
   // initialise the heightmap
   std::cout << "          Generating heightmap..." << std::endl;

@@ -3,7 +3,8 @@
 #include "worldcomponents.h"
 #include "globalvars_client_extern.h"
 
-firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype treetype, int rseed) {      /// default constructor
+firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype treetype, int rseed) {
+  /// default constructor
   currentplanet = parentplanet;
   currentplanet->features.push_back(this);
 
