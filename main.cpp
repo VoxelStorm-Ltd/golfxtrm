@@ -162,7 +162,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
             camnearplane, camfarplane);
   glMatrixMode(GL_MODELVIEW);
 
-  glColor3f(0, 0, 0);       // this may be necessary before enabling lighting
+  glColor3f(1, 1, 1);       // this may be necessary before enabling lighting
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
   //glCullFace(GL_BACK);      // may be redundant to cull back-faces
   glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer
