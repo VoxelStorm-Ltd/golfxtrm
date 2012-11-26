@@ -16,13 +16,13 @@ golfcourse::golfcourse(world *parent, Vector3d tee, Vector3d hole, unsigned int 
   srand(randomseed);
   std::cout << "        Planting trees..." << std::endl;
   for(int i = 0; i < 40; ++i) {
-    double xpos = rand() % (int)((landscape->bounds.x) - landscape->bounds.x * 0.5);
-    double zpos = rand() % (int)((landscape->bounds.z) - landscape->bounds.z * 0.5);
+    double xpos = (rand() % (int)(landscape->bounds.x * 1.1)) - (landscape->bounds.x * 0.55);
+    double zpos = (rand() % (int)(landscape->bounds.z * 1.1)) - (landscape->bounds.z * 0.55);
     new firtree(parent, xpos, landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_RANDOM, rand());
   }
   for(int i = 0; i < 1000; ++i) {
-    double xpos = rand() % (int)((landscape->bounds.x) - landscape->bounds.x * 0.5);
-    double zpos = rand() % (int)((landscape->bounds.z) - landscape->bounds.z * 0.5);
+    double xpos = (rand() % (int)(landscape->bounds.x * 1.5)) - (landscape->bounds.x * 0.75);
+    double zpos = (rand() % (int)(landscape->bounds.z * 1.5)) - (landscape->bounds.z * 0.75);
     new firtree(parent, xpos, landscape->get_height_at(xpos, zpos), zpos, firtree::FIRTREE_SAPLING_RANDOM, rand());
   }
   for(int i = 0; i < 40; ++i) {
