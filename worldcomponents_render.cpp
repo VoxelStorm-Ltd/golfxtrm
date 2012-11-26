@@ -25,7 +25,7 @@ void world::render() {
   // sky
   glColor4fv(skycolour);
   glBegin(GL_TRIANGLE_STRIP);
-  glNormal3f(0, -1, 0);
+  glNormal3i(0, -1, 0);
   glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x + horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z + horizondistance);
@@ -34,7 +34,7 @@ void world::render() {
   // ground
   glColor4fv(grasscolour);
   glBegin(GL_TRIANGLE_STRIP);
-  glNormal3f(0, 1, 0);
+  glNormal3i(0, 1, 0);
   glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z - horizondistance);
   glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z + horizondistance);

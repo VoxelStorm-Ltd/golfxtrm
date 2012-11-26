@@ -162,6 +162,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
             camnearplane, camfarplane);
   glMatrixMode(GL_MODELVIEW);
 
+  glColor3f(0, 0, 0);       // this may be necessary before enabling lighting
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
   //glCullFace(GL_BACK);      // may be redundant to cull back-faces
   glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer
@@ -170,11 +171,12 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);  // enable local lighting
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);  // to make flat shading ok
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);  // ensure one-sided lighting
+  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);  // slower, checks sign of dot product of normals
 
   //glEnable(GL_MINMAX);      // allow min and max colour tables for HDR effects
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
-  //glPolygonMode(GL_FRONT, GL_FILL);  //filled
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
+  glPolygonMode(GL_FRONT, GL_FILL);  //filled
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
   //glShadeModel(GL_SMOOTH);  //SMOOTH or FLAT
   glShadeModel(GL_FLAT);    //may look more spectacular for a cube world
@@ -188,12 +190,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glFogi(GL_FOG_START, 2);     // only used for linear fog
   glFogi(GL_FOG_END, 100);
 
-  /*// temporary material definition
-  GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
-  GLfloat mat_shininess[] = {50.0};
-  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
-  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+  // temporary material definition
+  GLfloat mat_specular[] = {0.0, 0.0, 0.0, 1.0};
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+  glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);  // range 0-128
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
 
   // set up some lights
@@ -348,7 +349,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   ball->position.y = ball->radius;
 
   glfwSetWindowTitle("GolfXTRM beta: Planting specific trees...");
-  firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
+  //firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
   //firtree *thistree4 = new firtree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, firtree::FIRTREE_STANDARD, 1);

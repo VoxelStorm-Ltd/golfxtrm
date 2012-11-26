@@ -172,7 +172,7 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
       // populate the normals (z vector cross product x vector)
       Vector3f thisnormal;
       if(xgrid == gridwidth - 1 || zgrid == gridwidth - 1) {
-        thisnormal = Vector3f(0,1,0);
+        thisnormal = Vector3f(0, 1, 0);
       } else {
         thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + (zgrid + 1)] - heightmap[(xgrid * gridwidth) + zgrid], 1)
           .crossProduct(Vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0));    // normal is z cross x
