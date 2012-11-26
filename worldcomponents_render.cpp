@@ -22,28 +22,7 @@ void world::render() {
   //glEnable(GL_COLOR_MATERIAL);
 
   glPushMatrix();
-    glTranslated(player->bodyposition.x, player->bodyposition.y, player->bodyposition.z);
-    // sky
-    glColor4fv(skycolour);
-    if(hasvao) {
-      glBindVertexArray(vao_sky);
-      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
-    } else {
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
-      glEnableClientState(GL_VERTEX_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, vbo_sky);
-      glVertexPointer(3, GL_FLOAT, 0, 0);
-      glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n_sky);
-      glNormalPointer(GL_FLOAT, 0, 0);
-      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
-      glDisableClientState(GL_VERTEX_ARRAY);
-      glDisableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, 0);
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-
+    glTranslated(player->bodyposition.x, 0, player->bodyposition.z);
     // ground
     glColor4fv(grasscolour);
     if(hasvao) {
@@ -59,6 +38,27 @@ void world::render() {
       glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
       glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+    glTranslated(0, player->bodyposition.y, 0);
+    // sky
+    glColor4fv(skycolour);
+    if(hasvao) {
+      glBindVertexArray(vao_sky);
+      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_sky);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n_sky);
+      glNormalPointer(GL_FLOAT, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
       glDisableClientState(GL_VERTEX_ARRAY);
       glDisableClientState(GL_NORMAL_ARRAY);
       glBindBufferARB(GL_ARRAY_BUFFER, 0);
