@@ -87,6 +87,9 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
   fulcrum_to_hands.z = armlength;
   fulcrum_to_hands.rotate(0, armsyaw, 0);
 
+  // bug workaround prior to adding normals
+  //glDisableClientState(GL_NORMAL_ARRAY);
+
   glPushMatrix();   // body
   {
     glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
@@ -96,14 +99,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       glBindVertexArray(vao_body);
       glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     } else {
-      glBindBuffer(GL_ARRAY_BUFFER, vbo_body);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_body);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      //glEnableClientState(GL_NORMAL_ARRAY);
+      //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+      //glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-      glDisableVertexAttribArray(0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      //glDisableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     glPushMatrix();   // hands
@@ -117,14 +124,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindVertexArray(vao_hands);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
       } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_hands);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, vbo_hands);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        //glEnableClientState(GL_NORMAL_ARRAY);
+        //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+        //glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        //glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
       if(helditem != NULL) {  // render the held item
         glPushMatrix();
@@ -156,14 +167,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindVertexArray(vao_arms);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
       } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_arms);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, vbo_arms);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        //glEnableClientState(GL_NORMAL_ARRAY);
+        //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+        //glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        //glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
       glPushMatrix();   // right forearm
       {
@@ -173,14 +188,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
           glBindVertexArray(vao_arms);
           glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         } else {
-          glBindBuffer(GL_ARRAY_BUFFER, vbo_arms);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-          glEnableVertexAttribArray(0);
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+          glEnableClientState(GL_VERTEX_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, vbo_arms);
+          glVertexPointer(3, GL_FLOAT, 0, 0);
+          //glEnableClientState(GL_NORMAL_ARRAY);
+          //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+          //glNormalPointer(GL_FLOAT, 0, 0);
           glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-          glDisableVertexAttribArray(0);
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          glDisableClientState(GL_VERTEX_ARRAY);
+          //glDisableClientState(GL_NORMAL_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
       }
       glPopMatrix();
@@ -200,14 +219,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindVertexArray(vao_arms);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
       } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_arms);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, vbo_arms);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        //glEnableClientState(GL_NORMAL_ARRAY);
+        //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+        //glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        //glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
       glPushMatrix();   // left forearm
       {
@@ -217,14 +240,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
           glBindVertexArray(vao_arms);
           glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_arms);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+          glEnableClientState(GL_VERTEX_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, vbo_arms);
+          glVertexPointer(3, GL_FLOAT, 0, 0);
+          //glEnableClientState(GL_NORMAL_ARRAY);
+          //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+          //glNormalPointer(GL_FLOAT, 0, 0);
+          glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+          glDisableClientState(GL_VERTEX_ARRAY);
+          //glDisableClientState(GL_NORMAL_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
       }
       glPopMatrix();
@@ -245,14 +272,18 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
           glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
           glBindVertexArray(0);
         } else {
-          glBindBuffer(GL_ARRAY_BUFFER, vbo_head);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-          glEnableVertexAttribArray(0);
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+          glEnableClientState(GL_VERTEX_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, vbo_head);
+          glVertexPointer(3, GL_FLOAT, 0, 0);
+          //glEnableClientState(GL_NORMAL_ARRAY);
+          //glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+          //glNormalPointer(GL_FLOAT, 0, 0);
           glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-          glDisableVertexAttribArray(0);
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          glDisableClientState(GL_VERTEX_ARRAY);
+          //glDisableClientState(GL_NORMAL_ARRAY);
+          glBindBufferARB(GL_ARRAY_BUFFER, 0);
+          glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
       }
       glPopMatrix();

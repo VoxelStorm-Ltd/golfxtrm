@@ -63,15 +63,14 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
   }
 
   // rendering setup
-  vao = 0;
-  vbo = 0;
-  ibo = 0;
+  vao = vbo = vbo_n = ibo = 0;
   if(hasvao) {
     glGenVertexArrays(1, &vao);
   }
   glGenBuffersARB(1, &vbo);
   glGenBuffersARB(1, &vbo_n);
   glGenBuffersARB(1, &ibo);
+  //std::cout << "DEBUG oaktree buffers: " << vbo << " " << vbo_n << " " << ibo << std::endl;
 
   updatevbo();
 }

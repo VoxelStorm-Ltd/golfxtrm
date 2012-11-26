@@ -85,12 +85,10 @@ golfclub::golfclub(world *parentplanet) {
 
   if(hasvao) {
     glBindVertexArray(vao);             // set up the VAO's state
-  }
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArrayARB(0);
-  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  if(hasvao) {
+    glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArrayARB(0);
+    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 }
@@ -121,14 +119,18 @@ void golfclub::render() {     /// draw the object using an indexed VBO with VAA 
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
       } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+        //glEnableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+        //glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        //glDisableClientState(GL_NORMAL_ARRAY);
+        glBindBufferARB(GL_ARRAY_BUFFER, 0);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
     glPopMatrix();
   }
@@ -142,14 +144,18 @@ void golfclub::renderlocal() {  /// draw the object using an indexed VBO with VA
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
   } else {
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    //glEnableClientState(GL_NORMAL_ARRAY);
+    glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+    //glNormalPointer(GL_FLOAT, 0, 0);
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
-    glDisableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_NORMAL_ARRAY);
+    glBindBufferARB(GL_ARRAY_BUFFER, 0);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 }
 

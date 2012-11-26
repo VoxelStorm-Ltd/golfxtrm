@@ -172,12 +172,10 @@ golfer::golfer(golfcourse *course,
 
   if(hasvao) {
     glBindVertexArray(vao_body);             // set up the VAO's state
-  }
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_body);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArrayARB(0);
-  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  if(hasvao) {
+    glBindBufferARB(GL_ARRAY_BUFFER,         vbo_body);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArrayARB(0);
+    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 
@@ -194,12 +192,10 @@ golfer::golfer(golfcourse *course,
 
   if(hasvao) {
     glBindVertexArray(vao_arms);             // set up the VAO's state
-  }
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_arms);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArrayARB(0);
-  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  if(hasvao) {
+    glBindBufferARB(GL_ARRAY_BUFFER,         vbo_arms);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArrayARB(0);
+    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 
@@ -216,12 +212,10 @@ golfer::golfer(golfcourse *course,
 
   if(hasvao) {
     glBindVertexArray(vao_hands);             // set up the VAO's state
-  }
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_hands);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArrayARB(0);
-  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  if(hasvao) {
+    glBindBufferARB(GL_ARRAY_BUFFER,         vbo_hands);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArrayARB(0);
+    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 
@@ -238,12 +232,10 @@ golfer::golfer(golfcourse *course,
 
   if(hasvao) {
     glBindVertexArray(vao_head);             // set up the VAO's state
-  }
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_head);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glEnableVertexAttribArrayARB(0);
-  glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  if(hasvao) {
+    glBindBufferARB(GL_ARRAY_BUFFER,         vbo_head);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArrayARB(0);
+    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 
