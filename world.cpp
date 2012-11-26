@@ -1,4 +1,6 @@
 #include "worldcomponents.h"
+
+#include <cstdlib>
 #include "terrain.h"
 #include "globalvars_client_extern.h"
 
@@ -160,6 +162,7 @@ void world::update_vbo() {
   numtris = 0;
   numtris_sky = 0;
 
+  // ground grid
   vbodata.push_back(-horizondistance);
   vbodata.push_back(-0.01);
   vbodata.push_back(-horizondistance);
@@ -191,7 +194,31 @@ void world::update_vbo() {
   indices.push_back(2);
   indices.push_back(0);
   numtris = 2;
+  // distant mountains
+  // draw random mountain range around the perimiter of a circle
+  for(double i = 0; i < 360; i += 1) {
+    // TODO: make this round
+    double thisheight = (rand() % 30) - 10;
+    vbodata.push_back(500);
+    vbodata.push_back(0);
+    vbodata.push_back((i - 180 + 5) * 8);
+    vbodata.push_back(500);
+    vbodata.push_back(thisheight);
+    vbodata.push_back((i - 180) * 8);
+    vbodata.push_back(500);
+    vbodata.push_back(0);
+    vbodata.push_back((i - 180 - 5) * 8);
+    vbodata_n.push_back(0);
+    vbodata_n.push_back(1);
+    vbodata_n.push_back(0);
+    indices.push_back(indices.size());
+    indices.push_back(indices.size());
+    indices.push_back(indices.size());
+    ++numtris;
+    // TODO: make mountains snowcapped
+  }
 
+  // simple flat sky
   vbodata_sky.push_back(-horizondistance);
   vbodata_sky.push_back(skyheight);
   vbodata_sky.push_back(-horizondistance);
