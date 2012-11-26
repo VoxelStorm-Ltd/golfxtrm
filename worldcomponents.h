@@ -2,6 +2,8 @@
 #define WORLDCOMPONENTS_H_INCLUDED
 
 #include <vector>
+#include <GL/glew.h>
+#include <GL/glfw.h>
 #include "vmath.h"
 
 class golfer;   // forward decs
@@ -39,6 +41,7 @@ public:
 
   int numcourses;
   double horizondistance;
+  double skyheight;
 
   double featureupdatefreq;       // how often to update features
   double updatetime;              // how long to wait between updates (1/above)
@@ -81,6 +84,18 @@ public:
   std::vector<feature*> features;  // all the permanent fixtures (trees etc)
   std::vector<particle*> particles;// all the particles and temporary effects
 
+  GLuint vao;                 // vertex array object
+  GLuint vbo;                 // vertex buffer object
+  GLuint vbo_n;               // vertex buffer object for normals
+  GLuint ibo;                 // element buffer object (index buffer object)
+  GLuint numtris;             // number of triangles in the index
+
+  GLuint vao_sky;             // vertex array object
+  GLuint vbo_sky;             // vertex buffer object
+  GLuint vbo_n_sky;           // vertex buffer object for normals
+  GLuint ibo_sky;             // element buffer object (index buffer object)
+  GLuint numtris_sky;         // number of triangles in the index
+
   world();
   void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition, unsigned int randomseed);
   golfcourse *get_course_at(double x, double z);
@@ -90,6 +105,7 @@ public:
   double get_grass_depth_at(double x, double z);
   double get_min_velocity_at(double x, double z);
   void update(double timedelta);
+  void update_vbo();
   void render();
 };
 

@@ -12,34 +12,59 @@ extern golfer *player;
 void golfcourse::render() {
   // draw the terrain
   landscape->render(parentplanet->grasscolour);
-  // draw the trees and other furniture
-  // TODO
 }
 
 void world::render() {
   // sort out lighting
   glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
   // give us a basic horizon, sky, atmospheric stuff
-  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-  glEnable(GL_COLOR_MATERIAL);
-  // sky
-  glColor4fv(skycolour);
-  glBegin(GL_TRIANGLE_STRIP);
-  glNormal3i(0, -1, 0);
-  glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, player->bodyposition.y + 60, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x - horizondistance, player->bodyposition.y + 60, player->bodyposition.z + horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, player->bodyposition.y + 60, player->bodyposition.z + horizondistance);
-  glEnd();
-  // ground
-  glColor4fv(grasscolour);
-  glBegin(GL_TRIANGLE_STRIP);
-  glNormal3i(0, 1, 0);
-  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z - horizondistance);
-  glVertex3d(player->bodyposition.x - horizondistance, -0.01, player->bodyposition.z + horizondistance);
-  glVertex3d(player->bodyposition.x + horizondistance, -0.01, player->bodyposition.z + horizondistance);
-  glEnd();
+  //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);  // this should be set up already
+  //glEnable(GL_COLOR_MATERIAL);
+
+  glPushMatrix();
+    glTranslated(player->bodyposition.x, player->bodyposition.y, player->bodyposition.z);
+    // sky
+    glColor4fv(skycolour);
+    if(hasvao) {
+      glBindVertexArray(vao_sky);
+      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_sky);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n_sky);
+      glNormalPointer(GL_FLOAT, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris_sky * 3, GL_UNSIGNED_INT, 0);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    // ground
+    glColor4fv(grasscolour);
+    if(hasvao) {
+      glBindVertexArray(vao);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
+    } else {
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+      glNormalPointer(GL_FLOAT, 0, 0);
+      glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
+      glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
+      glBindBufferARB(GL_ARRAY_BUFFER, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+  glPopMatrix();
 
   // iterate through the courses
   for(int i=0; i < numcourses; ++i) {
@@ -60,11 +85,11 @@ void world::render() {
   }
   // iterate through the particles last and draw those that we have time for
   //std::cout << "particles.size() r " << particles.size() << std::endl;
-  //if(particles.size() > 0) {
+  if(particles.size() > 0) {
     for(std::vector<particle*>::iterator i = particles.begin(); i != particles.end(); ++i) {
       (*i)->render();
     }
-  //}
+  }
 }
 
 void universe::render() {

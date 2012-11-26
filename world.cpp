@@ -9,6 +9,7 @@ world::world() {                                 /// default constructor
   gravity = 9.800;
   airdensity = 1.2041;
   horizondistance = 1200;
+  skyheight = 60;
 
   introon = false;
   #ifdef INTRO
@@ -67,6 +68,21 @@ world::world() {                                 /// default constructor
 
   numcourses = 0;
   //addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
+
+  vao = vbo = vbo_n = ibo = 0;
+  vao_sky = vbo_sky = vbo_n_sky = ibo_sky = 0;
+  if(hasvao) {
+    glGenVertexArrays(1, &vao);
+    glGenVertexArrays(1, &vao_sky);
+  }
+  glGenBuffersARB(1, &vbo);
+  glGenBuffersARB(1, &vbo_n);
+  glGenBuffersARB(1, &ibo);
+  glGenBuffersARB(1, &vbo_sky);
+  glGenBuffersARB(1, &vbo_n_sky);
+  glGenBuffersARB(1, &ibo_sky);
+  update_vbo();     // get the VBOs in place for terrain and sky rendering
+
   std::cout << "    Planet initialised" << std::endl;
 }
 
@@ -130,4 +146,134 @@ double world::get_min_velocity_at(double x, double z) {
     return thiscourse->get_min_velocity_at(x, z);
   }
   return 0.1;
+}
+
+void world::update_vbo() {
+  std::cout << "      Assigning buffers" << std::endl;
+  std::vector<GLfloat> vbodata;
+  std::vector<GLfloat> vbodata_n;
+  std::vector<GLuint> indices;
+  std::vector<GLfloat> vbodata_sky;
+  std::vector<GLfloat> vbodata_n_sky;
+  std::vector<GLuint> indices_sky;
+
+  numtris = 0;
+  numtris_sky = 0;
+
+  vbodata.push_back(-horizondistance);
+  vbodata.push_back(-0.01);
+  vbodata.push_back(-horizondistance);
+  vbodata.push_back(horizondistance);
+  vbodata.push_back(-0.01);
+  vbodata.push_back(-horizondistance);
+  vbodata.push_back(-horizondistance);
+  vbodata.push_back(-0.01);
+  vbodata.push_back(horizondistance);
+  vbodata.push_back(horizondistance);
+  vbodata.push_back(-0.01);
+  vbodata.push_back(horizondistance);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(1);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(1);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(1);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(0);
+  vbodata_n.push_back(1);
+  vbodata_n.push_back(0);
+  indices.push_back(0);
+  indices.push_back(1);
+  indices.push_back(3);
+  indices.push_back(3);
+  indices.push_back(2);
+  indices.push_back(0);
+  numtris = 2;
+
+  vbodata_sky.push_back(-horizondistance);
+  vbodata_sky.push_back(skyheight);
+  vbodata_sky.push_back(-horizondistance);
+  vbodata_sky.push_back(horizondistance);
+  vbodata_sky.push_back(skyheight);
+  vbodata_sky.push_back(-horizondistance);
+  vbodata_sky.push_back(-horizondistance);
+  vbodata_sky.push_back(skyheight);
+  vbodata_sky.push_back(horizondistance);
+  vbodata_sky.push_back(horizondistance);
+  vbodata_sky.push_back(skyheight);
+  vbodata_sky.push_back(horizondistance);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(-1);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(-1);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(-1);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(0);
+  vbodata_n_sky.push_back(-1);
+  vbodata_n_sky.push_back(0);
+  indices_sky.push_back(0);
+  indices_sky.push_back(1);
+  indices_sky.push_back(3);
+  indices_sky.push_back(3);
+  indices_sky.push_back(2);
+  indices_sky.push_back(0);
+  numtris_sky = 2;
+
+  std::cout << "      Uploading " << vbodata.size() << " vertices to vertex buffer (landscape)" << std::endl;
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  std::cout << "      Uploading " << vbodata_n.size() << " normals to normal buffer (landscape)" << std::endl;
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  std::cout << "      Uploading " << indices.size() << " indices for " << numtris << " triangles to index buffer (landscape)" << std::endl;
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  std::cout << "      Uploading " << vbodata_sky.size() << " vertices to vertex buffer (sky)" << std::endl;
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_sky);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_sky.size() * sizeof(GLfloat), &vbodata_sky[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  std::cout << "      Uploading " << vbodata_n_sky.size() << " normals to normal buffer (sky)" << std::endl;
+  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n_sky);
+  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_n_sky.size() * sizeof(GLfloat), &vbodata_n_sky[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  std::cout << "      Uploading " << indices_sky.size() << " indices for " << numtris_sky << " triangles to index buffer (sky)" << std::endl;
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
+  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, indices_sky.size() * sizeof(GLuint), &indices_sky[0], GL_STATIC_DRAW);
+  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  if(hasvao) {
+    std::cout << "      Setting up VAO" << std::endl;
+    glBindVertexArray(vao);             // set up the VAO's state
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
+    glNormalPointer(GL_FLOAT, 0, 0);
+
+    glBindVertexArray(vao_sky);             // set up the VAO's state
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_sky);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_n_sky);
+    glNormalPointer(GL_FLOAT, 0, 0);
+
+    glBindVertexArray(0);
+  } else {
+    std::cout << "      Not using VAO" << std::endl;
+  }
 }
