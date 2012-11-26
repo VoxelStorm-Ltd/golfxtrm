@@ -2,10 +2,5 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
 		<Project filename="golf client.cbp" active="1" />
-		<Project filename="../libraries/irrKlang-1.4.0/examples/01.HelloWorld/01.HelloWorld.cbp" />
-		<Project filename="../libraries/irrKlang-1.4.0/examples/02.3DSound/02.3DSound.cbp" />
-		<Project filename="../libraries/irrKlang-1.4.0/examples/03.MemoryPlayback/03.MemoryPlayback.cbp" />
-		<Project filename="../libraries/irrKlang-1.4.0/examples/04.OverrideFileAccess/04.OverrideFileAccess.cbp" />
-		<Project filename="../libraries/irrKlang-1.4.0/examples/05.Effects/05.Effects.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
