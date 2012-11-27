@@ -10,7 +10,7 @@ world::world() {                                 /// default constructor
 
   gravity = 9.800;
   airdensity = 1.2041;
-  horizondistance = 1200;
+  horizondistance = 800;
   skyheight = 60;
 
   introon = false;
@@ -196,24 +196,31 @@ void world::update_vbo() {
   numtris = 2;
   // distant mountains
   // draw random mountain range around the perimiter of a circle
-  for(double i = 0; i < 360; i += 1) {
+  for(double i = 0; i < 360; i += 2) {
     // TODO: make this round
-    double thisheight = (rand() % 30) - 10;
-    vbodata.push_back(500);
-    vbodata.push_back(0);
-    vbodata.push_back((i - 180 + 5) * 8);
-    vbodata.push_back(500);
-    vbodata.push_back(thisheight);
-    vbodata.push_back((i - 180) * 8);
-    vbodata.push_back(500);
-    vbodata.push_back(0);
-    vbodata.push_back((i - 180 - 5) * 8);
-    vbodata_n.push_back(0);
+    double thisheight = rand() % 15;
+    double thiswidth = thisheight / 4;
+    vbodata.push_back(cos((i + thiswidth) * M_PI / 180) * horizondistance / 4);
+    vbodata.push_back(-2);
+    vbodata.push_back(sin((i + thiswidth) * M_PI / 180) * horizondistance / 4);
+    vbodata.push_back(cos((i            ) * M_PI / 180) * horizondistance / 4);
+    vbodata.push_back(thisheight - 2);
+    vbodata.push_back(sin((i            ) * M_PI / 180) * horizondistance / 4);
+    vbodata.push_back(cos((i - thiswidth) * M_PI / 180) * horizondistance / 4);
+    vbodata.push_back(-2);
+    vbodata.push_back(sin((i - thiswidth) * M_PI / 180) * horizondistance / 4);
+    vbodata_n.push_back(-cos((i + thiswidth) * M_PI / 180));
     vbodata_n.push_back(1);
-    vbodata_n.push_back(0);
-    indices.push_back(indices.size());
-    indices.push_back(indices.size());
-    indices.push_back(indices.size());
+    vbodata_n.push_back(-sin((i + thiswidth) * M_PI / 180));
+    vbodata_n.push_back(-cos((i + thiswidth) * M_PI / 180));
+    vbodata_n.push_back(1);
+    vbodata_n.push_back(-sin((i + thiswidth) * M_PI / 180));
+    vbodata_n.push_back(-cos((i + thiswidth) * M_PI / 180));
+    vbodata_n.push_back(1);
+    vbodata_n.push_back(-sin((i + thiswidth) * M_PI / 180));
+    indices.push_back(indices.size()+1);
+    indices.push_back(indices.size()+1);
+    indices.push_back(indices.size()+1);
     ++numtris;
     // TODO: make mountains snowcapped
   }
