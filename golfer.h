@@ -55,6 +55,7 @@ public:
 
   double bodyyawtorquelimit;  // how fast the body can turn
   double headdampingcoefficient; // how much head rotation velocity is lost per second
+  double armsdampingcoefficient; // how much arm rotation velocity is lost per second
   double bodyyawdampingcoefficient; // how much body rotation velocity is lost per second
 
   double walkspeed;           // maximum speed on the ground when not sprinting

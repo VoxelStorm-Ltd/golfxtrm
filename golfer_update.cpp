@@ -6,6 +6,8 @@
 #include "worldcomponents.h"
 #include "globalvars_client_extern.h"
 
+/// This file contains all the player's control and movement physics
+
 extern irrklang::ISoundEngine* soundengine;
 
 void golfer::update(double timedelta) {
@@ -33,18 +35,24 @@ void golfer::update(double timedelta) {
       }
     } else if(inputmode == INPUTMODE_MOVING_HEAD_AND_ARMS) {
       // swing / aim / interact mode - move the arms and head
-      armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+      armsyawvelocity   += (yawtorque   * timedelta) / armsmomentofinertia;
+      armspitchvelocity += (pitchtorque * timedelta) / armsmomentofinertia;
       // head follows arms precisely
-      headyawvelocity   += ((armsyaw   - headyaw)   / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-      headpitchvelocity += ((armspitch - headpitch) / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+      //headyawvelocity   += ((armsyaw   - headyaw)   / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+      //headpitchvelocity += ((armspitch - headpitch) / 10 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+      //headyaw = armsyaw;
+      //headpitch = armspitch;
+      //headyawvelocity   += ((armsyaw   - headyaw)   / 15 * bodyyawtorquelimit * timedelta);
+      //headpitchvelocity += ((armspitch - headpitch) / 15 * bodyyawtorquelimit * timedelta);
+      headyaw   += ((armsyaw   - headyaw)   / 4);
+      headpitch += ((armspitch - headpitch) / 4);
 
       //std::cout << "Arms yaw: " << armsyaw << " pitch: " << armspitch << " yawvel: " << armsyawvelocity << " pitchvel: " << armspitchvelocity << std::endl;
       // body stays still
     } else if(inputmode == INPUTMODE_MOVING_ARMS) {  // INPUTMODE_MOVING_ARMS
       // swing / interact with fixed view - move the arms only
-      armsyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
-      armspitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
+      armsyawvelocity   += (yawtorque   * timedelta) / armsmomentofinertia;
+      armspitchvelocity += (pitchtorque * timedelta) / armsmomentofinertia;
       // body stays still
       // head stays still
     } else {          // INPUTMODE_MOVING_HEAD
@@ -53,12 +61,12 @@ void golfer::update(double timedelta) {
       headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
     }
   } else {
-    // default walk-around mode - move the head
+    // default walk-around mode for other players - move the head
     headyawvelocity   += (yawtorque   * timedelta) / headmomentofinertia;
     headpitchvelocity += (pitchtorque * timedelta) / headmomentofinertia;
     // put our arms down and centered
-    armsyawvelocity   += ((0                  - armsyaw)   / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
-    armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / bodymomentofinertia;
+    armsyawvelocity   += ((0                  - armsyaw  ) / 90 * bodyyawtorquelimit * timedelta) / armsmomentofinertia;
+    armspitchvelocity += ((armspitchdownlimit - armspitch) / 90 * bodyyawtorquelimit * timedelta) / armsmomentofinertia;
     // attempt to center the body on the head
     if(headyaw > headyawdeadzone || headyaw < -headyawdeadzone || state == GOLFER_WALKING || state == GOLFER_RUNNING) {
       double thistorque = headyaw / 90 * bodyyawtorquelimit;
@@ -165,7 +173,7 @@ void golfer::update(double timedelta) {
   armsyaw      += armsyawvelocity   * timedelta;
   armspitch    += armspitchvelocity * timedelta;
   if(headpitch > 0) {
-    headpitch += (headpitchvelocity - (std::abs(bodyyawvelocity) * headpitch      * 0.01)) * timedelta;
+    headpitch += (headpitchvelocity - (std::abs(bodyyawvelocity) * headpitch           * 0.01)) * timedelta;
   } else {
     headpitch += (headpitchvelocity + (std::abs(bodyyawvelocity) * std::abs(headpitch) * 0.01)) * timedelta;
   }
@@ -174,9 +182,9 @@ void golfer::update(double timedelta) {
   double thisheaddampingamount = 1 - (headdampingcoefficient * timedelta);
   headyawvelocity   *= thisheaddampingamount;
   headpitchvelocity *= thisheaddampingamount;
-  armsyawvelocity   *= thisheaddampingamount;
-  armspitchvelocity *= thisheaddampingamount;
-  headyawvelocity   *= thisheaddampingamount;
+  double thisarmsdampingamount = 1 - (armsdampingcoefficient * timedelta);
+  armsyawvelocity   *= thisarmsdampingamount;
+  armspitchvelocity *= thisarmsdampingamount;
   bodyyawvelocity   *= 1 - (bodyyawdampingcoefficient * timedelta);
 
   // air resistance and wind effect (combined)
