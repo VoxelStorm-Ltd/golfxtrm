@@ -235,7 +235,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     } else {
       soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
     }*/
-    soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+      #ifdef NOMUSIC
+        cout << "Skipping sound engine initialisation" << endl;
+      #else
+        soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+      #endif
     }
   } else {
     cout << "Sound engine failed to start!" << endl;
@@ -366,7 +370,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //}
   glfwEnable(GLFW_AUTO_POLL_EVENTS);
   glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
-  soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
+  #ifdef NOMUSIC
+    cout << "Skipping music" << endl;
+  #else
+    soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
+  #endif
 
   // these must be absolutely last:
   glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop

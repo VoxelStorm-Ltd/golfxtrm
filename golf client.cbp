@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DSKIPINTRO" />
+					<Add option="-DNOMUSIC" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
