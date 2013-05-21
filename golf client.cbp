@@ -38,10 +38,7 @@
 					<Add option="-fprofile-arcs" />
 					<Add option="-fprofile-use" />
 					<Add option="-fprofile-values" />
-					<Add option="--coverage" />
-					<Add option="-ftest-coverage" />
 					<Add option="-fsched2-use-traces" />
-					<Add option="-ftree-loop-linear" />
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
