@@ -96,7 +96,7 @@ void ashtree::updatevbo() {
   rootbranch.end = Vector3f(0,0,0);
   rootbranch.thickness = 0;
   rootbranch.grow_now = false;
-  rootbranch.parent = NULL;
+  rootbranch.parent = 0;
   branches.push_back(rootbranch);
   vertices.push_back(rootbranch.start.x-0.1);
   vertices.push_back(rootbranch.start.y-0.1);

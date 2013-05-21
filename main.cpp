@@ -303,7 +303,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
 	glPopMatrix();
   glfwDisable(GLFW_AUTO_POLL_EVENTS);   // don't poll the controls on this draw
   glfwSwapBuffers();
-  glBindTexture(GL_TEXTURE_2D, NULL);
+  //glBindTexture(GL_TEXTURE_2D, NULL);
   glDisable(GL_TEXTURE_2D);
   double splashtime;
   if(skipintro) {
