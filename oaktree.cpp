@@ -64,7 +64,7 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
 
   // rendering setup
   vao = vbo = vbo_n = ibo = 0;
-  if(hasvao) {
+  if(config->hasvao) {
     glGenVertexArrays(1, &vao);
   }
   glGenBuffersARB(1, &vbo);
@@ -166,7 +166,7 @@ void oaktree::updatevbo() {
   glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  if(hasvao) {
+  if(config->hasvao) {
     glBindVertexArray(vao);             // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -217,7 +217,7 @@ void oaktree::render() {
     glTranslated(position.x, position.y, position.z);
     glMultMatrixd(rotation.transform());
     glColor4f(0.75, 0.75, 0.25, 1);
-    if(hasvao) {
+    if(config->hasvao) {
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);

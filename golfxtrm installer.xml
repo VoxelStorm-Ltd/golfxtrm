@@ -1,7 +1,7 @@
 <project>
     <shortName>GolfXTRM</shortName>
     <fullName>GolfXTRM</fullName>
-    <version>3.8.3049.16704</version>
+    <version>3.9.3128.17043</version>
     <readmeFile>bin/Release/GolfXTRM/readme.txt</readmeFile>
     <leftImage>assets/golfball_bw2_2b 163x314.png</leftImage>
     <logoImage>assets/golfball_bw2_3a 48.png</logoImage>
