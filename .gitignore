@@ -1,0 +1,5 @@
+Thumbs.db
+*.depend
+*.layout
+bin/
+obj/
