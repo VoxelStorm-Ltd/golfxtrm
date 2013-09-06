@@ -40,6 +40,8 @@ void mainloop();
 
 void physics(double timedelta);
 void draw();
+void draw_oculus();
+void (*drawfunction)() = nullptr;
 void controls();
 void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((unused)), int action, int mods);
 void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
@@ -143,9 +145,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   if(oculusmonitor != NULL) {
     windowwidth  = oculus->hmdinfo.HResolution;
     windowheight = oculus->hmdinfo.VResolution;
+    drawfunction = &draw_oculus;
   } else {
     windowwidth  = 1024;
     windowheight = 768;
+    drawfunction = &draw;
   }
   /*} else if(fullscreen) {
     if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
@@ -216,6 +220,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
             << " revision "        << glfwGetWindowAttrib(window_main, GLFW_CONTEXT_REVISION)
             << " API "             << glfwGetWindowAttrib(window_main, GLFW_CLIENT_API)
             << " profile  "        << glfwGetWindowAttrib(window_main, GLFW_OPENGL_PROFILE) << std::endl;;
+  std::cout << "GL_SHADING_LANGUAGE_VERSION: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
   if(!GLEW_ARB_vertex_array_object) {
     std::cout << "GLEW_ARB_vertex_array_object not available..." << std::endl;
     if(!GLEW_ATI_vertex_array_object) {
@@ -239,6 +244,9 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
             camfov  * camnearplane * aspect_ratio,
             camnearplane, camfarplane);
   glMatrixMode(GL_MODELVIEW);
+
+  oculus->nearplane = camnearplane;
+  oculus->farplane  = camfarplane;
 
   glColor3f(1, 1, 1);       // this may be necessary before enabling lighting
   glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
@@ -475,7 +483,7 @@ void mainloop() {   /// the main rendering loop
 
     // render the frame, if it's time to do so
     timelastrenderstart = glfwGetTime();
-    draw();                                                 // do the rendering
+    drawfunction();                                               // do the rendering
     timelasttotal = timelastrenderend;
     timelastrenderend = glfwGetTime();
     timedeltarender = timelastrenderend - timelastrenderstart;  // render delta
@@ -630,6 +638,44 @@ void draw() {
                -player->bodyposition.z);
 
   // tell the universe to go render itself
+  root->render();
+
+  // do the buffer shuffle
+  glfwSwapBuffers(window_main);
+}
+
+
+void draw_oculus() {
+  // clear the buffer
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // poll controls
+  glfwPollEvents();
+
+  // left eye
+  oculus->setup_left();
+  glRotatef(player->headyaw,   0, 1, 0);
+  glRotatef(player->headpitch, 1, 0, 0);
+  glTranslated(0, -player->eyeleveloffset.y, 0);
+  glMultMatrixf(oculus->getmatrix().inverse());
+  glTranslated(0, -player->headfulcrum.y, 0);
+  glRotatef(player->bodyyaw,   0, 1, 0);
+  glTranslated(-player->bodyposition.x,
+               -player->bodyposition.y,
+               -player->bodyposition.z);
+  root->render();
+
+  // right eye
+  oculus->setup_right();
+  glRotatef(player->headyaw,   0, 1, 0);
+  glRotatef(player->headpitch, 1, 0, 0);
+  glTranslated(0, -player->eyeleveloffset.y, 0);
+  glMultMatrixf(oculus->getmatrix().inverse());
+  glTranslated(0, -player->headfulcrum.y, 0);
+  glRotatef(player->bodyyaw,   0, 1, 0);
+  glTranslated(-player->bodyposition.x,
+               -player->bodyposition.y,
+               -player->bodyposition.z);
   root->render();
 
   // do the buffer shuffle
