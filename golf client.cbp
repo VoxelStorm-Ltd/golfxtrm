@@ -73,7 +73,6 @@
 			<Add option="-Wall" />
 			<Add option="-DGLEW_STATIC" />
 			<Add directory="include" />
-			<Add directory="$(#glfw.include)" />
 			<Add directory="$(#boost.include)" />
 			<Add directory="$(#glew.include)" />
 			<Add directory="lib" />
@@ -91,7 +90,6 @@
 			<Add library="lib\libwinmm.a" />
 			<Add library="lib\libuser32.a" />
 			<Add library="lib\libsetupapi.a" />
-			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
 		<Unit filename="OVR/Kernel/OVR_Alg.cpp" />
