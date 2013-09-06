@@ -4,30 +4,33 @@
 	<Project>
 		<Option title="GolfXTRM client" />
 		<Option pch_mode="2" />
-		<Option default_target="Release" />
+		<Option default_target="Win32_Release" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="bin\Debug\GolfXTRM debug" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+			<Target title="Win32_Debug">
+				<Option output="bin/Win32_Debug/GolfXTRM debug" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32_Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-Og" />
+					<Add option="-DWINVER=0x0501" />
+					<Add option="-D_WIN32_WINNT=0x0501" />
 					<Add option="-DSKIPINTRO" />
 					<Add option="-DNOMUSIC" />
 				</Compiler>
 			</Target>
-			<Target title="Release">
-				<Option output="bin\Release\GolfXTRM\GolfXTRM" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+			<Target title="Win32_Release">
+				<Option output="bin/Win32_Release/GolfXTRM/GolfXTRM" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Win32_Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectCompilerOptionsRelation="1" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
-					<Add option="-O3" />
+					<Add option="-Ofast" />
 					<Add option="-fgcse-sm" />
 					<Add option="-fgcse-las" />
 					<Add option="-fgcse-after-reload" />
@@ -42,6 +45,8 @@
 					<Add option="-fpeel-loops" />
 					<Add option="-funroll-loops" />
 					<Add option="-funswitch-loops" />
+					<Add option="-DWINVER=0x0501" />
+					<Add option="-D_WIN32_WINNT=0x0501" />
 					<Add option="-DINTRO" />
 				</Compiler>
 				<Linker>
@@ -52,7 +57,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;" />
+			<Add alias="All" targets="Win32_Debug;Win32_Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -73,9 +78,91 @@
 			<Add library="lib\libopengl32.a" />
 			<Add library="lib\libirrKlang.a" />
 			<Add library="ws2_32" />
+			<Add library="lib\libwinmm.a" />
+			<Add library="lib\libuser32.a" />
+			<Add library="lib\libsetupapi.a" />
 			<Add directory="$(#glfw.lib)" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
+		<Unit filename="OVR/Kernel/OVR_Alg.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Alg.h" />
+		<Unit filename="OVR/Kernel/OVR_Allocator.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Allocator.h" />
+		<Unit filename="OVR/Kernel/OVR_Array.h" />
+		<Unit filename="OVR/Kernel/OVR_Atomic.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Atomic.h" />
+		<Unit filename="OVR/Kernel/OVR_Color.h" />
+		<Unit filename="OVR/Kernel/OVR_ContainerAllocator.h" />
+		<Unit filename="OVR/Kernel/OVR_File.cpp" />
+		<Unit filename="OVR/Kernel/OVR_File.h" />
+		<Unit filename="OVR/Kernel/OVR_FileFILE.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Hash.h" />
+		<Unit filename="OVR/Kernel/OVR_KeyCodes.h" />
+		<Unit filename="OVR/Kernel/OVR_List.h" />
+		<Unit filename="OVR/Kernel/OVR_Log.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Log.h" />
+		<Unit filename="OVR/Kernel/OVR_Math.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Math.h" />
+		<Unit filename="OVR/Kernel/OVR_RefCount.cpp" />
+		<Unit filename="OVR/Kernel/OVR_RefCount.h" />
+		<Unit filename="OVR/Kernel/OVR_Std.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Std.h" />
+		<Unit filename="OVR/Kernel/OVR_String.cpp" />
+		<Unit filename="OVR/Kernel/OVR_String.h" />
+		<Unit filename="OVR/Kernel/OVR_StringHash.h" />
+		<Unit filename="OVR/Kernel/OVR_String_FormatUtil.cpp" />
+		<Unit filename="OVR/Kernel/OVR_String_PathUtil.cpp" />
+		<Unit filename="OVR/Kernel/OVR_SysFile.cpp" />
+		<Unit filename="OVR/Kernel/OVR_SysFile.h" />
+		<Unit filename="OVR/Kernel/OVR_System.cpp" />
+		<Unit filename="OVR/Kernel/OVR_System.h" />
+		<Unit filename="OVR/Kernel/OVR_Threads.h" />
+		<Unit filename="OVR/Kernel/OVR_ThreadsWinAPI.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Timer.cpp" />
+		<Unit filename="OVR/Kernel/OVR_Timer.h" />
+		<Unit filename="OVR/Kernel/OVR_Types.h" />
+		<Unit filename="OVR/Kernel/OVR_UTF8Util.cpp" />
+		<Unit filename="OVR/Kernel/OVR_UTF8Util.h" />
+		<Unit filename="OVR/OVR_Device.h" />
+		<Unit filename="OVR/OVR_DeviceConstants.h" />
+		<Unit filename="OVR/OVR_DeviceHandle.cpp" />
+		<Unit filename="OVR/OVR_DeviceHandle.h" />
+		<Unit filename="OVR/OVR_DeviceImpl.cpp" />
+		<Unit filename="OVR/OVR_DeviceImpl.h" />
+		<Unit filename="OVR/OVR_DeviceMessages.h" />
+		<Unit filename="OVR/OVR_HIDDevice.h" />
+		<Unit filename="OVR/OVR_HIDDeviceBase.h" />
+		<Unit filename="OVR/OVR_HIDDeviceImpl.h" />
+		<Unit filename="OVR/OVR_JSON.cpp" />
+		<Unit filename="OVR/OVR_JSON.h" />
+		<Unit filename="OVR/OVR_LatencyTestImpl.cpp" />
+		<Unit filename="OVR/OVR_LatencyTestImpl.h" />
+		<Unit filename="OVR/OVR_Profile.cpp" />
+		<Unit filename="OVR/OVR_Profile.h" />
+		<Unit filename="OVR/OVR_SensorFilter.cpp" />
+		<Unit filename="OVR/OVR_SensorFilter.h" />
+		<Unit filename="OVR/OVR_SensorFusion.cpp" />
+		<Unit filename="OVR/OVR_SensorFusion.h" />
+		<Unit filename="OVR/OVR_SensorImpl.cpp" />
+		<Unit filename="OVR/OVR_SensorImpl.h" />
+		<Unit filename="OVR/OVR_ThreadCommandQueue.cpp" />
+		<Unit filename="OVR/OVR_ThreadCommandQueue.h" />
+		<Unit filename="OVR/OVR_Win32_DeviceManager.cpp" />
+		<Unit filename="OVR/OVR_Win32_DeviceManager.h" />
+		<Unit filename="OVR/OVR_Win32_DeviceStatus.cpp" />
+		<Unit filename="OVR/OVR_Win32_DeviceStatus.h" />
+		<Unit filename="OVR/OVR_Win32_HIDDevice.cpp" />
+		<Unit filename="OVR/OVR_Win32_HIDDevice.h" />
+		<Unit filename="OVR/OVR_Win32_HMDDevice.cpp" />
+		<Unit filename="OVR/OVR_Win32_HMDDevice.h" />
+		<Unit filename="OVR/OVR_Win32_SensorDevice.cpp" />
+		<Unit filename="OVR/OVR_Win32_SensorDevice.h" />
+		<Unit filename="OVR/Util/Util_LatencyTest.cpp" />
+		<Unit filename="OVR/Util/Util_LatencyTest.h" />
+		<Unit filename="OVR/Util/Util_MagCalibration.cpp" />
+		<Unit filename="OVR/Util/Util_MagCalibration.h" />
+		<Unit filename="OVR/Util/Util_Render_Stereo.cpp" />
+		<Unit filename="OVR/Util/Util_Render_Stereo.h" />
 		<Unit filename="ashtree.cpp" />
 		<Unit filename="firtree.cpp" />
 		<Unit filename="global_objects.h" />
@@ -92,12 +179,12 @@
 		<Unit filename="holdable.h" />
 		<Unit filename="landscape_feature.cpp" />
 		<Unit filename="landscape_features.h" />
-		<Unit filename="main.cpp">
-			<Option weight="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="oaktree.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.h" />
+		<Unit filename="oculusstorm.cpp" />
+		<Unit filename="oculusstorm.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
 		<Unit filename="perlin.cpp" />
@@ -117,7 +204,7 @@
 			<debugger />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="1" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="1" date_declarations="1" update_manifest="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>
