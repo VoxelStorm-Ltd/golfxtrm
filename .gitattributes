@@ -19,7 +19,6 @@
 *.jpeg binary
 *.ttf binary
 *.dll binary
-*.cbp binary
 *.sample binary
 *.xml binary
 *.layout binary

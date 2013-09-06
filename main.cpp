@@ -5,11 +5,12 @@
 #include <sstream>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <boost/thread/thread.hpp>
 #include "version.h"
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
-#include <GL/gl.h>
+#include <GLFW/glfw3.h>
+//#include <GL/gl.h>
 #include <irrKlang.h>
 #include <SOIL.h>
 #include "vmath.h"
@@ -22,6 +23,7 @@
 #include "golfer.h"
 #include "particle.h"
 #include "holdable.h"
+#include "oculusstorm.h"
 
 #include "global_objects.h"
 #include "objloader.h"
@@ -36,10 +38,19 @@ void init(bool fullscreen, bool largewindow, bool skipintro);
 void shutdown(int return_code, string errorstring);
 void mainloop();
 
-void controls();
-void GLFWCALL controlcallback(int key, int action);
 void physics(double timedelta);
 void draw();
+void controls();
+void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((unused)), int action, int mods);
+void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
+  /// Callback for handling window close events
+  std::cout << "Window closed, exiting" << std::endl;
+
+  delete oculus;
+  oculus = nullptr;
+
+  _Exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char* argv[]) {
   bool fullscreen, largewindow, skipintro;
@@ -88,11 +99,55 @@ int main(int argc, char* argv[]) {
 
 void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the one-time initialisation we need for the engine
   // initialise the opengl window
-  if(glfwInit() != GL_TRUE) shutdown(1, "GLFW failed to initialise");
-  GLFWvidmode desktopmode;
-  glfwGetDesktopMode(&desktopmode);
+  if(glfwInit() != GL_TRUE) {
+    std::cout << "ERROR: glfwInit() failed" << std::endl;
+    _Exit(EXIT_FAILURE);
+  }
 
-  if(fullscreen) {
+  oculus = new oculusstorm();   // initialise the oculus rift before graphics init
+
+  int nummonitors = 0;
+  GLFWmonitor **monitor_list = glfwGetMonitors(&nummonitors);
+  GLFWmonitor *monitor_primary = glfwGetPrimaryMonitor();
+  GLFWmonitor *oculusmonitor = NULL;
+  std::cout << "Monitors: " << nummonitors << std::endl;
+  for(int monitornum = 0; monitornum != nummonitors; ++monitornum) {
+    GLFWmonitor *thismonitor = monitor_list[monitornum];
+    int physicalwidth  = 0;
+    int physicalheight = 0;
+    int xpos = 0;
+    int ypos = 0;
+    glfwGetMonitorPhysicalSize(thismonitor, &physicalwidth, &physicalheight);
+    glfwGetMonitorPos(thismonitor, &xpos, &ypos);
+    const GLFWvidmode *videomode = glfwGetVideoMode(thismonitor);
+
+    std::cout << "Monitor " << monitornum;
+    if(thismonitor == monitor_primary) {
+      std::cout << " (primary)";
+    }
+    std::cout << std::endl;
+    std::cout << "  Name: " << glfwGetMonitorName(thismonitor) << std::endl;
+    std::cout << "  Physical size: " << physicalwidth << " " << physicalheight << std::endl;
+    std::cout << "  Position: " << xpos << " " << ypos << std::endl;
+    std::cout << "  Mode: " << videomode->width << " " << videomode->height << " " << videomode->refreshRate << std::endl;
+
+    // try to determine if this monitor is the Oculus Rift's display
+    if(static_cast<unsigned int>(videomode->width)  == oculus->hmdinfo.HResolution &&
+       static_cast<unsigned int>(videomode->height) == oculus->hmdinfo.VResolution &&
+       thismonitor != monitor_primary) {
+      std::cout << "  (Oculus Rift candidate)" << std::endl;
+      oculusmonitor = thismonitor;
+    }
+  }
+
+  if(oculusmonitor != NULL) {
+    windowwidth  = oculus->hmdinfo.HResolution;
+    windowheight = oculus->hmdinfo.VResolution;
+  } else {
+    windowwidth  = 1024;
+    windowheight = 768;
+  }
+  /*} else if(fullscreen) {
     if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
   } else if(largewindow) {
     windowwidth  = desktopmode.Width  - 80;
@@ -113,33 +168,56 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
     int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
     glfwSetWindowPos(winfinalposx,winfinalposy);
+  }*/
+
+  // set up window hints in advance
+  //glfwWindowHint(GLFW_RED_BITS,   state->videomode->redBits);
+  //glfwWindowHint(GLFW_GREEN_BITS, state->videomode->greenBits);
+  //glfwWindowHint(GLFW_BLUE_BITS,  state->videomode->blueBits);
+  //glfwWindowHint(GLFW_DEPTH_BITS, 32);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);   // forward compat disables all deprecated functions - we don't want that
+  //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_SAMPLES, 8);
+
+  glfwWindowHint(GLFW_CONTEXT_ROBUSTNESS, GLFW_NO_RESET_NOTIFICATION);
+  glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+  window_main = glfwCreateWindow(windowwidth,
+                                 windowheight,
+                                 "GolfXTRM",
+                                 oculusmonitor,
+                                 NULL);
+  glfwMakeContextCurrent(window_main);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glfwShowWindow(window_main);  // only display the window once in position
+
+  if(!window_main) {
+    // exit if this didn't work
+    std::cout << "ERROR: glfwOpenWindow returned NULL" << std::endl;
+    _Exit(EXIT_FAILURE);
   }
+  glfwSetWindowCloseCallback(window_main, callback_windowclose);    // callback for window closing
 
-  char titleprefix[] = "GolfXTRM beta ";
-  char titlestring[100];
-  strcpy(titlestring,titleprefix);
-  strcat(titlestring,AutoVersion::FULLVERSION_STRING);
-  strcat(titlestring," built ");
-  strcat(titlestring,AutoVersion::DATE);
-  strcat(titlestring,"/");
-  strcat(titlestring,AutoVersion::MONTH);
-  strcat(titlestring,"/");
-  strcat(titlestring,AutoVersion::YEAR);
-  //glfwSetWindowTitle(titlestring);
-  glfwSetWindowTitle("GolfXTRM beta: Loading...");
-
-  // globalise the opengl extensions we want to use
   glewExperimental = GL_TRUE;
-  if(glewInit() != GLEW_OK) shutdown(1, "GLEW failed to initialise");
+  if(glewInit() != GLEW_OK) {
+    std::cout << "ERROR: GLEW returned " << glewInit() << std::endl;
+    _Exit(EXIT_FAILURE);
+  }
   glewExperimental = GL_TRUE;
-  cout << "GL_VERSION:  " << glGetString(GL_VERSION) << endl;
-  cout << "GL_VENDOR:   " << glGetString(GL_VENDOR) << endl;
-  cout << "GL_RENDERER: " << glGetString(GL_RENDERER) << endl;
-  int versionmajor, versionminor, versionrev;
-  glfwGetGLVersion(&versionmajor, &versionminor, &versionrev);
-  cout << "GL version major " << versionmajor << " minor " << versionminor << " revision " << versionrev << endl;
+  std::cout << "GL_VERSION:  " << glGetString(GL_VERSION)  << std::endl;
+  std::cout << "GL_VENDOR:   " << glGetString(GL_VENDOR)   << std::endl;
+  std::cout << "GL_RENDERER: " << glGetString(GL_RENDERER) << std::endl;
+  std::cout << "GL version major " << glfwGetWindowAttrib(window_main, GLFW_CONTEXT_VERSION_MAJOR)
+            << " minor "           << glfwGetWindowAttrib(window_main, GLFW_CONTEXT_VERSION_MINOR)
+            << " revision "        << glfwGetWindowAttrib(window_main, GLFW_CONTEXT_REVISION)
+            << " API "             << glfwGetWindowAttrib(window_main, GLFW_CLIENT_API)
+            << " profile  "        << glfwGetWindowAttrib(window_main, GLFW_OPENGL_PROFILE) << std::endl;;
   if(!GLEW_ARB_vertex_array_object) {
-    cout << "GLEW_ARB_vertex_array_object not available..." << endl;
+    std::cout << "GLEW_ARB_vertex_array_object not available..." << std::endl;
     if(!GLEW_ATI_vertex_array_object) {
       if(!GLEW_APPLE_vertex_array_object) {
         hasvao = false;
@@ -210,12 +288,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //glLightfv(GL_LIGHT1, GL_SPECULAR, directionallightspec);
   //glEnable(GL_LIGHT1);
 
-  glfwSetKeyCallback(controlcallback);    // activate the control callback
-  //glfwEnable(GLFW_KEY_REPEAT);            // enable key repeats
-  glfwDisable(GLFW_KEY_REPEAT);            // enable key repeats
-
-  glfwEnable(GLFW_STICKY_KEYS);     // capture all keystrokes even if we're slow
-  glfwEnable(GLFW_STICKY_MOUSE_BUTTONS);  // and clicks
+  glfwSetKeyCallback(window_main, callback_key);    // activate the control callback
   //glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
 
   glfwSwapInterval(1);    // activate vsync
@@ -301,8 +374,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     glMatrixMode(GL_MODELVIEW);
 	}
 	glPopMatrix();
-  glfwDisable(GLFW_AUTO_POLL_EVENTS);   // don't poll the controls on this draw
-  glfwSwapBuffers();
+  glfwSwapBuffers(window_main);
   //glBindTexture(GL_TEXTURE_2D, NULL);
   glDisable(GL_TEXTURE_2D);
   double splashtime;
@@ -315,19 +387,19 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   srand(1337);   // seed the random generator predictably
 
   // create and populate the universe
-  glfwSetWindowTitle("GolfXTRM beta: Growing grass...");
+  glfwSetWindowTitle(window_main, "GolfXTRM beta: Growing grass...");
   root = new universe();      // create the global universe object
   root->addplanet(0);         // populate it with a default planet
   root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227), 1337);  // add the default course
 
-  glfwSetWindowTitle("GolfXTRM beta: Loading prehistoric fauna...");
+  glfwSetWindowTitle(window_main, "GolfXTRM beta: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
   cout << "Loading raptor... " << endl;
   raptor->load();
   cout << "Raptor loaded." << endl;
 
 
-  glfwSetWindowTitle("GolfXTRM beta: Walking to the course...");
+  glfwSetWindowTitle(window_main, "GolfXTRM beta: Walking to the course...");
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
                       root->planet[0]->course[0]->teeposition.y,
@@ -338,7 +410,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   randomgroundclub->rotate(golfclub::AXIS_X, 90);
   randomgroundclub->position.x = 1;
   randomgroundclub->position.z = 22;
-  glfwSetWindowTitle("GolfXTRM beta: Polishing clubs...");
+  glfwSetWindowTitle(window_main, "GolfXTRM beta: Polishing clubs...");
   player->helditem = new golfclub(root->planet[0]);
   player->helditem->held_by = player;
   player->swinglength = player->armlength + player->helditem->bbox_end.y;
@@ -352,7 +424,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   golfball *ball = new golfball(root->planet[0]);
   ball->position.y = ball->radius;
 
-  glfwSetWindowTitle("GolfXTRM beta: Planting specific trees...");
+  glfwSetWindowTitle(window_main, "GolfXTRM beta: Planting specific trees...");
   //firtree *thistree1 = new firtree(root->planet[0], 48, root->planet[0]->course[0]->landscape->get_height_at(48, 32), 32, firtree::FIRTREE_STANDARD, 1);
   //oaktree *thistree2 = new oaktree(root->planet[0], 28, root->planet[0]->course[0]->landscape->get_height_at(28, 52), 52, oaktree::OAKTREE_STANDARD, 1);
   //ashtree *thistree3 = new ashtree(root->planet[0], 4, root->planet[0]->course[0]->landscape->get_height_at(18, 22), 2, 2);
@@ -360,16 +432,15 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
   //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
-  glfwSetWindowTitle(titlestring);  // set the title to the main run's title
+  glfwSetWindowTitle(window_main, "GolfXTRM beta");  // set the title to the main run's title
 
   cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
-  glfwSleep(splashtime - glfwGetTime()); // show the splash screen for the rest of our splash time
+  boost::this_thread::sleep_for(boost::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
   //while(glfwGetTime() < splashtime) {
   //  // lazy-wait while refreshing through the splash screen
   //  glfwSleep(0.1);
   //}
-  glfwEnable(GLFW_AUTO_POLL_EVENTS);
-  glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
+  glfwSetInputMode(window_main, GLFW_CURSOR, GLFW_CURSOR_DISABLED);   // hide the mouse
   #ifdef NOMUSIC
     cout << "Skipping music" << endl;
   #else
@@ -377,7 +448,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   #endif
 
   // these must be absolutely last:
-  glfwSetMousePos(windowwidth/2, windowheight/2);   //centre the mouse before the main loop
+  glfwSetCursorPos(window_main, windowwidth / 2, windowheight / 2);   //centre the mouse before the main loop
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
 }
 
@@ -433,7 +504,7 @@ void controls() {
   double thisstrafeforce = 0;
   golfer::golferstatetype movestate;
 
-  if(glfwGetKey(GLFW_KEY_LSHIFT) == GLFW_PRESS) {              // shift to sprint
+  if(glfwGetKey(window_main, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {              // shift to sprint
     thismoveforce   = player->maxforce_run;
     thisstrafeforce = player->maxforce_runstrafe;
     movestate = golfer::GOLFER_RUNNING;
@@ -444,31 +515,31 @@ void controls() {
   }
 
   player->state = golfer::GOLFER_STANDING;
-  if(glfwGetKey('W') == GLFW_PRESS) {                  // wasd for movement
+  if(glfwGetKey(window_main, GLFW_KEY_W) == GLFW_PRESS) {                  // wasd for movement
     player->moveforce.x += sin(player->bodyyaw * M_PI / 180) * thismoveforce;
     player->moveforce.z -= cos(player->bodyyaw * M_PI / 180) * thismoveforce;
     keyspressed++;
     player->state = movestate;
   }
-  if(glfwGetKey('S') == GLFW_PRESS) {
+  if(glfwGetKey(window_main, GLFW_KEY_S) == GLFW_PRESS) {
     player->moveforce.x -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce; // you can't run as fast
     player->moveforce.z += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce; // backwards as forwards
     keyspressed++;
     player->state = movestate;
   }
-  if(glfwGetKey('A') == GLFW_PRESS) {
+  if(glfwGetKey(window_main, GLFW_KEY_A) == GLFW_PRESS) {
     player->moveforce.x -= cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     player->moveforce.z -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }
-  if(glfwGetKey('D') == GLFW_PRESS) {
+  if(glfwGetKey(window_main, GLFW_KEY_D) == GLFW_PRESS) {
     player->moveforce.x += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     player->moveforce.z += sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }
-  //if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
+  //if(glfwGetKey(window_main, GLFW_KEY_SPACE) == GLFW_PRESS) {      //jump/fly up
   //  player->state = golfer::GOLFER_JUMPING;
   //}
 
@@ -477,16 +548,16 @@ void controls() {
   }
 
   // convert mouse movements to camera rotation
-  glfwGetMousePos(&mousex, &mousey);
+  glfwGetCursorPos(window_main, &mousex, &mousey);
   //player->headyaw += (mousex-(windowwidth / 2)) * camyawperpixel;
   //player->headpitch += (mousey-(windowheight / 2)) * campitchperpixel * mouseinvert;
-  player->yawtorque   = (mousex-(windowwidth  / 2)) * camyawperpixel;
-  player->pitchtorque = (mousey-(windowheight / 2)) * campitchperpixel * mouseinvert;
-  glfwSetMousePos(windowwidth / 2, windowheight / 2);   //reset the mouse immediately after
+  player->yawtorque   = (mousex - (windowwidth  / 2)) * camyawperpixel;
+  player->pitchtorque = (mousey - (windowheight / 2)) * campitchperpixel * mouseinvert;
+  glfwSetCursorPos(window_main, windowwidth / 2, windowheight / 2);   //reset the mouse immediately after
 
   // poll mouse buttons
-  if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
-    if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT)) {
+  if(glfwGetMouseButton(window_main, GLFW_MOUSE_BUTTON_LEFT)) {
+    if(glfwGetMouseButton(window_main, GLFW_MOUSE_BUTTON_RIGHT)) {
       // both buttons held down
       inputmode = INPUTMODE_MOVING_HEAD;
     } else {
@@ -494,7 +565,7 @@ void controls() {
       inputmode = INPUTMODE_MOVING_ARMS;
     }
   } else {
-    if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT)) {
+    if(glfwGetMouseButton(window_main, GLFW_MOUSE_BUTTON_RIGHT)) {
       // RMB held down
       inputmode = INPUTMODE_MOVING_HEAD_AND_ARMS;
     } else {
@@ -504,17 +575,17 @@ void controls() {
   }
 }
 
-void GLFWCALL controlcallback(int key, int action) {
+void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((unused)), int action, int mods) {
   if(action == GLFW_PRESS) {   // here are all the down-presses we care about
     if(key == GLFW_KEY_SPACE) {        // space to jump
       player->state = golfer::GOLFER_JUMPING;
-    } else if(key == 'O') {        // O and P switch render modes
+    } else if(key == GLFW_KEY_O) {        // O and P switch render modes
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
       cout << "Switched to filled render mode" << endl;
-    } else if(key == 'P') {
+    } else if(key == GLFW_KEY_P) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
       cout << "Switched to wireframe render mode" << endl;
-    } else if(key == 'B') {
+    } else if(key == GLFW_KEY_B) {
       golfball *ball = new golfball(root->planet[0]);
       Vector3d positionvector = Vector3d(0,0,-0.6);
       positionvector.rotate(0,-player->bodyyaw,0);
@@ -523,7 +594,7 @@ void GLFWCALL controlcallback(int key, int action) {
       ball->position.y += 1.5;
       ball->at_rest = false;
       cout << "Dropped another ball" << endl;
-    } else if(key == GLFW_KEY_ESC) {         // escape to quit
+    } else if(key == GLFW_KEY_ESCAPE) {         // escape to quit
       keeprunning = false;
       cout << "Stop requested..." << endl;
     }
@@ -545,6 +616,9 @@ void draw() {
   // reset view matrix
   glLoadIdentity();
 
+  // poll controls
+  glfwPollEvents();
+
   // translate us to the player's viewpoint
   glTranslated(0, -player->eyeleveloffset.y, 0);
   glRotatef(player->headyaw,   0, 1, 0);
@@ -559,5 +633,5 @@ void draw() {
   root->render();
 
   // do the buffer shuffle
-  glfwSwapBuffers();
+  glfwSwapBuffers(window_main);
 }

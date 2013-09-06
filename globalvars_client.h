@@ -2,7 +2,7 @@
 #define GLOBALVARS_CLIENT_H_INCLUDED
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include "globaldefs.h"
 
 // user settings
@@ -69,7 +69,12 @@ double camfov = 1;          // field of view - larger numbers are wider
 double camnearplane = 0.1;  // default near and far clipping planes
 double camfarplane  = 1000;
 
-int mousex = 0;       // track mouse movement from screen centre
-int mousey = 0;
+double mousex = 0;       // track mouse movement from screen centre
+double mousey = 0;
+
+GLFWwindow *window_main;      // the main game window
+
+class oculusstorm;
+oculusstorm *oculus;          // oculus rift controller
 
 #endif // GLOBALVARS_CLIENT_H_INCLUDED

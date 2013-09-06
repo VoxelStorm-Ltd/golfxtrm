@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include "vmath.h"
 #include "landscape_features.h"
 

@@ -2,7 +2,7 @@
 #define PLAYER_H_INCLUDED
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <irrKlang.h>
 #include "vmath.h"
 

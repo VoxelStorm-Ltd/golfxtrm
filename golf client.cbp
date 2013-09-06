@@ -14,12 +14,18 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-std=gnu++1y" />
 					<Add option="-Og" />
 					<Add option="-DWINVER=0x0501" />
 					<Add option="-D_WIN32_WINNT=0x0501" />
 					<Add option="-DSKIPINTRO" />
 					<Add option="-DNOMUSIC" />
 				</Compiler>
+				<Linker>
+					<Add library="lib\libboost_chrono-mgw48-mt-sd-1_53.a" />
+					<Add library="lib\libboost_thread-mgw48-mt-sd-1_53.a" />
+					<Add library="lib\libboost_system-mgw48-mt-sd-1_53.a" />
+				</Linker>
 			</Target>
 			<Target title="Win32_Release">
 				<Option output="bin/Win32_Release/GolfXTRM/GolfXTRM" prefix_auto="1" extension_auto="1" />
@@ -30,6 +36,7 @@
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
+					<Add option="-std=gnu++1y" />
 					<Add option="-Ofast" />
 					<Add option="-fgcse-sm" />
 					<Add option="-fgcse-las" />
@@ -53,6 +60,9 @@
 					<Add option="-s" />
 					<Add option="-fprofile-arcs" />
 					<Add option="-lgcov" />
+					<Add library="lib\libboost_chrono-mgw48-mt-s-1_53.a" />
+					<Add library="lib\libboost_thread-mgw48-mt-s-1_53.a" />
+					<Add library="lib\libboost_system-mgw48-mt-s-1_53.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -61,6 +71,7 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-DGLEW_STATIC" />
 			<Add directory="include" />
 			<Add directory="$(#glfw.include)" />
 			<Add directory="$(#boost.include)" />
@@ -69,13 +80,12 @@
 		</Compiler>
 		<Linker>
 			<Add library="lib\libSOIL.a" />
+			<Add library="lib\libglfw3.a" />
 			<Add library="lib\libglew32.a" />
-			<Add library="glfw" />
 			<Add library="opengl32" />
-			<Add library="glu32" />
+			<Add library="lib\libglu32.a" />
 			<Add library="gdi32" />
 			<Add library="lib\libglu32.a" />
-			<Add library="lib\libopengl32.a" />
 			<Add library="lib\libirrKlang.a" />
 			<Add library="ws2_32" />
 			<Add library="lib\libwinmm.a" />

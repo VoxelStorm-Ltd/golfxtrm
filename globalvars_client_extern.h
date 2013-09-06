@@ -2,7 +2,7 @@
 #define GLOBALVARS_CLIENT_H_INCLUDED
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include "globaldefs.h"
 
 // user settings
@@ -78,7 +78,12 @@ extern double camyaw;
 extern double camnearplane;
 extern double camfarplane;
 
-extern int mousex;
-extern int mousey;
+extern double mousex;
+extern double mousey;
+
+extern GLFWwindow *window_main;
+
+class oculusstorm;
+extern oculusstorm *oculus;
 
 #endif // GLOBALVARS_CLIENT_H_INCLUDED

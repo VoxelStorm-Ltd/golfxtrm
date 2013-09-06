@@ -2,7 +2,7 @@
 #define HOLDABLE_H_INCLUDED
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include "vmath.h"
 
 class golfer;   // forward dec
