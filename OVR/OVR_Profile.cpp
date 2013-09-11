@@ -54,7 +54,22 @@ String GetBaseOVRPath(bool create_dir)
 
 #if defined(__MINGW32__)
 
-    path = String(getenv("APPDATA"));
+    path = String(getenv("LOCALAPPDATA"));
+    if(path.IsEmpty()) {
+      // Windows XP does not have %LOCALAPPDATA%; in this case, substitute manually
+      path = String(getenv("USERPROFILE"));
+      if(!path.IsEmpty()) {
+        // if we found their profile dir, append the assumed subdirs to that
+        path.AppendString("/Local Settings/Application Data");
+      } else {
+        // or if we still have nothing, fall back to APPDATA as a last resort
+        path = String(getenv("APPDATA"));
+      }
+    }
+    if(path.IsEmpty()) {
+      // super-last resort - if we really can't get any path, just use "here"
+      path = String(".");
+    }
 
 #else
 
