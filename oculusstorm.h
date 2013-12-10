@@ -11,7 +11,9 @@
 
 class oculusstorm {
 public:
-  const float gravity = 9.81;
+  bool enabled;
+
+  static constexpr float gravity = 9.81;
   unsigned int viewport_width;
   unsigned int viewport_height;
   float ipd;
@@ -41,6 +43,7 @@ public:
   ~oculusstorm();
 
   void dumpinfo();
+  Quatf getquat();
   Matrix4f getmatrix();
   Matrix4f convertmatrix(OVR::Matrix4f ovrmatrix);
   void setup_left();

@@ -4,7 +4,8 @@
 #include "vmath.h"
 
 oculusstorm::oculusstorm()
-  : manager(nullptr),
+  : enabled(false),
+    manager(nullptr),
     device(nullptr),
     sensor(nullptr),
     sensorfusion(nullptr),
@@ -33,6 +34,7 @@ oculusstorm::oculusstorm()
   if(sensor) {
     std::cout << "Oculus: Sensor found" << std::endl;
     sensorfusion.AttachToSensor(sensor);
+    enabled = true;
   } else {
     std::cout << "Oculus: Sensor not found" << std::endl;
   }
@@ -128,13 +130,16 @@ void oculusstorm::dumpinfo() {
                " Z=" << acceleration.z << std::endl;
 }
 
+Quatf oculusstorm::getquat() {
+  /// Fetch the rotation quaternion
+  OVR::Quatf const orientation = sensorfusion.GetOrientation();
+  // translate from OVR quat to vmath quat (w + Xi + Yj + Zk)
+  return Quatf(orientation.w, orientation.x, orientation.y, orientation.z);
+}
+
 Matrix4f oculusstorm::getmatrix() {
   /// Generate a matrix with a yaw offset
-  OVR::Quatf orientation = sensorfusion.GetOrientation();
-  // translate from OVR quat to vmath quat (w + Xi + Yj + Zk)
-  Quatf thisrotation(orientation.w, orientation.x, orientation.y, orientation.z);
-  //std::cout << thisrotation.transform() << std::endl;
-  return thisrotation.transform();
+  return getquat().transform();
 }
 
 Matrix4f oculusstorm::convertmatrix(OVR::Matrix4f ovrmatrix) {
@@ -148,11 +153,12 @@ void oculusstorm::setup_left() {
   glLoadIdentity();                             // reset projection matrix
   glViewport(0, 0, viewport_width, viewport_height);
 
-  glFrustum((-1 - ild_half) * nearplane * fov,
-            ( 1 - ild_half) * nearplane * fov,
-            -nearplane * fov * aspectratio,
-             nearplane * fov * aspectratio,
-             nearplane, farplane);
+  glFrustum(nearplane * -fov * (1 + ild_half),
+            nearplane *  fov * (1 - ild_half),
+            nearplane * -fov * aspectratio,
+            nearplane *  fov * aspectratio,
+            nearplane, farplane);
+
   glTranslatef(ipd_half, 0.0, 0.0);
   //glMultMatrixf(projection_left);
 
@@ -167,11 +173,12 @@ void oculusstorm::setup_right() {
   glLoadIdentity();                             // reset projection matrix
   glViewport(viewport_width, 0, viewport_width, viewport_height);
 
-  glFrustum((-1 + ild_half) * nearplane * fov,
-            ( 1 + ild_half) * nearplane * fov,
-            -nearplane * fov * aspectratio,
-             nearplane * fov * aspectratio,
-             nearplane, farplane);
+  glFrustum(nearplane * -fov * (1 - ild_half),
+            nearplane *  fov * (1 + ild_half),
+            nearplane * -fov * aspectratio,
+            nearplane *  fov * aspectratio,
+            nearplane, farplane);
+
   glTranslatef(-ipd_half, 0.0, 0.0);
 
   glMatrixMode(GL_MODELVIEW);
