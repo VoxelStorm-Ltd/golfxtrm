@@ -194,7 +194,7 @@ class Vector2 {
     /**
      * Creates and sets to (0,0)
      */
-    Vector2()
+    inline Vector2()
       : x(0), y(0) {
     }
 
@@ -203,7 +203,7 @@ class Vector2 {
      * @param nx initial x-coordinate value
      * @param ny initial y-coordinate value
      */
-    Vector2(T nx, T ny)
+    inline Vector2(T nx, T ny)
       : x(nx), y(ny) {
     }
 
@@ -211,7 +211,7 @@ class Vector2 {
      * Copy constructor.
      * @param src Source of data for new created instance.
      */
-    Vector2(const Vector2<T>& src)
+    inline Vector2(const Vector2<T>& src)
       : x(src.x), y(src.y) {
     }
 
@@ -220,8 +220,19 @@ class Vector2 {
      * @param src Source of data for new created instance.
      */
     template<class FromT>
-    Vector2(const Vector2<FromT>& src)
+    inline Vector2(const Vector2<FromT>& src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)) {
+    }
+
+    //----------------[ assignment ]-------------------------
+    /**
+     * Sets to (x,y)
+     * @param nx initial x-coordinate value
+     * @param ny initial y-coordinate value
+     */
+    inline void assign(T nx = 0, T ny = 0) {
+      x = nx;
+      y = ny;
     }
 
     //----------------[ access operators ]-------------------
@@ -230,7 +241,7 @@ class Vector2 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Vector2<T>& operator=(const Vector2<FromT>& rhs) {
+    inline Vector2<T>& operator=(const Vector2<FromT>& rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       return *this;
@@ -240,7 +251,7 @@ class Vector2 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator=(const Vector2<T>& rhs) {
+    inline Vector2<T>& operator=(const Vector2<T>& rhs) {
       x = rhs.x;
       y = rhs.y;
       return *this;
@@ -252,7 +263,7 @@ class Vector2 {
      * @return For n = 0, reference to x coordinate, else reference to y
      * y coordinate.
      */
-    T &operator[](int n) {
+    inline T &operator[](int n) {
       assert(n >= 0 && n <= 1);
       if(0 == n)
         return x;
@@ -266,7 +277,7 @@ class Vector2 {
      * @return For n = 0, reference to x coordinate, else reference to y
      * y coordinate.
      */
-    const T &operator[](int n) const {
+    inline const T &operator[](int n) const {
       assert(n >= 0 && n <= 1);
       if(0 == n)
         return x;
@@ -279,7 +290,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator+(const Vector2<T>& rhs) const {
+    inline Vector2<T> operator+(const Vector2<T>& rhs) const {
       return Vector2<T>(x + rhs.x, y + rhs.y);
     }
 
@@ -287,7 +298,7 @@ class Vector2 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator-(const Vector2<T>& rhs) const {
+    inline Vector2<T> operator-(const Vector2<T>& rhs) const {
       return Vector2<T>(x - rhs.x, y - rhs.y);
     }
 
@@ -295,7 +306,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator*(const Vector2<T>& rhs) const {
+    inline Vector2<T> operator*(const Vector2<T>& rhs) const {
       return Vector2<T>(x * rhs.x, y * rhs.y);
     }
 
@@ -303,7 +314,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator/(const Vector2<T>& rhs) const {
+    inline Vector2<T> operator/(const Vector2<T>& rhs) const {
       return Vector2<T>(x / rhs.x, y / rhs.y);
     }
 
@@ -311,7 +322,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator+=(const Vector2<T>& rhs) {
+    inline Vector2<T>& operator+=(const Vector2<T>& rhs) {
       x += rhs.x;
       y += rhs.y;
       return *this;
@@ -321,7 +332,7 @@ class Vector2 {
      * Substraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator-=(const Vector2<T>& rhs) {
+    inline Vector2<T>& operator-=(const Vector2<T>& rhs) {
       x -= rhs.x;
       y -= rhs.y;
       return *this;
@@ -331,7 +342,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator*=(const Vector2<T>& rhs) {
+    inline Vector2<T>& operator*=(const Vector2<T>& rhs) {
       x *= rhs.x;
       y *= rhs.y;
       return *this;
@@ -341,7 +352,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator/=(const Vector2<T>& rhs) {
+    inline Vector2<T>& operator/=(const Vector2<T>& rhs) {
       x /= rhs.x;
       y /= rhs.y;
       return *this;
@@ -351,7 +362,7 @@ class Vector2 {
      * Dot product of two vectors.
      * @param rhs Right hand side argument of binary operator.
      */
-    T dotProduct(const Vector3<T>& rhs) const {
+    inline T dotProduct(const Vector3<T>& rhs) const {
       return x * rhs.x + y * rhs.y;
     }
 
@@ -359,7 +370,7 @@ class Vector2 {
      * Cross product of two vectors
      * @param rhs Right hand side argument of binary operator.
      */
-    T crossProduct(const Vector3<T>& rhs) const {
+    inline T crossProduct(const Vector3<T>& rhs) const {
       return x * rhs.y - y * rhs.x;
     }
 
@@ -368,7 +379,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator+(T rhs) const {
+    inline Vector2<T> operator+(T rhs) const {
       return Vector2<T>(x + rhs, y + rhs);
     }
 
@@ -376,7 +387,7 @@ class Vector2 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator-(T rhs) const {
+    inline Vector2<T> operator-(T rhs) const {
       return Vector2<T>(x - rhs, y - rhs);
     }
 
@@ -384,7 +395,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator*(T rhs) const {
+    inline Vector2<T> operator*(T rhs) const {
       return Vector2<T>(x * rhs, y * rhs);
     }
 
@@ -392,7 +403,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T> operator/(T rhs) const {
+    inline Vector2<T> operator/(T rhs) const {
       return Vector2<T>(x / rhs, y / rhs);
     }
 
@@ -400,7 +411,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator+=(T rhs) {
+    inline Vector2<T>& operator+=(T rhs) {
       x += rhs;
       y += rhs;
       return *this;
@@ -410,7 +421,7 @@ class Vector2 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator-=(T rhs) {
+    inline Vector2<T>& operator-=(T rhs) {
       x -= rhs;
       y -= rhs;
       return *this;
@@ -420,7 +431,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator*=(T rhs) {
+    inline Vector2<T>& operator*=(T rhs) {
       x *= rhs;
       y *= rhs;
       return *this;
@@ -430,7 +441,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector2<T>& operator/=(T rhs) {
+    inline Vector2<T>& operator/=(T rhs) {
       x /= rhs;
       y /= rhs;
       return *this;
@@ -444,7 +455,7 @@ class Vector2 {
      * values equal, must satisfy this condition | lhs.x - rhs.y | < EPSILON,
      * same for y-coordinate.
      */
-    bool operator==(const Vector2<T>& rhs) const {
+    inline bool operator==(const Vector2<T>& rhs) const {
       return (std::abs(x - rhs.x) < EPSILON) && (std::abs(y - rhs.y) < EPSILON);
     }
 
@@ -453,7 +464,7 @@ class Vector2 {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Vector2<T>& rhs) const {
+    inline bool operator!=(const Vector2<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -462,7 +473,7 @@ class Vector2 {
      * Unary negate operator
      * @return negated vector
      */
-    Vector2<T> operator-() const {
+    inline Vector2<T> operator-() const {
       return Vector2<T>(-x, -y);
     }
 
@@ -471,20 +482,27 @@ class Vector2 {
      * Get length of vector.
      * @return lenght of vector
      */
-    T length() const {
+    inline T length() const {
       return (T) std::sqrt(x * x + y * y);
     }
 
     /**
      * Normalize vector
      */
-    void normalize() {
+    inline void normalize() {
       T s = length();
       x /= s;
       y /= s;
     }
-    void normalise() {  // proper english
+    inline void normalise() {  // proper english
       normalize();
+    }
+    inline Vector2<T> normalize_copy() const {
+      T s = length();
+      return Vector2<T>(x / s, y / s);
+    }
+    inline Vector2<T> normalise_copy() const {  // proper english
+      return normalize_copy();
     }
 
     /**
@@ -494,7 +512,7 @@ class Vector2 {
      * of length of two vector can be used just this value, instead
      * of more expensive length() method.
      */
-    T lengthSq() const {
+    inline T lengthSq() const {
       return x * x + y * y;
     }
 
@@ -503,9 +521,17 @@ class Vector2 {
      * Rotate 2D vector clockwise.
      * @param aa Angle (in degrees) to be rotated.
      */
-    void rotate(T aa) {
+    inline void rotate(T aa) {
       T a = cos(DEG2RAD(-aa));
       T b = sin(DEG2RAD(-aa));
+      T nx = x * a - y * b;
+      T ny = x * b + y * a;
+      x = nx;
+      y = ny;
+    }
+    inline void rotate_rad(T aa) {
+      T a = cos(-aa);
+      T b = sin(-aa);
       T nx = x * a - y * b;
       T ny = x * b + y * a;
       x = nx;
@@ -521,7 +547,7 @@ class Vector2 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Vector2<T> lerp(T fact, const Vector2<T>& r) const {
+    inline Vector2<T> lerp(T fact, const Vector2<T>& r) const {
       return (*this) + (r - (*this)) * fact;
     }
 
@@ -531,7 +557,7 @@ class Vector2 {
      * @return Pointer to internally stored (in management of class Vector2<T>)
      * used for passing Vector2<T> values to gl*2[fd] functions.
      */
-    operator T*() {
+    inline operator T*() {
       return (T*) this;
     }
     /**
@@ -539,7 +565,7 @@ class Vector2 {
      * @return Constant Pointer to internally stored (in management of class Vector2<T>)
      * used for passing Vector2<T> values to gl*2[fd] functions.
      */
-    operator const T*() const {
+    inline operator const T*() const {
       return (const T*) this;
     }
 
@@ -550,7 +576,7 @@ class Vector2 {
      * @param rhs Right hand side argument of operator.
      * @return Left hand side argument - the ostream object passed to operator.
      */
-    friend std::ostream &operator<<(std::ostream &lhs, const Vector2<T>& rhs) {
+    inline friend std::ostream &operator<<(std::ostream &lhs, const Vector2<T>& rhs) {
       lhs << "[" << rhs.x << "," << rhs.y << "]";
       return lhs;
     }
@@ -558,7 +584,7 @@ class Vector2 {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -572,10 +598,10 @@ class Vector2 {
    * @param line2start The start coordinates of the first line
    * @param line2end The end coordinates of the first line
    */
-  bool get_line_intersection(const Vector2<T> line1start,
-                             const Vector2<T> line1end,
-                             const Vector2<T> line2start,
-                             const Vector2<T> line2end) {
+  inline bool get_line_intersection(const Vector2<T> line1start,
+                                    const Vector2<T> line1end,
+                                    const Vector2<T> line2start,
+                                    const Vector2<T> line2end) {
     Vector2<T> s1, s2;
     s1.x = line1end.x - line1start.x;
     s1.y = line1end.y - line1start.y;
@@ -679,7 +705,7 @@ class Vector3 {
     /**
      * Creates and sets to (0,0,0)
      */
-    Vector3()
+    inline Vector3()
       : x(0), y(0), z(0) {
     }
 
@@ -689,7 +715,7 @@ class Vector3 {
      * @param ny initial y-coordinate value
      * @param nz initial z-coordinate value
      */
-    Vector3(T nx, T ny, T nz)
+    inline Vector3(T nx, T ny, T nz)
       : x(nx), y(ny), z(nz) {
     }
 
@@ -697,7 +723,7 @@ class Vector3 {
      * Copy constructor.
      * @param src Source of data for new created Vector3 instance.
      */
-    Vector3(const Vector3<T>& src)
+    inline Vector3(const Vector3<T>& src)
       : x(src.x), y(src.y), z(src.z) {
     }
 
@@ -706,8 +732,21 @@ class Vector3 {
      * @param src Source of data for new created Vector3 instance.
      */
     template<class FromT>
-    Vector3(const Vector3<FromT>& src)
+    inline Vector3(const Vector3<FromT>& src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) {
+    }
+
+    //----------------[ assignment ]-------------------------
+    /**
+     * Sets to (x,y,z)
+     * @param nx initial x-coordinate value
+     * @param ny initial y-coordinate value
+     * @param nz initial z-coordinate value
+     */
+    inline void assign(T nx = 0, T ny = 0, T nz = 0) {
+      x = nx;
+      y = ny;
+      z = nz;
     }
 
     //----------------[ access operators ]-------------------
@@ -715,7 +754,7 @@ class Vector3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator=(const Vector3<T>& rhs) {
+    inline Vector3<T> operator=(const Vector3<T>& rhs) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -727,7 +766,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Vector3<T> operator=(const Vector3<FromT>& rhs) {
+    inline Vector3<T> operator=(const Vector3<FromT>& rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -738,7 +777,7 @@ class Vector3 {
      * Copy operator to Vector3
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator=(const Vector4<T>& rhs) {
+    inline Vector3<T> operator=(const Vector4<T>& rhs) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -750,7 +789,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Vector3<T> operator=(const Vector4<FromT>& rhs) {
+    inline Vector3<T> operator=(const Vector4<FromT>& rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -764,7 +803,7 @@ class Vector3 {
      * reference to y, else reference to z
      * y coordinate.
      */
-    T &operator[](int n) {
+    inline T &operator[](int n) {
       assert(n >= 0 && n <= 2);
       if(0 == n)
         return x;
@@ -781,7 +820,7 @@ class Vector3 {
      * reference to y, else reference to z
      * y coordinate.
      */
-    const T &operator[](int n) const {
+    inline const T &operator[](int n) const {
       assert(n >= 0 && n <= 2);
       if(0 == n)
         return x;
@@ -796,7 +835,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator+(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator+(const Vector3<T>& rhs) const {
       return Vector3<T>(x + rhs.x, y + rhs.y, z + rhs.z);
     }
 
@@ -804,7 +843,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator-(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator-(const Vector3<T>& rhs) const {
       return Vector3<T>(x - rhs.x, y - rhs.y, z - rhs.z);
     }
 
@@ -812,7 +851,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator*(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator*(const Vector3<T>& rhs) const {
       return Vector3<T>(x * rhs.x, y * rhs.y, z * rhs.z);
     }
 
@@ -820,7 +859,7 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator/(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator/(const Vector3<T>& rhs) const {
       return Vector3<T>(x / rhs.x, y / rhs.y, z / rhs.z);
     }
 
@@ -828,7 +867,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator+=(const Vector3<T>& rhs) {
+    inline Vector3<T>& operator+=(const Vector3<T>& rhs) {
       x += rhs.x;
       y += rhs.y;
       z += rhs.z;
@@ -839,7 +878,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator-=(const Vector3<T>& rhs) {
+    inline Vector3<T>& operator-=(const Vector3<T>& rhs) {
       x -= rhs.x;
       y -= rhs.y;
       z -= rhs.z;
@@ -850,7 +889,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator*=(const Vector3<T>& rhs) {
+    inline Vector3<T>& operator*=(const Vector3<T>& rhs) {
       x *= rhs.x;
       y *= rhs.y;
       z *= rhs.z;
@@ -861,7 +900,7 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator/=(const Vector3<T>& rhs) {
+    inline Vector3<T>& operator/=(const Vector3<T>& rhs) {
       x /= rhs.x;
       y /= rhs.y;
       z /= rhs.z;
@@ -872,7 +911,7 @@ class Vector3 {
      * Dot product of two vectors.
      * @param rhs Right hand side argument of binary operator.
      */
-    T dotProduct(const Vector3<T>& rhs) const {
+    inline T dotProduct(const Vector3<T>& rhs) const {
       return x * rhs.x + y * rhs.y + z * rhs.z;
     }
 
@@ -880,8 +919,30 @@ class Vector3 {
      * Cross product of two vectors
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> crossProduct(const Vector3<T>& rhs) const {
+    inline Vector3<T> crossProduct(const Vector3<T>& rhs) const {
       return Vector3<T>(y * rhs.z - rhs.y * z, z * rhs.x - rhs.z * x, x * rhs.y - rhs.x * y);
+    }
+
+    //--------------[ rotation with quaternions ]-----------------
+    // see http://mollyrocket.com/forums/viewtopic.php?t=833&sid=3a84e00a70ccb046cfc87ac39881a3d0
+    /**
+     * Multiplication by quaternion operator (rotation by quaternion)
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> operator*(const Quaternion<T>& rhs) const {
+      const Vector3<T>& lhs = *this;
+      const Vector3<T> temp = rhs.v.crossProduct(lhs) * 2;
+      return lhs + (temp * rhs.w) + rhs.v.crossProduct(temp);
+    }
+
+    /**
+     * Multiplication by quaternion operator (rotation by quaternion)
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T>& operator*=(const Quaternion<T>& rhs) {
+      const Vector3<T> temp = rhs.v.crossProduct(*this) * 2;
+      *this += (temp * rhs.w) + rhs.v.crossProduct(temp);
+      return *this;
     }
 
     //--------------[ scalar vector operator ]--------------------
@@ -889,7 +950,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator+(T rhs) const {
+    inline Vector3<T> operator+(T rhs) const {
       return Vector3<T>(x + rhs, y + rhs, z + rhs);
     }
 
@@ -897,7 +958,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator-(T rhs) const {
+    inline Vector3<T> operator-(T rhs) const {
       return Vector3<T>(x - rhs, y - rhs, z - rhs);
     }
 
@@ -905,7 +966,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator*(T rhs) const {
+    inline Vector3<T> operator*(T rhs) const {
       return Vector3<T>(x * rhs, y * rhs, z * rhs);
     }
 
@@ -913,7 +974,7 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator/(T rhs) const {
+    inline Vector3<T> operator/(T rhs) const {
       return Vector3<T>(x / rhs, y / rhs, z / rhs);
     }
 
@@ -921,7 +982,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator+=(T rhs) {
+    inline Vector3<T>& operator+=(T rhs) {
       x += rhs;
       y += rhs;
       z += rhs;
@@ -932,7 +993,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator-=(T rhs) {
+    inline Vector3<T>& operator-=(T rhs) {
       x -= rhs;
       y -= rhs;
       z -= rhs;
@@ -943,7 +1004,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator*=(T rhs) {
+    inline Vector3<T>& operator*=(T rhs) {
       x *= rhs;
       y *= rhs;
       z *= rhs;
@@ -954,7 +1015,7 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T>& operator/=(T rhs) {
+    inline Vector3<T>& operator/=(T rhs) {
       x /= rhs;
       y /= rhs;
       z /= rhs;
@@ -969,7 +1030,7 @@ class Vector3 {
      * values equal, must satisfy this condition | lhs.x - rhs.y | < EPSILON,
      * same for y-coordinate, and z-coordinate.
      */
-    bool operator==(const Vector3<T>& rhs) const {
+    inline bool operator==(const Vector3<T>& rhs) const {
       return std::fabs(x - rhs.x) < EPSILON && std::fabs(y - rhs.y) < EPSILON && std::fabs(z - rhs.z) < EPSILON;
     }
 
@@ -978,7 +1039,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Vector3<T>& rhs) const {
+    inline bool operator!=(const Vector3<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -987,7 +1048,7 @@ class Vector3 {
      * Unary negate operator
      * @return negated vector
      */
-    Vector3<T> operator-() const {
+    inline Vector3<T> operator-() const {
       return Vector3<T>(-x, -y, -z);
     }
 
@@ -996,7 +1057,7 @@ class Vector3 {
      * Get length of vector.
      * @return lenght of vector
      */
-    T length() const {
+    inline T length() const {
       return (T) std::sqrt(x * x + y * y + z * z);
     }
 
@@ -1007,21 +1068,28 @@ class Vector3 {
      * of length of two vector can be used just this value, instead
      * of more expensive length() method.
      */
-    T lengthSq() const {
+    inline T lengthSq() const {
       return x * x + y * y + z * z;
     }
 
     /**
      * Normalize vector
      */
-    void normalize() {
+    inline void normalize() {
       T s = length();
       x /= s;
       y /= s;
       z /= s;
     }
-    void normalise() {  // proper english
+    inline void normalise() {  // proper english
       normalize();
+    }
+    inline Vector3<T> normalize_copy() const {
+      T s = length();
+      return Vector3<T>(x / s, y / s, z / s);
+    }
+    inline Vector3<T> normalise_copy() const {  // proper english
+      return normalize_copy();
     }
 
     //-------------[ other operations ]--------------------------
@@ -1031,7 +1099,7 @@ class Vector3 {
      * @param ay Angle (in degrees) to be rotated around Y-axis.
      * @param az Angle (in degrees) to be rotated around Z-axis.
      */
-    void rotate(T ax, T ay, T az) {
+    inline void rotate(T ax, T ay, T az) {
       T a = cos(DEG2RAD(ax));
       T b = sin(DEG2RAD(ax));
       T c = cos(DEG2RAD(ay));
@@ -1045,6 +1113,27 @@ class Vector3 {
       y = ny;
       z = nz;
     }
+    inline void rotate_rad(T ax, T ay, T az) {
+      T a = cos(ax);
+      T b = sin(ax);
+      T c = cos(ay);
+      T d = sin(ay);
+      T e = cos(az);
+      T f = sin(az);
+      T nx = c * e * x - c * f * y + d * z;
+      T ny = (a * f + b * d * e) * x + (a * e - b * d * f) * y - b * c * z;
+      T nz = (b * f - a * d * e) * x + (a * d * f + b * e) * y + a * c * z;
+      x = nx;
+      y = ny;
+      z = nz;
+    }
+    /**
+     * Rotate vector by a quaternion.
+     * @param ax Quaternion to rotate by.
+     */
+    inline void rotate(const Quaternion<T>& rhs) {
+      *this *= rhs;
+    }
 
     /**
      * Linear interpolation of two vectors
@@ -1055,7 +1144,7 @@ class Vector3 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Vector3<T> lerp(T fact, const Vector3<T>& r) const {
+    inline Vector3<T> lerp(T fact, const Vector3<T>& r) const {
       return (*this) + (r - (*this)) * fact;
     }
 
@@ -1066,7 +1155,7 @@ class Vector3 {
      * @return Pointer to internally stored (in management of class Vector3<T>)
      * used for passing Vector3<T> values to gl*3[fd] functions.
      */
-    operator T*() {
+    inline operator T*() {
       return (T*) this;
     }
 
@@ -1075,7 +1164,7 @@ class Vector3 {
      * @return Constant Pointer to internally stored (in management of class Vector3<T>)
      * used for passing Vector3<T> values to gl*3[fd] functions.
      */
-    operator const T*() const {
+    inline operator const T*() const {
       return (const T*) this;
     }
 
@@ -1086,7 +1175,7 @@ class Vector3 {
      * @param rhs Right hand side argument of operator.
      * @return Left hand side argument - the ostream object passed to operator.
      */
-    friend std::ostream &operator<<(std::ostream &lhs, const Vector3<T> rhs) {
+    inline friend std::ostream &operator<<(std::ostream &lhs, const Vector3<T> rhs) {
       lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z << "]";
       return lhs;
     }
@@ -1094,7 +1183,7 @@ class Vector3 {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -1103,14 +1192,14 @@ class Vector3 {
     /**
      * Gets a 2D vector equivalent using the X and Y axes
      */
-    Vector2<T> to_2D_XY() const {
+    inline Vector2<T> to_2D_XY() const {
       return Vector2<T>(x, y);
     }
 
     /**
      * Gets a 2D vector equivalent using the X and Z axes
      */
-    Vector2<T> to_2D_XZ() const {
+    inline Vector2<T> to_2D_XZ() const {
       return Vector2<T>(x, z);
     }
 };
@@ -1193,7 +1282,7 @@ class Vector4 {
     /**
      * Creates and sets to (0,0,0,0)
      */
-    Vector4()
+    inline Vector4()
       : x(0), y(0), z(0), w(0) {
     }
 
@@ -1204,7 +1293,7 @@ class Vector4 {
      * @param nz initial z-coordinate value (B)
      * @param nw initial w-coordinate value (Alpha)
      */
-    Vector4(T nx, T ny, T nz, T nw)
+    inline Vector4(T nx, T ny, T nz, T nw)
       : x(nx), y(ny), z(nz), w(nw) {
     }
 
@@ -1212,7 +1301,7 @@ class Vector4 {
      * Copy constructor.
      * @param src Source of data for new created Vector4 instance.
      */
-    Vector4(const Vector4<T>& src)
+    inline Vector4(const Vector4<T>& src)
       : x(src.x), y(src.y), z(src.z), w(src.w) {
     }
 
@@ -1221,8 +1310,23 @@ class Vector4 {
      * @param src Source of data for new created Vector4 instance.
      */
     template<class FromT>
-    Vector4(const Vector4<FromT>& src)
+    inline Vector4(const Vector4<FromT>& src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(src.w)) {
+    }
+
+    //----------------[ assignment ]-------------------------
+    /**
+     * Sets to (x,y,z)
+     * @param nx initial x-coordinate value
+     * @param ny initial y-coordinate value
+     * @param nz initial z-coordinate value
+     * @param nz initial w-coordinate value
+     */
+    inline void assign(T nx = 0, T ny = 0, T nz = 0, T nw = 0) {
+      x = nx;
+      y = ny;
+      z = nz;
+      w = nw;
     }
 
     //----------------[ access operators ]-------------------
@@ -1230,7 +1334,7 @@ class Vector4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator=(const Vector4<T>& rhs) {
+    inline Vector4<T> operator=(const Vector4<T>& rhs) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -1243,7 +1347,7 @@ class Vector4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Vector4<T> operator=(const Vector4<FromT>& rhs) {
+    inline Vector4<T> operator=(const Vector4<FromT>& rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -1255,7 +1359,7 @@ class Vector4 {
      * Copy operator to Vector4
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator=(const Vector3<T>& rhs) {
+    inline Vector4<T> operator=(const Vector3<T>& rhs) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -1268,7 +1372,7 @@ class Vector4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Vector4<T> operator=(const Vector3<FromT>& rhs) {
+    inline Vector4<T> operator=(const Vector3<FromT>& rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -1283,7 +1387,7 @@ class Vector4 {
      * reference to y coordinate, n = 2 reference to z,
      * else reference to w coordinate.
      */
-    T &operator[](int n) {
+    inline T &operator[](int n) {
       assert(n >= 0 && n <= 3);
       if(0 == n)
         return x;
@@ -1302,7 +1406,7 @@ class Vector4 {
      * reference to y coordinate, n = 2 reference to z,
      * else reference to w coordinate.
      */
-    const T &operator[](int n) const {
+    inline const T &operator[](int n) const {
       assert(n >= 0 && n <= 3);
       if(0 == n)
         return x;
@@ -1319,7 +1423,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator+(const Vector4<T>& rhs) const {
+    inline Vector4<T> operator+(const Vector4<T>& rhs) const {
       return Vector4<T>(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
     }
 
@@ -1327,7 +1431,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator-(const Vector4<T>& rhs) const {
+    inline Vector4<T> operator-(const Vector4<T>& rhs) const {
       return Vector4<T>(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
     }
 
@@ -1335,7 +1439,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator*(const Vector4<T> rhs) const {
+    inline Vector4<T> operator*(const Vector4<T> rhs) const {
       return Vector4<T>(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
     }
 
@@ -1343,7 +1447,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator/(const Vector4<T>& rhs) const {
+    inline Vector4<T> operator/(const Vector4<T>& rhs) const {
       return Vector4<T>(x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w);
     }
 
@@ -1351,7 +1455,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator+=(const Vector4<T>& rhs) {
+    inline Vector4<T>& operator+=(const Vector4<T>& rhs) {
       x += rhs.x;
       y += rhs.y;
       z += rhs.z;
@@ -1363,7 +1467,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator-=(const Vector4<T>& rhs) {
+    inline Vector4<T>& operator-=(const Vector4<T>& rhs) {
       x -= rhs.x;
       y -= rhs.y;
       z -= rhs.z;
@@ -1375,7 +1479,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator*=(const Vector4<T>& rhs) {
+    inline Vector4<T>& operator*=(const Vector4<T>& rhs) {
       x *= rhs.x;
       y *= rhs.y;
       z *= rhs.z;
@@ -1387,7 +1491,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator/=(const Vector4<T>& rhs) {
+    inline Vector4<T>& operator/=(const Vector4<T>& rhs) {
       x /= rhs.x;
       y /= rhs.y;
       z /= rhs.z;
@@ -1403,7 +1507,7 @@ class Vector4 {
      * values equal, must satisfy this condition | lhs.x - rhs.y | < EPSILON,
      * same for y-coordinate, z-coordinate, and w-coordinate.
      */
-    bool operator==(const Vector4<T>& rhs) const {
+    inline bool operator==(const Vector4<T>& rhs) const {
       return std::fabs(x - rhs.x) < EPSILON && std::fabs(y - rhs.y) < EPSILON && std::fabs(z - rhs.z) < EPSILON
              && std::fabs(w - rhs.w) < EPSILON;
     }
@@ -1413,7 +1517,7 @@ class Vector4 {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Vector4<T>& rhs) const {
+    inline bool operator!=(const Vector4<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -1422,7 +1526,7 @@ class Vector4 {
      * Unary negate operator
      * @return negated vector
      */
-    Vector4<T> operator-() const {
+    inline Vector4<T> operator-() const {
       return Vector4<T>(-x, -y, -z, -w);
     }
 
@@ -1432,7 +1536,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator+(T rhs) const {
+    inline Vector4<T> operator+(T rhs) const {
       return Vector4<T>(x + rhs, y + rhs, z + rhs, w + rhs);
     }
 
@@ -1440,7 +1544,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator-(T rhs) const {
+    inline Vector4<T> operator-(T rhs) const {
       return Vector4<T>(x - rhs, y - rhs, z - rhs, w - rhs);
     }
 
@@ -1448,7 +1552,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator*(T rhs) const {
+    inline Vector4<T> operator*(T rhs) const {
       return Vector4<T>(x * rhs, y * rhs, z * rhs, w * rhs);
     }
 
@@ -1456,7 +1560,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator/(T rhs) const {
+    inline Vector4<T> operator/(T rhs) const {
       return Vector4<T>(x / rhs, y / rhs, z / rhs, w / rhs);
     }
 
@@ -1464,7 +1568,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator+=(T rhs) {
+    inline Vector4<T>& operator+=(T rhs) {
       x += rhs;
       y += rhs;
       z += rhs;
@@ -1476,7 +1580,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator-=(T rhs) {
+    inline Vector4<T>& operator-=(T rhs) {
       x -= rhs;
       y -= rhs;
       z -= rhs;
@@ -1488,7 +1592,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator*=(T rhs) {
+    inline Vector4<T>& operator*=(T rhs) {
       x *= rhs;
       y *= rhs;
       z *= rhs;
@@ -1500,7 +1604,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T>& operator/=(T rhs) {
+    inline Vector4<T>& operator/=(T rhs) {
       x /= rhs;
       y /= rhs;
       z /= rhs;
@@ -1513,22 +1617,29 @@ class Vector4 {
      * Get length of vector.
      * @return lenght of vector
      */
-    T length() const {
+    inline T length() const {
       return (T) std::sqrt(x * x + y * y + z * z + w * w);
     }
 
     /**
      * Normalize vector
      */
-    void normalize() {
+    inline void normalize() {
       T s = length();
       x /= s;
       y /= s;
       z /= s;
       w /= s;
     }
-    void normalise() {  // proper english
+    inline void normalise() {  // proper english
       normalize();
+    }
+    inline Vector4<T> normalize_copy() const {
+      T s = length();
+      return Vector4<T>(x / s, y / s, z / s, w / s);
+    }
+    inline Vector4<T> normalise_copy() const {  // proper english
+      return normalize_copy();
     }
 
     /**
@@ -1538,7 +1649,7 @@ class Vector4 {
      * of length of two vector can be used just this value, instead
      * of more expensive length() method.
      */
-    T lengthSq() const {
+    inline T lengthSq() const {
       return x * x + y * y + z * z + w * w;
     }
 
@@ -1552,7 +1663,7 @@ class Vector4 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Vector4<T> lerp(T fact, const Vector4<T>& r) const {
+    inline Vector4<T> lerp(T fact, const Vector4<T>& r) const {
       return (*this) + (r - (*this)) * fact;
     }
 
@@ -1563,7 +1674,7 @@ class Vector4 {
      * @return Pointer to internally stored (in management of class Vector4<T>)
      * used for passing Vector4<T> values to gl*4[fd] functions.
      */
-    operator T*() {
+    inline operator T*() {
       return (T*) this;
     }
 
@@ -1572,7 +1683,7 @@ class Vector4 {
      * @return Constant Pointer to internally stored (in management of class Vector4<T>)
      * used for passing Vector4<T> values to gl*4[fd] functions.
      */
-    operator const T*() const {
+    inline operator const T*() const {
       return (const T*) this;
     }
 
@@ -1583,7 +1694,7 @@ class Vector4 {
      * @param rhs Right hand side argument of operator.
      * @return Left hand side argument - the ostream object passed to operator.
      */
-    friend std::ostream &operator<<(std::ostream &lhs, const Vector4<T>& rhs) {
+    inline friend std::ostream &operator<<(std::ostream &lhs, const Vector4<T>& rhs) {
       lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z << "," << rhs.w << "]";
       return lhs;
     }
@@ -1591,7 +1702,7 @@ class Vector4 {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -1624,7 +1735,7 @@ class Matrix3 {
     /**
      * Creates identity matrix
      */
-    Matrix3() {
+    inline Matrix3() {
       for(int i = 0; i < 9; i++)
         data[i] = (i % 4) ? 0 : 1;
     }
@@ -1633,7 +1744,7 @@ class Matrix3 {
      * Copy matrix values from array (these data must be in column
      * major order!)
      */
-    Matrix3(const T *dt) {
+    inline Matrix3(const T *dt) {
       std::memcpy(data, dt, sizeof(T) * 9);
     }
 
@@ -1641,7 +1752,7 @@ class Matrix3 {
      * Copy constructor.
      * @param src Data source for new created instance of Matrix3
      */
-    Matrix3(const Matrix3<T>& src) {
+    inline Matrix3(const Matrix3<T>& src) {
       std::memcpy(data, src.data, sizeof(T) * 9);
     }
 
@@ -1650,7 +1761,7 @@ class Matrix3 {
      * @param src Data source for new created instance of Matrix3
      */
     template<class FromT>
-    Matrix3(const Matrix3<FromT>& src) {
+    inline Matrix3(const Matrix3<FromT>& src) {
       for(int i = 0; i < 9; i++) {
         data[i] = static_cast<T>(src.data[i]);
       }
@@ -1659,7 +1770,7 @@ class Matrix3 {
     /**
      * Resets matrix to be identity matrix
      */
-    void identity() {
+    inline void identity() {
       for(int i = 0; i < 9; i++)
         data[i] = (i % 4) ? 0 : 1;
     }
@@ -1670,7 +1781,7 @@ class Matrix3 {
      * @param yDeg Angle (in degrees) of rotation around axis Y.
      * @param zDeg Angle (in degrees) of rotation around axis Z.
      */
-    static Matrix3<T> createRotationAroundAxis(T xDeg, T yDeg, T zDeg) {
+    inline static Matrix3<T> createRotationAroundAxis(T xDeg, T yDeg, T zDeg) {
       T xRads(DEG2RAD(xDeg));
       T yRads(DEG2RAD(yDeg));
       T zRads(DEG2RAD(zDeg));
@@ -1706,7 +1817,7 @@ class Matrix3 {
      * Creates rotation matrix from ODE Matrix.
      */
     template<class It>
-    static Matrix3<T> fromOde(const It *mat) {
+    inline static Matrix3<T> fromOde(const It *mat) {
       Matrix3<T> ret;
       for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
@@ -1723,7 +1834,7 @@ class Matrix3 {
      * @return An instance of Matrix3<T> representing @a arr
      */
     template<class FromT>
-    static Matrix3<T> fromRowMajorArray(const FromT *arr) {
+    inline static Matrix3<T> fromRowMajorArray(const FromT *arr) {
       const T retData[] = {
         static_cast<T>(arr[0]), static_cast<T>(arr[3]), static_cast<T>(arr[6]), static_cast<T>(arr[1]),
         static_cast<T>(arr[4]), static_cast<T>(arr[7]), static_cast<T>(arr[2]), static_cast<T>(arr[5]),
@@ -1740,7 +1851,7 @@ class Matrix3 {
      * @return An instance of Matrix3<T> representing @a arr
      */
     template<class FromT>
-    static Matrix3<T> fromColumnMajorArray(const FromT *arr) {
+    inline static Matrix3<T> fromColumnMajorArray(const FromT *arr) {
       const T retData[] = {
         static_cast<T>(arr[0]), static_cast<T>(arr[1]), static_cast<T>(arr[2]), static_cast<T>(arr[3]),
         static_cast<T>(arr[4]), static_cast<T>(arr[5]), static_cast<T>(arr[6]), static_cast<T>(arr[7]),
@@ -1759,7 +1870,7 @@ class Matrix3 {
      * | lhs[i] - rhs[i] | < EPSILON,
      * same for y-coordinate, z-coordinate, and w-coordinate.
      */
-    bool operator==(const Matrix3<T>& rhs) const {
+    inline bool operator==(const Matrix3<T>& rhs) const {
       for(int i = 0; i < 9; i++) {
         if(std::fabs(data[i] - rhs.data[i]) >= EPSILON)
           return false;
@@ -1772,7 +1883,7 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Matrix3<T>& rhs) const {
+    inline bool operator!=(const Matrix3<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -1782,7 +1893,7 @@ class Matrix3 {
      * @param x Number of column (0..2)
      * @param y Number of row (0..2)
      */
-    T &at(int x, int y) {
+    inline T &at(int x, int y) {
       assert(x >= 0 && x < 3);
       assert(y >= 0 && y < 3);
       return data[x * 3 + y];
@@ -1793,7 +1904,7 @@ class Matrix3 {
      * @param x Number of column (0..2)
      * @param y Number of row (0..2)
      */
-    const T &at(int x, int y) const {
+    inline const T &at(int x, int y) const {
       assert(x >= 0 && x < 3);
       assert(y >= 0 && y < 3);
       return data[x * 3 + y];
@@ -1804,7 +1915,7 @@ class Matrix3 {
      * @param i Number of row (1..3)
      * @param j Number of column (1..3)
      */
-    T &operator()(int i, int j) {
+    inline T &operator()(int i, int j) {
       assert(i >= 1 && i <= 3);
       assert(j >= 1 && j <= 3);
       return data[(j - 1) * 3 + i - 1];
@@ -1815,7 +1926,7 @@ class Matrix3 {
      * @param i Number of row (1..3)
      * @param j Number of column (1..3)
      */
-    const T &operator()(int i, int j) const {
+    inline const T &operator()(int i, int j) const {
       assert(i >= 1 && i <= 3);
       assert(j >= 1 && j <= 3);
       return data[(j - 1) * 3 + i - 1];
@@ -1825,7 +1936,7 @@ class Matrix3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T>& operator=(const Matrix3<T>& rhs) {
+    inline Matrix3<T>& operator=(const Matrix3<T>& rhs) {
       std::memcpy(data, rhs.data, sizeof(T) * 9);
       return *this;
     }
@@ -1835,7 +1946,7 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Matrix3<T>& operator=(const Matrix3<FromT>& rhs) {
+    inline Matrix3<T>& operator=(const Matrix3<FromT>& rhs) {
       for(int i = 0; i < 9; i++) {
         data[i] = static_cast<T>(rhs.data[i]);
       }
@@ -1846,12 +1957,12 @@ class Matrix3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T>& operator=(const T *rhs) {
+    inline Matrix3<T>& operator=(const T *rhs) {
       std::memcpy(data, rhs, sizeof(T) * 9);
       return *this;
     }
 
-    /*Matrix3<T> & operator=(const double* m)
+    /*inline Matrix3<T> & operator=(const double* m)
      {
      for(int i = 0; i < 9; i++) data[i] = (T)m[i];
      return * this;
@@ -1862,7 +1973,7 @@ class Matrix3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator+(const Matrix3<T>& rhs) const {
+    inline Matrix3<T> operator+(const Matrix3<T>& rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] + rhs.data[i];
@@ -1873,7 +1984,7 @@ class Matrix3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator-(const Matrix3<T>& rhs) const {
+    inline Matrix3<T> operator-(const Matrix3<T>& rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] - rhs.data[i];
@@ -1885,7 +1996,7 @@ class Matrix3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator+(T rhs) const {
+    inline Matrix3<T> operator+(T rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] + rhs;
@@ -1896,7 +2007,7 @@ class Matrix3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator-(T rhs) const {
+    inline Matrix3<T> operator-(T rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] - rhs;
@@ -1907,7 +2018,7 @@ class Matrix3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator*(T rhs) const {
+    inline Matrix3<T> operator*(T rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] * rhs;
@@ -1918,7 +2029,7 @@ class Matrix3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator/(T rhs) const {
+    inline Matrix3<T> operator/(T rhs) const {
       Matrix3<T> ret;
       for(int i = 0; i < 9; i++)
         ret.data[i] = data[i] / rhs;
@@ -1930,7 +2041,7 @@ class Matrix3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator*(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator*(const Vector3<T>& rhs) const {
       return Vector3<T>(data[0] * rhs.x + data[3] * rhs.y + data[6] * rhs.z,
                         data[1] * rhs.x + data[4] * rhs.y + data[7] * rhs.z,
                         data[2] * rhs.x + data[5] * rhs.y + data[8] * rhs.z);
@@ -1941,7 +2052,7 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      * Enabling Vector4 rotation as if it's a Vector3, maintaining W
      */
-    Vector4<T> operator*(const Vector4<T>& rhs) const {
+    inline Vector4<T> operator*(const Vector4<T>& rhs) const {
       return Vector4<T>(data[0] * rhs.x + data[3] * rhs.y + data[6] * rhs.z,
                         data[1] * rhs.x + data[4] * rhs.y + data[7] * rhs.z,
                         data[2] * rhs.x + data[5] * rhs.y + data[8] * rhs.z,
@@ -1952,7 +2063,7 @@ class Matrix3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix3<T> operator*(Matrix3<T> rhs) const {
+    inline Matrix3<T> operator*(Matrix3<T> rhs) const {
       static Matrix3<T> w;
       for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
@@ -1970,7 +2081,7 @@ class Matrix3 {
     /**
      * Transpose matrix.
      */
-    Matrix3<T> transpose() {
+    inline Matrix3<T> transpose() {
       Matrix3<T> ret;
       for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
@@ -1989,12 +2100,12 @@ class Matrix3 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Matrix3<T> lerp(T fact, const Matrix3<T>& rhs) const {
+    inline Matrix3<T> lerp(T fact, const Matrix3<T>& rhs) const {
       Matrix3<T> ret = (*this) + (rhs - (*this)) * fact;
       return ret;
     }
 
-    T det() {
+    inline T det() {
       return + at(0, 0) * at(1, 1) * at(2, 2) + at(0, 1) * at(1, 2) * at(2, 0) + at(0, 2) * at(1, 0) * at(2, 1)
              - at(0, 0) * at(1, 2) * at(2, 1) - at(0, 1) * at(1, 0) * at(2, 2) - at(0, 2) * at(1, 1) * at(2, 0);
     }
@@ -2003,7 +2114,7 @@ class Matrix3 {
      * Computes inverse matrix
      * @return Inverse matrix of this matrix.
      */
-    Matrix3<T> inverse() {
+    inline Matrix3<T> inverse() {
       Matrix3<T> ret;
       ret.at(0, 0) = at(1, 1) * at(2, 2) - at(2, 1) * at(1, 2);
       ret.at(0, 1) = at(2, 1) * at(0, 2) - at(0, 1) * at(2, 2);
@@ -2024,7 +2135,7 @@ class Matrix3 {
      * @return Pointer to internally stored (in management of class Matrix3<T>)
      * used for passing Matrix3<T> values to gl*[fd]v functions.
      */
-    operator T*() {
+    inline operator T*() {
       return (T*) data;
     }
 
@@ -2033,7 +2144,7 @@ class Matrix3 {
      * @return Constant Pointer to internally stored (in management of class Matrix3<T>)
      * used for passing Matrix3<T> values to gl*[fd]v functions.
      */
-    operator const T*() const {
+    inline operator const T*() const {
       return (const T*) data;
     }
 
@@ -2044,7 +2155,7 @@ class Matrix3 {
      * @param rhs Right hand side argument of operator.
      * @return Left hand side argument - the ostream object passed to operator.
      */
-    friend std::ostream &operator <<(std::ostream &lhs, const Matrix3<T>& rhs) {
+    inline friend std::ostream &operator <<(std::ostream &lhs, const Matrix3<T>& rhs) {
       for(int i = 0; i < 3; i++) {
         lhs << "|\t";
         for(int j = 0; j < 3; j++) {
@@ -2058,7 +2169,7 @@ class Matrix3 {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -2090,7 +2201,7 @@ class Matrix4 {
     /**
      *Creates identity matrix
      */
-    Matrix4() {
+    inline Matrix4() {
       for(int i = 0; i < 16; i++)
         data[i] = (i % 5) ? 0 : 1;
     }
@@ -2099,7 +2210,7 @@ class Matrix4 {
      * Copy matrix values from array (these data must be in column
      * major order!)
      */
-    Matrix4(const T *dt) {
+    inline Matrix4(const T *dt) {
       std::memcpy(data, dt, sizeof(T) * 16);
     }
 
@@ -2107,7 +2218,7 @@ class Matrix4 {
      * Copy constructor.
      * @param src Data source for new created instance of Matrix4.
      */
-    Matrix4(const Matrix4<T>& src) {
+    inline Matrix4(const Matrix4<T>& src) {
       std::memcpy(data, src.data, sizeof(T) * 16);
     }
 
@@ -2116,7 +2227,7 @@ class Matrix4 {
      * @param src Data source for new created instance of Matrix4.
      */
     template<class FromT>
-    Matrix4(const Matrix4<FromT>& src) {
+    inline Matrix4(const Matrix4<FromT>& src) {
       for(int i = 0; i < 16; i++) {
         data[i] = static_cast<T>(src.data[i]);
       }
@@ -2125,7 +2236,7 @@ class Matrix4 {
     /**
      * Resets matrix to be identity matrix
      */
-    void identity() {
+    inline void identity() {
       for(int i = 0; i < 16; i++)
         data[i] = (i % 5) ? 0 : 1;
     }
@@ -2136,7 +2247,7 @@ class Matrix4 {
      * @param yDeg Angle (in degrees) of rotation around axis Y.
      * @param zDeg Angle (in degrees) of rotation around axis Z.
      */
-    static Matrix4<T> createRotationAroundAxis(T xDeg, T yDeg, T zDeg) {
+    inline static Matrix4<T> createRotationAroundAxis(T xDeg, T yDeg, T zDeg) {
       T xRads(DEG2RAD(xDeg));
       T yRads(DEG2RAD(yDeg));
       T zRads(DEG2RAD(zDeg));
@@ -2183,7 +2294,7 @@ class Matrix4 {
      * @param z Z-direction translation
      * @param w for W-coordinate translation (implicitly set to 1)
      */
-    static Matrix4<T> createTranslation(T x, T y, T z, T w = 1) {
+    inline static Matrix4<T> createTranslation(T x, T y, T z, T w = 1) {
       Matrix4 ret;
       ret.at(3, 0) = x;
       ret.at(3, 1) = y;
@@ -2200,7 +2311,7 @@ class Matrix4 {
      * @param upDir Direction of up vector
      * @return Resulting view matrix that looks from and at specific position.
      */
-    static Matrix4<T> createLookAt(const Vector3<T>& eyePos, const Vector3<T>& centerPos, const Vector3<T>& upDir) {
+    inline static Matrix4<T> createLookAt(const Vector3<T>& eyePos, const Vector3<T>& centerPos, const Vector3<T>& upDir) {
       Vector3<T> forward, side, up;
       Matrix4<T> m;
 
@@ -2245,7 +2356,7 @@ class Matrix4 {
      *
      * @return Projection matrix for specified frustum.
      */
-    static Matrix4<T> createFrustum(T left, T right, T bottom, T top, T zNear, T zFar) {
+    inline static Matrix4<T> createFrustum(T left, T right, T bottom, T top, T zNear, T zFar) {
       /*
        *
             2 zNear
@@ -2302,7 +2413,7 @@ class Matrix4 {
      *       This value is negative if the plane is to be behind the viewer.
      * @return Othrographic projection matrix.
      */
-    static Matrix4<T> createOrtho(T left, T right, T bottom, T top, T zNear, T zFar) {
+    inline static Matrix4<T> createOrtho(T left, T right, T bottom, T top, T zNear, T zFar) {
       /*
              2
           ------------       0              0              tx
@@ -2352,7 +2463,7 @@ class Matrix4 {
      * @return An instance of Matrix4<T> representing @a arr
      */
     template<class FromT>
-    static Matrix4<T> fromRowMajorArray(const FromT *arr) {
+    inline static Matrix4<T> fromRowMajorArray(const FromT *arr) {
       const T retData[] = {
         static_cast<T>(arr[0]), static_cast<T>(arr[4]), static_cast<T>(arr[8]), static_cast<T>(arr[12]),
         static_cast<T>(arr[1]), static_cast<T>(arr[5]), static_cast<T>(arr[9]), static_cast<T>(arr[13]),
@@ -2370,7 +2481,7 @@ class Matrix4 {
      * @return An instance of Matrix4<T> representing @a arr
      */
     template<class FromT>
-    static Matrix4<T> fromColumnMajorArray(const FromT *arr) {
+    inline static Matrix4<T> fromColumnMajorArray(const FromT *arr) {
       const T retData[] = {
         static_cast<T>(arr[0]), static_cast<T>(arr[1]), static_cast<T>(arr[2]), static_cast<T>(arr[3]),
         static_cast<T>(arr[4]), static_cast<T>(arr[5]), static_cast<T>(arr[6]), static_cast<T>(arr[7]),
@@ -2390,7 +2501,7 @@ class Matrix4 {
      * | lhs[i] - rhs[i] | < EPSILON,
      * same for y-coordinate, z-coordinate, and w-coordinate.
      */
-    bool operator==(const Matrix4<T>& rhs) const {
+    inline bool operator==(const Matrix4<T>& rhs) const {
       for(int i = 0; i < 16; i++) {
         if(std::fabs(data[i] - rhs.data[i]) >= EPSILON
           )
@@ -2404,7 +2515,7 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Matrix4<T>& rhs) const {
+    inline bool operator!=(const Matrix4<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -2414,7 +2525,7 @@ class Matrix4 {
      * @param x Number of column (0..3)
      * @param y Number of row (0..3)
      */
-    T &at(int x, int y) {
+    inline T &at(int x, int y) {
       assert(x >= 0 && x < 4);
       assert(y >= 0 && y < 4);
       return data[x * 4 + y];
@@ -2425,7 +2536,7 @@ class Matrix4 {
      * @param x Number of column (0..3)
      * @param y Number of row (0..3)
      */
-    const T &at(int x, int y) const {
+    inline const T &at(int x, int y) const {
       assert(x >= 0 && x < 4);
       assert(y >= 0 && y < 4);
       return data[x * 4 + y];
@@ -2436,7 +2547,7 @@ class Matrix4 {
      * @param i Number of row (1..4)
      * @param j Number of column (1..4)
      */
-    T &operator()(int i, int j) {
+    inline T &operator()(int i, int j) {
       assert(i >= 1 && i <= 4);
       assert(j >= 1 && j <= 4);
       return data[(j - 1) * 4 + i - 1];
@@ -2447,7 +2558,7 @@ class Matrix4 {
      * @param i Number of row (1..4)
      * @param j Number of column (1..4)
      */
-    const T &operator()(int i, int j) const {
+    inline const T &operator()(int i, int j) const {
       assert(i >= 1 && i <= 4);
       assert(j >= 1 && j <= 4);
       return data[(j - 1) * 4 + i - 1];
@@ -2458,14 +2569,14 @@ class Matrix4 {
      *
      * @param v Vector of translation to be set.
      */
-    void setTranslation(const Vector3<T>& v) {
+    inline void setTranslation(const Vector3<T>& v) {
       at(3, 0) = v.x;
       at(3, 1) = v.y;
       at(3, 2) = v.z;
       at(3, 3) = 1;
     }
 
-    Vector3<T> getTranslation() {
+    inline Vector3<T> getTranslation() {
       return Vector3<T>(at(3, 0), at(3, 1), at(3, 2));
     }
 
@@ -2474,7 +2585,7 @@ class Matrix4 {
      *
      * @param m Rotation part of matrix
      */
-    void setRotation(const Matrix3<T>& m) {
+    inline void setRotation(const Matrix3<T>& m) {
       for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
           at(i, j) = m.at(i, j);
@@ -2486,7 +2597,7 @@ class Matrix4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T>& operator=(const Matrix4<T>& rhs) {
+    inline Matrix4<T>& operator=(const Matrix4<T>& rhs) {
       std::memcpy(data, rhs.data, sizeof(T) * 16);
       return *this;
     }
@@ -2496,7 +2607,7 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Matrix4<T>& operator=(const Matrix4<FromT>& rhs) {
+    inline Matrix4<T>& operator=(const Matrix4<FromT>& rhs) {
       for(int i = 0; i < 16; i++) {
         data[i] = static_cast<T>(rhs.data[i]);
       }
@@ -2507,12 +2618,12 @@ class Matrix4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T>& operator=(const T *rhs) {
+    inline Matrix4<T>& operator=(const T *rhs) {
       std::memcpy(data, rhs, sizeof(T) * 16);
       return *this;
     }
 
-    /*Matrix4<T> & operator=(const double* m)
+    /*inline Matrix4<T> & operator=(const double* m)
      {
      for(int i = 0; i < 16; i++) data[i] = (T)m[i];
      return * this;
@@ -2523,7 +2634,7 @@ class Matrix4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator+(const Matrix4<T>& rhs) const {
+    inline Matrix4<T> operator+(const Matrix4<T>& rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] + rhs.data[i];
@@ -2534,7 +2645,7 @@ class Matrix4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator-(const Matrix4<T>& rhs) const {
+    inline Matrix4<T> operator-(const Matrix4<T>& rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] - rhs.data[i];
@@ -2546,7 +2657,7 @@ class Matrix4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator+(T rhs) const {
+    inline Matrix4<T> operator+(T rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] + rhs;
@@ -2557,7 +2668,7 @@ class Matrix4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator-(T rhs) const {
+    inline Matrix4<T> operator-(T rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] - rhs;
@@ -2568,7 +2679,7 @@ class Matrix4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator*(T rhs) const {
+    inline Matrix4<T> operator*(T rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] * rhs;
@@ -2579,7 +2690,7 @@ class Matrix4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator/(T rhs) const {
+    inline Matrix4<T> operator/(T rhs) const {
       Matrix4<T> ret;
       for(int i = 0; i < 16; i++)
         ret.data[i] = data[i] / rhs;
@@ -2591,7 +2702,7 @@ class Matrix4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector4<T> operator*(const Vector4<T>& rhs) const {
+    inline Vector4<T> operator*(const Vector4<T>& rhs) const {
       return Vector4<T>(data[0] * rhs.x + data[4] * rhs.y + data[8] * rhs.z + data[12] * rhs.w,
                         data[1] * rhs.x + data[5] * rhs.y + data[9] * rhs.z + data[13] * rhs.w,
                         data[2] * rhs.x + data[6] * rhs.y + data[10] * rhs.z + data[14] * rhs.w,
@@ -2603,7 +2714,7 @@ class Matrix4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Vector3<T> operator*(const Vector3<T>& rhs) const {
+    inline Vector3<T> operator*(const Vector3<T>& rhs) const {
       return Vector3<T>(data[0] * rhs.x + data[4] * rhs.y + data[8] * rhs.z,
                         data[1] * rhs.x + data[5] * rhs.y + data[9] * rhs.z,
                         data[2] * rhs.x + data[6] * rhs.y + data[10] * rhs.z);
@@ -2613,7 +2724,7 @@ class Matrix4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Matrix4<T> operator*(Matrix4<T> rhs) const {
+    inline Matrix4<T> operator*(Matrix4<T> rhs) const {
       static Matrix4<T> w;
       for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
@@ -2634,7 +2745,7 @@ class Matrix4 {
      * @return Determinant of matrix
      * @note This function does 3 * 4 * 6 mul, 3 * 6 add.
      */
-    T det() {
+    inline T det() {
 
       return +at(3, 0) * at(2, 1) * at(1, 2) * at(0, 3) - at(2, 0) * at(3, 1) * at(1, 2) * at(0, 3)
              - at(3, 0) * at(1, 1) * at(2, 2) * at(0, 3) + at(1, 0) * at(3, 1) * at(2, 2) * at(0, 3)
@@ -2662,7 +2773,7 @@ class Matrix4 {
      * @note This is a little bit time consuming operation
      * (16 * 6 * 3 mul, 16 * 5 add + det() + mul() functions)
      */
-    Matrix4<T> inverse() {
+    inline Matrix4<T> inverse() {
       Matrix4<T> ret;
 
       ret.at(0, 0) = +at(2, 1) * at(3, 2) * at(1, 3) - at(3, 1) * at(2, 2) * at(1, 3) + at(3, 1) * at(1, 2) * at(2, 3)
@@ -2719,7 +2830,7 @@ class Matrix4 {
     /**
      * Transpose matrix.
      */
-    Matrix4<T> transpose() {
+    inline Matrix4<T> transpose() {
       Matrix4<T> ret;
       for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
@@ -2738,7 +2849,7 @@ class Matrix4 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Matrix4<T> lerp(T fact, const Matrix4<T>& rhs) const {
+    inline Matrix4<T> lerp(T fact, const Matrix4<T>& rhs) const {
       Matrix4<T> ret = (*this) + (rhs - (*this)) * fact;
       return ret;
     }
@@ -2749,7 +2860,7 @@ class Matrix4 {
      * @return Pointer to internally stored (in management of class Matrix4<T>)
      * used for passing Matrix4<T> values to gl*[fd]v functions.
      */
-    operator T*() {
+    inline operator T*() {
       return (T*) data;
     }
 
@@ -2758,7 +2869,7 @@ class Matrix4 {
      * @return Constant Pointer to internally stored (in management of class Matrix4<T>)
      * used for passing Matrix4<T> values to gl*[fd]v functions.
      */
-    operator const T*() const {
+    inline operator const T*() const {
       return (const T*) data;
     }
 
@@ -2769,7 +2880,7 @@ class Matrix4 {
      * @param rhs Right hand side argument of operator.
      * @return Left hand side argument - the ostream object passed to operator.
      */
-    friend std::ostream &operator <<(std::ostream &lhs, const Matrix4<T>& rhs) {
+    inline friend std::ostream &operator <<(std::ostream &lhs, const Matrix4<T>& rhs) {
       for(int i = 0; i < 4; i++) {
         lhs << "|\t";
         for(int j = 0; j < 4; j++) {
@@ -2783,7 +2894,7 @@ class Matrix4 {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -2822,14 +2933,14 @@ class Quaternion {
     /**
      * Quaternion constructor, sets quaternion to (0 + 0i + 0j + 0k).
      */
-    Quaternion()
+    inline Quaternion()
       : w(0), v(0, 0, 0) {
     }
 
     /**
      * Copy constructor.
      */
-    Quaternion(const Quaternion<T>& q)
+    inline Quaternion(const Quaternion<T>& q)
       : w(q.w), v(q.v) {
     }
 
@@ -2837,7 +2948,7 @@ class Quaternion {
      * Copy casting constructor.
      */
     template<class FromT>
-    Quaternion(const Quaternion<FromT>& q)
+    inline Quaternion(const Quaternion<FromT>& q)
       : w(static_cast<T>(q.w)), v(q.v) {
     }
 
@@ -2846,7 +2957,7 @@ class Quaternion {
      * @param w_ Real part of quaternion.
      * @param v_ Complex part of quaternion (xi + yj + zk).
      */
-    Quaternion(T w_, const Vector3<T>& v_)
+    inline Quaternion(T w_, const Vector3<T>& v_)
       : w(w_), v(v_) {
     }
 
@@ -2857,7 +2968,7 @@ class Quaternion {
      * @param y Complex coefficient for j complex constant.
      * @param z Complex coefficient for k complex constant.
      */
-    Quaternion(T w_, T x, T y, T z)
+    inline Quaternion(T w_, T x, T y, T z)
       : w(w_), v(x, y, z) {
     }
 
@@ -2865,7 +2976,7 @@ class Quaternion {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T>& operator=(const Quaternion<T>& rhs) {
+    inline Quaternion<T>& operator=(const Quaternion<T>& rhs) {
       v = rhs.v;
       w = rhs.w;
       return *this;
@@ -2876,7 +2987,7 @@ class Quaternion {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    Quaternion<T>& operator=(const Quaternion<FromT>& rhs) {
+    inline Quaternion<T>& operator=(const Quaternion<FromT>& rhs) {
       v = rhs.v;
       w = static_cast<T>(rhs.w);
       return *this;
@@ -2886,7 +2997,7 @@ class Quaternion {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T> operator+(const Quaternion<T>& rhs) const {
+    inline Quaternion<T> operator+(const Quaternion<T>& rhs) const {
       const Quaternion<T>& lhs = *this;
       return Quaternion<T>(lhs.w + rhs.w, lhs.v + rhs.v);
     }
@@ -2895,7 +3006,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T> operator*(const Quaternion<T>& rhs) const {
+    inline Quaternion<T> operator*(const Quaternion<T>& rhs) const {
       const Quaternion<T>& lhs = *this;
       return Quaternion<T>(lhs.w * rhs.w - lhs.v.x * rhs.v.x - lhs.v.y * rhs.v.y - lhs.v.z * rhs.v.z,
                            lhs.w * rhs.v.x + lhs.v.x * rhs.w + lhs.v.y * rhs.v.z - lhs.v.z * rhs.v.y,
@@ -2907,7 +3018,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T> operator*(T rhs) const {
+    inline Quaternion<T> operator*(T rhs) const {
       return Quaternion<T>(w * rhs, v * rhs);
     }
 
@@ -2915,7 +3026,7 @@ class Quaternion {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T> operator-(const Quaternion<T>& rhs) const {
+    inline Quaternion<T> operator-(const Quaternion<T>& rhs) const {
       const Quaternion<T>& lhs = *this;
       return Quaternion<T>(lhs.w - rhs.w, lhs.v - rhs.v);
     }
@@ -2924,7 +3035,7 @@ class Quaternion {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T>& operator+=(const Quaternion<T>& rhs) {
+    inline Quaternion<T>& operator+=(const Quaternion<T>& rhs) {
       w += rhs.w;
       v += rhs.v;
       return *this;
@@ -2934,7 +3045,7 @@ class Quaternion {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T>& operator-=(const Quaternion<T>& rhs) {
+    inline Quaternion<T>& operator-=(const Quaternion<T>& rhs) {
       w -= rhs.w;
       v -= rhs.v;
       return *this;
@@ -2944,7 +3055,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T>& operator*=(const Quaternion<T>& rhs) {
+    inline Quaternion<T>& operator*=(const Quaternion<T>& rhs) {
       Quaternion q = (*this) * rhs;
       v = q.v;
       w = q.w;
@@ -2955,7 +3066,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    Quaternion<T>& operator*=(T rhs) {
+    inline Quaternion<T>& operator*=(T rhs) {
       w *= rhs;
       v *= rhs;
       return *this;
@@ -2968,7 +3079,7 @@ class Quaternion {
      * values equal, must satisfy this condition | lhs - rhs | < EPSILON,
      * for all quaternion coordinates.
      */
-    bool operator==(const Quaternion<T>& rhs) const {
+    inline bool operator==(const Quaternion<T>& rhs) const {
       const Quaternion<T>& lhs = *this;
       return (std::fabs(lhs.w - rhs.w) < EPSILON) && lhs.v == rhs.v;
     }
@@ -2978,7 +3089,7 @@ class Quaternion {
      * @param rhs Right hand side argument of binary operator.
      * @return not (lhs == rhs) :-P
      */
-    bool operator!=(const Quaternion<T>& rhs) const {
+    inline bool operator!=(const Quaternion<T>& rhs) const {
       return !(*this == rhs);
     }
 
@@ -2987,7 +3098,7 @@ class Quaternion {
      * Unary negate operator
      * @return negated quaternion
      */
-    Quaternion<T> operator-() const {
+    inline Quaternion<T> operator-() const {
       return Quaternion<T>(-w, -v);
     }
 
@@ -2995,7 +3106,7 @@ class Quaternion {
      * Unary conjugate operator
      * @return conjugated quaternion
      */
-    Quaternion<T> operator~() const {
+    inline Quaternion<T> operator~() const {
       return Quaternion<T>(w, -v);
     }
 
@@ -3003,7 +3114,7 @@ class Quaternion {
      * Get lenght of quaternion.
      * @return Length of quaternion.
      */
-    T length() const {
+    inline T length() const {
       return (T) std::sqrt(w * w + v.lengthSq());
     }
 
@@ -3014,20 +3125,27 @@ class Quaternion {
      * of length of two quaternion can be used just this value, instead
      * of more expensive length() method.
      */
-    T lengthSq() const {
+    inline T lengthSq() const {
       return w * w + v.lengthSq();
     }
 
     /**
      * Normalize quaternion
      */
-    void normalize() {
+    inline void normalize() {
       T len = length();
       w /= len;
       v /= len;
     }
-    void normalise() {  // proper english
+    inline void normalise() {  // proper english
       normalize();
+    }
+    inline Quaternion<T> normalize_copy() const {
+      T len = length();
+      return Quaternion<T>(w / len, v / len);
+    }
+    inline Quaternion<T> normalise_copy() const {  // proper english
+      return normalize_copy();
     }
 
     /**
@@ -3037,9 +3155,10 @@ class Quaternion {
      * @param z Rotation around z axis (in degrees).
      * @return Quaternion object representing transformation.
      */
-    static Quaternion<T> fromEulerAngles(T x, T y, T z) {
-      Quaternion<T> ret = fromAxisRot(Vector3<T>(1, 0, 0), x) * fromAxisRot(Vector3<T>(0, 1, 0), y)
-                          * fromAxisRot(Vector3<T>(0, 0, 1), z);
+    inline static Quaternion<T> fromEulerAngles(T x, T y, T z) {
+      Quaternion<T> ret = fromAxisRot(Vector3<T>(1, 0, 0), x) *
+                          fromAxisRot(Vector3<T>(0, 1, 0), y) *
+                          fromAxisRot(Vector3<T>(0, 0, 1), z);
       return ret;
     }
 
@@ -3048,7 +3167,7 @@ class Quaternion {
      * @param axis Unit vector expressing axis of rotation.
      * @param angleDeg Angle of rotation around axis (in degrees).
      */
-    static Quaternion<T> fromAxisRot(Vector3<T> axis, float angleDeg) {
+    inline static Quaternion<T> fromAxisRot(Vector3<T> axis, float angleDeg) {
       double angleRad = DEG2RAD(angleDeg);
       double sa2 = std::sin(angleRad / 2);
       double ca2 = std::cos(angleRad / 2);
@@ -3059,7 +3178,7 @@ class Quaternion {
      * Converts quaternion into rotation matrix.
      * @return Rotation matrix expressing this quaternion.
      */
-    Matrix3<T> rotMatrix() {
+    inline Matrix3<T> rotMatrix() {
       Matrix3<T> ret;
 
       /*ret.at(0,0) = 1 - 2*v.y*v.y - 2*v.z*v.z;
@@ -3107,7 +3226,7 @@ class Quaternion {
      * conversion method. But returns Matrix of 4x4 elements.
      * @return Transformation matrix expressing this quaternion.
      */
-    Matrix4<T> transform() const {
+    inline Matrix4<T> transform() const {
       Matrix4<T> ret;
 
       T xx = v.x * v.x;
@@ -3155,14 +3274,14 @@ class Quaternion {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    Quaternion<T> lerp(T fact, const Quaternion<T>& rhs) const {
+    inline Quaternion<T> lerp(T fact, const Quaternion<T>& rhs) const {
       return Quaternion<T>((1 - fact) * w + fact * rhs.w, v.lerp(fact, rhs.v));
     }
 
     /**
      * Provides output to standard output stream.
      */
-    friend std::ostream &operator <<(std::ostream &oss, const Quaternion<T>& q) {
+    inline friend std::ostream &operator <<(std::ostream &oss, const Quaternion<T>& q) {
       oss << "Re: " << q.w << " Im: " << q.v;
       return oss;
     }
@@ -3170,7 +3289,7 @@ class Quaternion {
     /**
      * Gets string representation.
      */
-    std::string toString() const {
+    inline std::string toString() const {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -3183,7 +3302,7 @@ class Quaternion {
      * @return Quaternion representing rotation of matrix m.
      */
     // 2011-07-02: Davide Bacchet: changed formula to fix degenerate cases
-    static Quaternion<T> fromMatrix(const Matrix4<T>& m) {
+    inline static Quaternion<T> fromMatrix(const Matrix4<T>& m) {
       Quaternion<T> q;
 
       T tr, s;
@@ -3233,7 +3352,7 @@ class Quaternion {
      */
 
     // 2011-07-02: Davide Bacchet: changed formula to fix degenerate cases
-    static Quaternion<T> fromMatrix(const Matrix3<T>& m) {
+    inline static Quaternion<T> fromMatrix(const Matrix3<T>& m) {
       Quaternion<T> q;
 
       T tr, s;
@@ -3283,7 +3402,7 @@ class Quaternion {
      * @param q2 Second quaternion for interpolation.
      * @return Result of interpolation.
      */
-    Quaternion<T> slerp(T r, const Quaternion<T>& q2) const {
+    inline Quaternion<T> slerp(T r, const Quaternion<T>& q2) const {
       Quaternion<T> ret;
       T cosTheta = w * q2.w + v.x * q2.v.x + v.y * q2.v.y + v.z * q2.v.z;
       T theta = (T) acos(cosTheta);
