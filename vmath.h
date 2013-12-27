@@ -2921,14 +2921,24 @@ typedef Matrix4<int> Matrix4i;
 template<class T>
 class Quaternion {
   public:
-    /**
-     * Real part of quaternion.
-     */
-    T w;
-    /**
-     * Imaginary part of quaternion.
-     */
-    Vector3<T> v;
+
+    union {
+      /**
+       * Real part of quaternion.
+       */
+      T w;
+      T real;
+      T scalar;
+    };
+
+    union {
+      /**
+       * Imaginary part of quaternion.
+       */
+      Vector3<T> v;
+      Vector3<T> imaginary;
+      Vector3<T> vector;
+    };
 
     /**
      * Quaternion constructor, sets quaternion to (0 + 0i + 0j + 0k).
@@ -3023,6 +3033,14 @@ class Quaternion {
     }
 
     /**
+     * Division operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Quaternion<T> operator/(T rhs) const {
+      return Quaternion<T>(w / rhs, v / rhs);
+    }
+
+    /**
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
@@ -3069,6 +3087,16 @@ class Quaternion {
     inline Quaternion<T>& operator*=(T rhs) {
       w *= rhs;
       v *= rhs;
+      return *this;
+    }
+
+    /**
+     * Division operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Quaternion<T>& operator/=(T rhs) {
+      w /= rhs;
+      v /= rhs;
       return *this;
     }
 
@@ -3147,6 +3175,35 @@ class Quaternion {
     inline Quaternion<T> normalise_copy() const {  // proper english
       return normalize_copy();
     }
+
+    inline void conjugate() {
+      v = -v;
+    }
+
+    inline Quaternion<T> conjugate_copy() const {
+      return Quaternion<T>(w, -v);
+    }
+
+    /**
+     * @brief Computes the inverse of this quaternion.
+     *
+     * @note This is a general inverse.  If you know a priori
+     * that you're using a unit quaternion (i.e., norm() == 1),
+     * it will be significantly faster to use conjugate() instead.
+     *
+     * @return The quaternion q such that q * (*this) == (*this) * q
+     * == [ 0 0 0 1 ]<sup>T</sup>.
+     */
+    inline void invert() {
+      T l = length();
+      conjugate();
+      (*this) /= l;
+    }
+
+    inline Quaternion<T> invert_copy() const {
+      return conjugate_copy() / length();
+    }
+
 
     /**
      * Creates quaternion for eulers angles.
