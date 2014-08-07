@@ -1,23 +1,22 @@
 #include "objloader.h"
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <string>
 #include <boost/algorithm/string.hpp>
 
-using namespace std;
-
-objloader::objloader(string filename) {
-  this->file = new ifstream(filename.c_str());
+objloader::objloader(std::string const &filename) {
+  this->file = new std::ifstream(filename.c_str());
 }
 
 void objloader::load() {
-  string line;
+  std::string line;
 
   if (this->file->is_open()) {
     while(this->file->good()) {
       getline(*file, line);
 
-      vector<string> toks;
+      std::vector<std::string> toks;
       boost::split(toks, line, boost::is_any_of(" /"));
 
       if (toks[0] == "v" && toks.size() >= 4) {
@@ -34,9 +33,9 @@ void objloader::load() {
         }
       }
     }
-    cout << "Vertices: " << vertices.size() << endl;
-    cout << "Normals: "  << normals.size()  << endl;
-    cout << "Faces: "    << faces.size()    << endl;
+    std::cout << "Vertices: " << vertices.size() << std::endl;
+    std::cout << "Normals: "  << normals.size()  << std::endl;
+    std::cout << "Faces: "    << faces.size()    << std::endl;
   }
 }
 

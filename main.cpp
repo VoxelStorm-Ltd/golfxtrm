@@ -4,10 +4,11 @@
 #include <iostream>
 #include <sstream>
 #define _USE_MATH_DEFINES
-#include <math.h>
-#include <boost/thread/thread.hpp>
+#include <cmath>
 #include "version.h"
 
+#include <thread>
+#include <chrono>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 //#include <GL/gl.h>
@@ -106,7 +107,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     _Exit(EXIT_FAILURE);
   }
 
-  oculus = new oculusstorm();   // initialise the oculus rift before graphics init
+  oculus = new oculusstorm(1000.0, 0.1);   // initialise the oculus rift before graphics init
 
   int nummonitors = 0;
   GLFWmonitor **monitor_list = glfwGetMonitors(&nummonitors);
@@ -443,7 +444,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glfwSetWindowTitle(window_main, "GolfXTRM beta");  // set the title to the main run's title
 
   cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
-  boost::this_thread::sleep_for(boost::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
+  std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
   //while(glfwGetTime() < splashtime) {
   //  // lazy-wait while refreshing through the splash screen
   //  glfwSleep(0.1);
@@ -452,7 +453,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   #ifdef NOMUSIC
     cout << "Skipping music" << endl;
   #else
-    soundengine->play2D("GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg", true);
+    soundengine->play2D("Skin Walker - Berserker - Versus.ogg", true);
   #endif
 
   // these must be absolutely last:

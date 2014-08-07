@@ -23,8 +23,8 @@ public:
   float aspectratio;
   float fov;
 
-  GLdouble nearplane;
-  GLdouble farplane;
+  GLfloat nearplane;
+  GLfloat farplane;
 
   Matrix4f projection_left;
   Matrix4f projection_right;
@@ -32,20 +32,21 @@ public:
   Matrix4f viewadjust_right;
 
   OVR::Ptr<OVR::DeviceManager>    manager;
-  OVR::Ptr<OVR::HMDDevice>		    device;
+  OVR::Ptr<OVR::HMDDevice>        device;
   OVR::Ptr<OVR::SensorDevice>     sensor;
-  OVR::SensorFusion		            sensorfusion;
-  OVR::HMDInfo			              hmdinfo;
-  bool			                      infoloaded;
+  OVR::SensorFusion               *sensorfusion;
+  OVR::HMDInfo                    hmdinfo;
+  bool                            infoloaded;
   OVR::Util::Render::StereoConfig stereoconfig;
 
-  oculusstorm();
+  oculusstorm(float farplane, float nearplane = 0.0);
   ~oculusstorm();
 
   void dumpinfo();
   Quatf getquat();
   Matrix4f getmatrix();
   Matrix4f convertmatrix(OVR::Matrix4f ovrmatrix);
+  void cachematrices();
   void setup_left();
   void setup_right();
 };

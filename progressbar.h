@@ -2,7 +2,6 @@
 #define PROGRESSBAR_H_INCLUDED
 
 //#include <iostream>
-//#include <GLFW/glfw3.h>
 
 //#include "globaldefs.h"
 //#include "globalvars_client.h"

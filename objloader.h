@@ -14,7 +14,7 @@ public:
   std::vector<GLuint>  faces;
 
   std::ifstream *file;
-  objloader(std::string filename);
+  objloader(std::string const &filename);
   void load();
   virtual ~objloader();
 };

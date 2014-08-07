@@ -1,8 +1,8 @@
 <project>
     <shortName>GolfXTRM</shortName>
     <fullName>GolfXTRM</fullName>
-    <version>3.9.3128.17043</version>
-    <readmeFile>bin/Release/GolfXTRM/readme.txt</readmeFile>
+    <version>3.9.3189.17362</version>
+    <readmeFile>bin/Win32_Release/GolfXTRM/readme.txt</readmeFile>
     <leftImage>assets/golfball_bw2_2b 163x314.png</leftImage>
     <logoImage>assets/golfball_bw2_3a 48.png</logoImage>
     <splashImage>assets/golfball_bw2_3a 375.png</splashImage>
@@ -21,40 +21,40 @@
                     <platforms>all</platforms>
                     <distributionFileList>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM splash screen.png</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM splash screen.png</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - Anton Riehl - Amazing Lift.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - Anton Riehl - Amazing Lift.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - Anton Riehl - Fresh Dew.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - Anton Riehl - Fresh Dew.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - Anton Riehl - The Green Flash.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - Anton Riehl - The Green Flash.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - hit1.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - hit1.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - hole1.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - hole1.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - Skin Walker - Versus (Slowed Down x4).ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/Skin Walker - Berserker - Versus.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - swing1.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - swing1.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - swing2.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - swing2.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - swing3.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - swing3.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM - swing4.ogg</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM - swing4.ogg</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/raptor.obj</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/raptor.obj</origin>
                         </distributionFile>
                     </distributionFileList>
                     <shortcutList>
@@ -87,16 +87,16 @@
                     <platforms>windows</platforms>
                     <distributionFileList>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/irrKlang.dll</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/irrKlang.dll</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM window.lnk</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM window.lnk</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM.exe</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM.exe</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>bin/Release/GolfXTRM/GolfXTRM fullscreen.lnk</origin>
+                            <origin>bin/Win32_Release/GolfXTRM/GolfXTRM fullscreen.lnk</origin>
                         </distributionFile>
                     </distributionFileList>
                 </folder>
