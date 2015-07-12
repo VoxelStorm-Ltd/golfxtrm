@@ -6,7 +6,10 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
 #include <OVR.h>
+#pragma GCC diagnostic pop
 #include "vmath.h"
 
 class oculusstorm {
@@ -26,10 +29,10 @@ public:
   GLfloat nearplane;
   GLfloat farplane;
 
-  Matrix4f projection_left;
-  Matrix4f projection_right;
-  Matrix4f viewadjust_left;
-  Matrix4f viewadjust_right;
+  Matrix4<GLfloat> projection_left;
+  Matrix4<GLfloat> projection_right;
+  Matrix4<GLfloat> viewadjust_left;
+  Matrix4<GLfloat> viewadjust_right;
 
   OVR::Ptr<OVR::DeviceManager>    manager;
   OVR::Ptr<OVR::HMDDevice>        device;

@@ -1,4 +1,4 @@
-#include "oculusstorm/oculusstorm.h"
+#include "oculusstorm.h"
 #include <iostream>
 #include <cmath>
 #include "vmath.h"
@@ -9,8 +9,8 @@ oculusstorm::oculusstorm(float farplane, float nearplane)
     viewport_height(800),
     ipd(6.4),
     ipd_half(3.2),
-    aspectratio(1280.0 / (2.0 * 800.0)),
-    nearplane(nearplane == 0.0 ? 0.2 : nearplane),    // 20cm default clip plane
+    aspectratio(1280.0f / (2.0f * 800.0f)),
+    nearplane(nearplane == 0.0f ? 0.2f : nearplane),  // 20cm default clip plane
     farplane(farplane),
     manager(nullptr),
     device(nullptr),
@@ -86,11 +86,11 @@ oculusstorm::oculusstorm(float farplane, float nearplane)
   viewport_width  = hmdinfo.HResolution / 2;
   viewport_height = hmdinfo.VResolution;
   ipd = hmdinfo.InterpupillaryDistance;
-  ipd_half = ipd / 2.0;
+  ipd_half = ipd / 2.0f;
   ild = hmdinfo.LensSeparationDistance / hmdinfo.HScreenSize;
-  ild_half = ild / 2.0;
+  ild_half = ild / 2.0f;
   aspectratio = (static_cast<float>(hmdinfo.HResolution) / 2.0f) / static_cast<float>(hmdinfo.VResolution);
-  fov = 2.0f * atan(hmdinfo.VScreenSize / (2.0f * hmdinfo.EyeToScreenDistance));
+  fov = 2.0f * std::atan(hmdinfo.VScreenSize / (2.0f * hmdinfo.EyeToScreenDistance));
   std::cout << "  aspect ratio  = " << aspectratio << std::endl;
   std::cout << "  field of view = " << fov << std::endl;
   std::cout << "  interlens distance (ratio)  = " << ild << std::endl;
@@ -175,28 +175,25 @@ void oculusstorm::cachematrices() {
   // better to do it ourselves:
 
   glMatrixMode(GL_PROJECTION);
-  double top    = tan(fov * 0.5) * nearplane;
-  double bottom = -top;
-  double left, right;
-  float temp_matrix[16];
+  float const top    = std::tan(fov * 0.5f) * nearplane;
+  float const bottom = -top;
+  float left, right;
 
   // left eye
   glLoadIdentity();
-  left   = aspectratio * bottom * (1 + ild_half);
-  right  = aspectratio * top    * (1 - ild_half);
+  left   = aspectratio * bottom * (1.0f + ild_half);
+  right  = aspectratio * top    * (1.0f - ild_half);
   glFrustum(left, right, bottom, top, nearplane, farplane);
   glTranslatef(ipd_half, 0.0, 0.0);
-  glGetFloatv(GL_PROJECTION_MATRIX, temp_matrix);
-  projection_left = Matrix4f::fromColumnMajorArray(temp_matrix);
+  glGetFloatv(GL_PROJECTION_MATRIX, projection_left.data.data());
 
   // right eye
   glLoadIdentity();
-  left   = aspectratio * bottom * (1 - ild_half);
-  right  = aspectratio * top    * (1 + ild_half);
+  left   = aspectratio * bottom * (1.0f - ild_half);
+  right  = aspectratio * top    * (1.0f + ild_half);
   glFrustum(left, right, bottom, top, nearplane, farplane);
   glTranslatef(-ipd_half, 0.0, 0.0);
-  glGetFloatv(GL_PROJECTION_MATRIX, temp_matrix);
-  projection_right = Matrix4f::fromColumnMajorArray(temp_matrix);
+  glGetFloatv(GL_PROJECTION_MATRIX, projection_right.data.data());
 
 }
 
