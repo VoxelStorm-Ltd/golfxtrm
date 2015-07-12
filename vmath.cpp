@@ -61,6 +61,14 @@ template class Matrix4<int>;
 template class Quaternion<float>;
 template class Quaternion<double>;
 template class Quaternion<long double>;
+template class Aabb2<float>;
+template class Aabb2<double>;
+template class Aabb2<long double>;
+template class Aabb2<int>;
+template class Aabb3<float>;
+template class Aabb3<double>;
+template class Aabb3<long double>;
+template class Aabb3<int>;
 
 #ifdef VMATH_NAMESPACE
 }
