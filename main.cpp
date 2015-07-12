@@ -24,7 +24,7 @@
 #include "golfer.h"
 #include "particle.h"
 #include "holdable.h"
-#include "oculusstorm.h"
+#include "oculusstorm/oculusstorm.h"
 
 #include "global_objects.h"
 #include "objloader.h"

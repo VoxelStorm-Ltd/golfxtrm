@@ -24,7 +24,7 @@
 					<Add option="-static" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
-					<Add library="lib\libOVR_MinGW_Win32_d.a" />
+					<Add library="lib/libOVR_MinGW_Win32_d.a" />
 				</Linker>
 			</Target>
 			<Target title="Win32_Release">
@@ -67,7 +67,7 @@
 					<Add option="-fuse-linker-plugin" />
 					<Add option="-flto" />
 					<Add option="-funsafe-math-optimizations" />
-					<Add library="lib\libOVR_MinGW_Win32.a" />
+					<Add library="lib/libOVR_MinGW_Win32.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -78,19 +78,20 @@
 			<Add option="-Wall" />
 			<Add directory="include" />
 			<Add directory="$(#boost.include)" />
+			<Add directory="." />
 		</Compiler>
 		<Linker>
-			<Add library="lib\libirrKlang.a" />
-			<Add library="lib\libSOIL.a" />
-			<Add library="lib\libglew32.a" />
-			<Add library="lib\libglfw3.a" />
-			<Add library="lib\libglu32.a" />
-			<Add library="lib\libopengl32.a" />
-			<Add library="lib\libuser32.a" />
-			<Add library="lib\libws2_32.a" />
-			<Add library="lib\libgdi32.a" />
-			<Add library="lib\libwinmm.a" />
-			<Add library="lib\libsetupapi.a" />
+			<Add library="lib/libirrKlang.a" />
+			<Add library="lib/libSOIL.a" />
+			<Add library="lib/libglew32.a" />
+			<Add library="lib/libglfw3.a" />
+			<Add library="lib/libglu32.a" />
+			<Add library="lib/libopengl32.a" />
+			<Add library="lib/libuser32.a" />
+			<Add library="lib/libws2_32.a" />
+			<Add library="lib/libgdi32.a" />
+			<Add library="lib/libwinmm.a" />
+			<Add library="lib/libsetupapi.a" />
 		</Linker>
 		<Unit filename="ashtree.cpp" />
 		<Unit filename="firtree.cpp" />
@@ -112,8 +113,8 @@
 		<Unit filename="oaktree.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.h" />
-		<Unit filename="oculusstorm.cpp" />
-		<Unit filename="oculusstorm.h" />
+		<Unit filename="oculusstorm/oculusstorm.cpp" />
+		<Unit filename="oculusstorm/oculusstorm.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
 		<Unit filename="perlin.cpp" />
@@ -137,6 +138,7 @@
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
 			</AutoVersioning>
+			<editor_config active="1" use_tabs="0" tab_indents="1" tab_width="2" indent="2" eol_mode="0" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

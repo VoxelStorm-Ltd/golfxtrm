@@ -1,4 +1,4 @@
-#include "oculusstorm.h"
+#include "oculusstorm/oculusstorm.h"
 #include <iostream>
 #include <cmath>
 #include "vmath.h"
