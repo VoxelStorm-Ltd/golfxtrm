@@ -8,6 +8,8 @@
 #include <GL/gl.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #include <OVR.h>
 #pragma GCC diagnostic pop
 #include "vmath.h"
