@@ -3493,7 +3493,7 @@ class Quaternion {
       float const squareLength = v.lengthSq();
       if(squareLength != 0) {
         angle = static_cast<T>(2.0) * std::acos(w);
-        axis /= std::pow(squareLength, static_cast<T>(0.5));
+        axis = v / std::pow(squareLength, static_cast<T>(0.5));
       } else {
         angle = static_cast<T>(0.0);
         axis.assign(static_cast<T>(1.0), static_cast<T>(0.0), static_cast<T>(0.0));
