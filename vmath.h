@@ -113,7 +113,7 @@
 // Modified 2011-06-12, Davide Bacchet (davide.bacchet at gmail dot com)
 //                      added () operators with standard matrix notation (opposite wrt at() ).
 
-// Modified 2013-2014, Eugene Hopkinson for VoxelStorm Ltd
+// Modified 2013-2015, Eugene Hopkinson for VoxelStorm Ltd
 //                     various expansions and conversions
 //                     Version 2.0: C++11 specific optimisations, including constexpr
 //                     Version 2.1: C++14 optimisations, intersection algorithms
@@ -3166,6 +3166,46 @@ class Quaternion {
       : w(w_), v(x, y, z) {
     }
 
+    /**
+     * Construct quaternion from rotation matrix.
+     * @return Rotation matrix expressing this quaternion.
+     */
+    inline Quaternion(Matrix4<T> const &matrix) __attribute__((__always_inline__)) {
+      // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+      // article "Quaternion Calculus and Fast Animation".
+      T const trace = matrix.at(1, 1) + matrix.at(2, 2) + matrix.at(3, 3);
+      if(trace > 0) {
+        // |w| > 1/2, may as well choose w > 1/2
+        T root = std::sqrt(trace + static_cast<T>(1.0));  // 2w
+        w = static_cast<T>(0.5) * root;
+        root = static_cast<T>(0.5) / root;  // 1/(4w)
+        v.x = (matrix.at(3, 2) - matrix.at(2, 3)) * root;
+        v.y = (matrix.at(1, 3) - matrix.at(3, 1)) * root;
+        v.z = (matrix.at(2, 1) - matrix.at(1, 2)) * root;
+      } else {
+        // |w| <= 1/2
+        static int constexpr next[3] = {2, 3, 1};
+
+        int i = 1;
+        if(matrix.at(2, 2) > matrix.at(1, 1)) {
+          i = 2;
+        }
+        if(matrix.at(3, 3) > matrix.at(i, i)) {
+          i = 3;
+        }
+        int j = next[i];
+        int k = next[j];
+
+        T root = std::sqrt(matrix.at(i, i) - matrix.at(j, j) - matrix.at(k, k) + static_cast<T>(1.0));
+        T *quaternion[3] = {&v.x, &v.y, &v.z};
+        *quaternion[i] = static_cast<T>(0.5) * root;
+        root = static_cast<T>(0.5) / root;
+        w = (matrix.at(k, j) - matrix.at(j, k)) * root;
+        *quaternion[j] = (matrix.at(j, i) + matrix.at(i, j)) * root;
+        *quaternion[k] = (matrix.at(k, i) + matrix.at(i, k)) * root;
+      }
+    }
+
     //----------------[ assignment ]-------------------------
     /**
      * Sets to (w_ + xi + yj + zk).
@@ -3442,6 +3482,22 @@ class Quaternion {
      */
     inline static Quaternion<T> constexpr fromAxisRot_rad(Vector3<T> axis, T angleRad) __attribute__((__always_inline__)) {
       return Quaternion<T>(std::cos(angleRad / static_cast<T>(2.0)), axis * std::sin(angleRad / static_cast<T>(2.0)));
+    }
+
+    /**
+     * Converts this quaternion to an axis and angle combination
+     * @param angle The angle of rotation
+     * @param axis The axis around which the rotation is
+     */
+    inline void constexpr toAngleAxis(T &angle, Vector3<T> &axis) __attribute__((__always_inline__)) {
+      float const squareLength = v.lengthSq();
+      if(squareLength != 0) {
+        angle = static_cast<T>(2.0) * std::acos(w);
+        axis /= std::pow(squareLength, static_cast<T>(0.5));
+      } else {
+        angle = static_cast<T>(0.0);
+        axis.assign(static_cast<T>(1.0), static_cast<T>(0.0), static_cast<T>(0.0));
+      }
     }
 
     /**
