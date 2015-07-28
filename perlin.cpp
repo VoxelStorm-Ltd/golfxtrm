@@ -1,8 +1,8 @@
 /* coherent noise function over 1, 2 or 3 dimensions */
 /* (copyright Ken Perlin) */
 
-#include <cstdlib>
-#include <cstdio>
+//#include <cstdlib>
+//#include <cstdio>
 #include <cmath>
 
 #include "perlin.h"
