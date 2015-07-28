@@ -1,7 +1,7 @@
 #include "worldcomponents.h"
 #include "golfer.h"
 #include "holdable.h"
-#include "landscape_features.h"
+//#include "landscape_features.h"
 #include "terrain.h"
 #include "particle.h"
 #include "globalvars_client_extern.h"

@@ -1,5 +1,5 @@
-#include <cstdlib>
-#include <irrKlang.h>
+//#include <cstdlib>
+//#include <irrKlang.h>
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"

@@ -1,8 +1,8 @@
-#include <cstdlib>
+//#include <cstdlib>
 #include "terrain.h"
 #include "globalvars_client_extern.h"
 #include "perlin.h"
-#include "landscape_features.h"
+//#include "landscape_features.h"
 #include "worldcomponents.h"
 
 terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,

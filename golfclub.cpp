@@ -1,4 +1,4 @@
-#include <irrKlang.h>
+//#include <irrKlang.h>
 #include "holdable.h"
 #include "worldcomponents.h"
 #include "golfer.h"
