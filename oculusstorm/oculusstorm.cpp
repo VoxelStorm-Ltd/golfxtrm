@@ -1,7 +1,4 @@
 #include "oculusstorm.h"
-#include <iostream>
-#include <cmath>
-#include "vmath.h"
 
 oculusstorm::oculusstorm(float farplane, float nearplane)
   : enabled(false),
