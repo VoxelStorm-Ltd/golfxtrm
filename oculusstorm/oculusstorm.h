@@ -2,7 +2,7 @@
 #define OCULUSSTORM_H_INCLUDED
 
 // A lightweight class to manage the Oculus Rift
-// Written by Eugene Hopkinson for VoxelStorm Ltd, 2013
+// Written by Eugene Hopkinson for VoxelStorm Ltd, 2013-2015
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -10,6 +10,8 @@
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
 #include <OVR.h>
 #pragma GCC diagnostic pop
 #include "vmath.h"
@@ -18,7 +20,7 @@ class oculusstorm {
 public:
   bool enabled;
 
-  static constexpr float gravity = 9.81;
+  static float constexpr gravity = 9.81f;
   unsigned int viewport_width;
   unsigned int viewport_height;
   float ipd;
@@ -44,7 +46,7 @@ public:
   bool                            infoloaded;
   OVR::Util::Render::StereoConfig stereoconfig;
 
-  oculusstorm(float farplane, float nearplane = 0.0);
+  oculusstorm(float farplane, float nearplane = 0.0f);
   ~oculusstorm();
 
   void dumpinfo();
