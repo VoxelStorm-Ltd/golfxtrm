@@ -138,6 +138,7 @@ namespace VMATH_NAMESPACE {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <boost/math/constants/constants.hpp>
 #pragma GCC diagnostic pop
 #else  // VMATH_NO_BOOST
