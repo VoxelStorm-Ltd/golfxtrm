@@ -674,6 +674,26 @@ class Vector2 {
       }
       return false;
     }
+
+    /**
+     * Gets a 3D vector equivalent populating the X and Y axes
+     */
+    inline Vector3<T> constexpr to_3D_XY() const __attribute__((__always_inline__)) {
+      return Vector3<T>(x, y, 0);
+    }
+    inline Vector3<T> constexpr to_3d_xy() const __attribute__((__always_inline__)) {
+      return Vector3<T>(x, y, 0);
+    }
+
+    /**
+     * Gets a 3D vector equivalent populating the X and Z axes
+     */
+    inline Vector3<T> constexpr to_3D_XZ() const __attribute__((__always_inline__)) {
+      return Vector3<T>(x, 0, z);
+    }
+    inline Vector3<T> constexpr to_3d_xz() const __attribute__((__always_inline__)) {
+      return Vector3<T>(x, 0, z);
+    }
 };
 
 //--------------------------------------
@@ -1249,11 +1269,17 @@ class Vector3 {
     inline Vector2<T> constexpr to_2D_XY() const __attribute__((__always_inline__)) {
       return Vector2<T>(x, y);
     }
+    inline Vector2<T> constexpr to_2d_xy() const __attribute__((__always_inline__)) {
+      return Vector2<T>(x, y);
+    }
 
     /**
      * Gets a 2D vector equivalent using the X and Z axes
      */
     inline Vector2<T> constexpr to_2D_XZ() const __attribute__((__always_inline__)) {
+      return Vector2<T>(x, z);
+    }
+    inline Vector2<T> constexpr to_2d_xz() const __attribute__((__always_inline__)) {
       return Vector2<T>(x, z);
     }
 };
@@ -4500,7 +4526,6 @@ class Aabb3 {
       return *this;
     }
 
-
     /**
      * Extends this bounding-box by point @a rhs.
      * @param rhs A point to extend this bounding-box by
@@ -4576,7 +4601,6 @@ using Aabb3i = Aabb3<int>;
 #ifdef VMATH_NAMESPACE
 }
 #endif //VMATH_NAMESPACE
-
 
 #endif // __vmath_Header_File__
 
