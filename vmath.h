@@ -522,6 +522,17 @@ class Vector2 {
     }
 
     /**
+     * Return square of length.
+     * @return length ^ 2
+     * @note This method is faster then length(). For comparison
+     * of length of two vector can be used just this value, instead
+     * of more expensive length() method.
+     */
+    inline T constexpr lengthSq() const __attribute__((__always_inline__)) {
+      return x * x + y * y;
+    }
+
+    /**
      * Normalize vector
      */
     inline void normalize() __attribute__((__always_inline__)) {
@@ -533,21 +544,22 @@ class Vector2 {
       normalize();
     }
     inline Vector2<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
-      return Vector2<T>(x / length(), y / length());
+      T const temp(length());
+      return Vector2<T>(x / temp, y / temp);
     }
     inline Vector2<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
     }
 
     /**
-     * Return square of length.
-     * @return length ^ 2
-     * @note This method is faster then length(). For comparison
-     * of length of two vector can be used just this value, instead
-     * of more expensive length() method.
+     * Absolute vector (make all values positive)
      */
-    inline T constexpr lengthSq() const __attribute__((__always_inline__)) {
-      return x * x + y * y;
+    inline void abs() __attribute__((__always_inline__)) {
+      x = std::abs(x);
+      y = std::abs(y);
+    }
+    inline Vector2<T> constexpr abs_copy() const __attribute__((__always_inline__)) {
+      return Vector2<T>(std::abs(x), std::abs(y));
     }
 
     //-------------[ other operations ]--------------------------
@@ -1164,10 +1176,23 @@ class Vector3 {
       normalize();
     }
     inline Vector3<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
-      return Vector3<T>(x / length(), y / length(), z / length());
+      T const temp(length());
+      return Vector3<T>(x / temp, y / temp, z / temp);
     }
     inline Vector3<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
+    }
+
+    /**
+     * Absolute vector (make all values positive)
+     */
+    inline void abs() __attribute__((__always_inline__)) {
+      x = std::abs(x);
+      y = std::abs(y);
+      z = std::abs(z);
+    }
+    inline Vector3<T> constexpr abs_copy() const __attribute__((__always_inline__)) {
+      return Vector3<T>(std::abs(x), std::abs(y), std::abs(z));
     }
 
     //-------------[ other operations ]--------------------------
@@ -1704,6 +1729,17 @@ class Vector4 {
     }
 
     /**
+     * Return square of length.
+     * @return length ^ 2
+     * @note This method is faster then length(). For comparison
+     * of length of two vector can be used just this value, instead
+     * of more expensive length() method.
+     */
+    inline T constexpr lengthSq() const __attribute__((__always_inline__)) {
+      return x * x + y * y + z * z + w * w;
+    }
+
+    /**
      * Normalize vector
      */
     inline void normalize() __attribute__((__always_inline__)) {
@@ -1717,21 +1753,24 @@ class Vector4 {
       normalize();
     }
     inline Vector4<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
-      return Vector4<T>(x / length(), y / length(), z / length(), w / length());
+      T const temp(length());
+      return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
     }
     inline Vector4<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
     }
 
     /**
-     * Return square of length.
-     * @return length ^ 2
-     * @note This method is faster then length(). For comparison
-     * of length of two vector can be used just this value, instead
-     * of more expensive length() method.
+     * Absolute vector (make all values positive)
      */
-    inline T constexpr lengthSq() const __attribute__((__always_inline__)) {
-      return x * x + y * y + z * z + w * w;
+    inline void abs() __attribute__((__always_inline__)) {
+      x = std::abs(x);
+      y = std::abs(y);
+      z = std::abs(z);
+      w = std::abs(w);
+    }
+    inline Vector4<T> constexpr abs_copy() const __attribute__((__always_inline__)) {
+      return Vector4<T>(std::abs(x), std::abs(y), std::abs(z), std::abs(w));
     }
 
     //--------------[ misc. operations ]-----------------------
@@ -3437,7 +3476,8 @@ class Quaternion {
       normalize();
     }
     inline Quaternion<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
-      return Quaternion<T>(w / length(), v / length());
+      T const temp(length());
+      return Quaternion<T>(w / temp, v / temp);
     }
     inline Quaternion<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
