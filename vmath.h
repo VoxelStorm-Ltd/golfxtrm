@@ -1015,7 +1015,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Vector3<T> constexpr operator*(Quaternion<T> const &rhs) const __attribute__((__always_inline__)) {
-      return *this + (rhs.v.crossProduct(*this) * 2 * rhs.w) + rhs.v.crossProduct(rhs.v.crossProduct(*this) * 2);
+      return *this + (rhs.v.crossProduct(*this) * static_cast<T>(2) * rhs.w) + rhs.v.crossProduct(rhs.v.crossProduct(*this) * static_cast<T>(2));
     }
 
     /**
@@ -1023,7 +1023,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Vector3<T> &operator*=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
-      Vector3<T> const temp = rhs.v.crossProduct(*this) * 2;
+      Vector3<T> const temp = rhs.v.crossProduct(*this) * static_cast<T>(2);
       *this += (temp * rhs.w) + rhs.v.crossProduct(temp);
       return *this;
     }
@@ -2127,6 +2127,16 @@ class Matrix3 {
     }
 
     /**
+     * Returns transform (4x4) matrix including this as the rotationc component.
+     */
+    inline Matrix4<T> constexpr getTranslation() const __attribute__((__always_inline__)) {
+      return Matrix4<T>(data[0],           data[1],           data[2],           static_cast<T>(0),
+                        data[3],           data[4],           data[5],           static_cast<T>(0),
+                        data[6],           data[7],           data[8],           static_cast<T>(0),
+                        static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1));
+    }
+
+    /**
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
@@ -2847,7 +2857,10 @@ class Matrix4 {
       data[15] = 1;
     }
 
-    inline Vector3<T> constexpr getTranslation() __attribute__((__always_inline__)) {
+    /**
+     * Returns translation part of matrix.
+     */
+    inline Vector3<T> constexpr getTranslation() const __attribute__((__always_inline__)) {
       return Vector3<T>(data[12], data[13], data[14]);
     }
 
@@ -2862,6 +2875,15 @@ class Matrix4 {
           at(i, j) = m.at(i, j);
         }
       }
+    }
+
+    /**
+     * Returns rotation (matrix 3x3) part of matrix.
+     */
+    inline Matrix3<T> constexpr getRotation() const __attribute__((__always_inline__)) {
+      return Matrix3<T>(data[ 0], data[ 1], data[ 2],
+                        data[ 4], data[ 5], data[ 6],
+                        data[ 8], data[ 9], data[10]);
     }
 
     /**
