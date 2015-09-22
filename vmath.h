@@ -174,6 +174,25 @@ inline static T constexpr const rad2deg(T const angle_rad) {
   #endif // VMATH_NO_BOOST
 }
 
+template<class T>
+inline static void constexpr sincos_any(T const angle_rad, T &out_sin, T &out_cos) {
+  sincos(angle_rad, &out_sin, &out_cos);
+}
+inline static void constexpr sincos_any(int const angle_rad, int &out_sin, int &out_cos) {
+  // if we're only working with integers, assume single precision is enough
+  float out_sin_temp = 0.0f;
+  float out_cos_temp = 0.0f;
+  sincosf(static_cast<float>(angle_rad), &out_sin_temp, &out_cos_temp);
+  out_sin = static_cast<int>(out_sin_temp);
+  out_cos = static_cast<int>(out_cos_temp);
+}
+inline static void constexpr sincos_any(float const angle_rad, float &out_sin, float &out_cos) {
+  sincosf(angle_rad, &out_sin, &out_cos);
+}
+inline static void constexpr sincos_any(long double const angle_rad, long double &out_sin, long double &out_cos) {
+  sincosl(angle_rad, &out_sin, &out_cos);
+}
+
 template<class T> class Vector2;  // forward declarations
 template<class T> class Vector3;
 template<class T> class Vector4;
@@ -576,10 +595,11 @@ class Vector2 {
      * @param aa Angle (in radians) to be rotated.
      */
     inline void rotate_rad(T aa) __attribute__((__always_inline__)) {
-      auto const a = std::cos(-aa);
-      auto const b = std::sin(-aa);
-      T const nx = static_cast<T>((x * a) - (y * b));
-      T const ny = static_cast<T>((x * b) + (y * a));
+      T temp_sin = static_cast<T>(0);
+      T temp_cos = static_cast<T>(0);
+      sincos_any(-aa, temp_sin, temp_cos);
+      T const nx = static_cast<T>((x * temp_cos) - (y * temp_sin));
+      T const ny = static_cast<T>((x * temp_sin) + (y * temp_cos));
       x = nx;
       y = ny;
     }
@@ -1213,15 +1233,18 @@ class Vector3 {
      * @param az Angle (in radians) to be rotated around Z-axis.
      */
     inline void rotate_rad(T ax, T ay, T az) __attribute__((__always_inline__)) {
-      auto const a = std::cos(ax);
-      auto const b = std::sin(ax);
-      auto const c = std::cos(ay);
-      auto const d = std::sin(ay);
-      auto const e = std::cos(az);
-      auto const f = std::sin(az);
-      T const nx = static_cast<T>(((c *             e) * x) - ((c *             f) * y) + (d *     z));
-      T const ny = static_cast<T>(((a * f + b * d * e) * x) + ((a * e - b * d * f) * y) - (b * c * z));
-      T const nz = static_cast<T>(((b * f - a * d * e) * x) + ((a * d * f + b * e) * y) + (a * c * z));
+      T cos_x = static_cast<T>(0);
+      T sin_x = static_cast<T>(0);
+      T cos_y = static_cast<T>(0);
+      T sin_y = static_cast<T>(0);
+      T cos_z = static_cast<T>(0);
+      T sin_z = static_cast<T>(0);
+      sincos_any(ax, sin_x, cos_x);
+      sincos_any(ay, sin_y, cos_y);
+      sincos_any(az, sin_z, cos_z);
+      T const nx = static_cast<T>(((cos_y *                         cos_z) * x) - ((cos_y *                         sin_z) * y) + (sin_y *         z));
+      T const ny = static_cast<T>(((cos_x * sin_z + sin_x * sin_y * cos_z) * x) + ((cos_x * cos_z - sin_x * sin_y * sin_z) * y) - (sin_x * cos_y * z));
+      T const nz = static_cast<T>(((sin_x * sin_z - cos_x * sin_y * cos_z) * x) + ((cos_x * sin_y * sin_z + sin_x * cos_z) * y) + (cos_x * cos_y * z));
       x = nx;
       y = ny;
       z = nz;
@@ -1945,18 +1968,32 @@ class Matrix3 {
      * @param zRads Angle (in radians) of rotation around axis Z.
      */
     inline static Matrix3<T> constexpr createRotationAroundAxis_rad(T xRads, T yRads, T zRads) __attribute__((__always_inline__)) {
+      //T sin_xRads, cos_xRads, sin_yRads, cos_yRads, sin_zRads, cos_zRads;
+      // zero-initialisation is required for gcc not to complain when the function is constexpr
       // the static cast is to avoid narrowing conversion warnings when used with ints
-      return Matrix3<T>({static_cast<T>(std::cos(zRads) * std::cos(yRads)),
-                         static_cast<T>(std::cos(zRads) * std::sin(yRads) * std::sin(xRads) - std::sin(zRads) * std::cos(xRads)),
-                         static_cast<T>(std::cos(zRads) * std::sin(yRads) * std::cos(xRads) + std::sin(zRads) * std::sin(xRads)),
+      T sin_xRads = static_cast<T>(0);
+      T cos_xRads = static_cast<T>(0);
+      T sin_yRads = static_cast<T>(0);
+      T cos_yRads = static_cast<T>(0);
+      T sin_zRads = static_cast<T>(0);
+      T cos_zRads = static_cast<T>(0);
+      sincos_any(xRads, sin_xRads, cos_xRads);
+      sincos_any(yRads, sin_yRads, cos_yRads);
+      sincos_any(zRads, sin_zRads, cos_zRads);
+      T const temp_sin_z_sin_y = sin_zRads * sin_yRads;
+      T const temp_cos_z_sin_y = cos_zRads * sin_yRads;
+      T const temp_cos_z_cos_y = cos_zRads * cos_yRads;
+      return Matrix3<T>(temp_cos_z_cos_y,
+                        temp_cos_z_sin_y * sin_xRads - sin_zRads * cos_xRads,
+                        temp_cos_z_sin_y * cos_xRads + sin_zRads * sin_xRads,
 
-                         static_cast<T>(std::sin(zRads) * std::cos(yRads)),
-                         static_cast<T>(std::sin(zRads) * std::sin(yRads) * std::sin(xRads) + std::cos(zRads) * std::cos(xRads)),
-                         static_cast<T>(std::sin(zRads) * std::sin(yRads) * std::cos(xRads) - std::cos(zRads) * std::sin(xRads)),
+                        sin_zRads * cos_yRads,
+                        temp_sin_z_sin_y * sin_xRads + cos_zRads * cos_xRads,
+                        temp_sin_z_sin_y * cos_xRads - cos_zRads * sin_xRads,
 
-                         static_cast<T>(std::sin(yRads)),
-                         static_cast<T>(std::cos(yRads) * std::sin(xRads)),
-                         static_cast<T>(std::cos(yRads) * std::cos(xRads))});
+                       -temp_cos_z_sin_y,
+                        temp_cos_z_cos_y * sin_xRads,
+                        temp_cos_z_cos_y * cos_xRads);
     }
 
     /**
@@ -1975,18 +2012,23 @@ class Matrix3 {
      */
     inline static Matrix3<T> constexpr createRotationAroundAxis_rad(Vector3<T> const &axis, T angle) __attribute__((__always_inline__)) {
       // adapted from Inigo Quilez: http://www.iquilezles.org/www/articles/noacos/noacos.htm
+      // zero-initialisation is required for gcc not to complain when the function is constexpr
       // the static cast is to avoid narrowing conversion warnings when used with ints
-      return Matrix3<T>({static_cast<T>(axis.x * axis.x - std::cos(angle) + std::cos(angle)),
-                         static_cast<T>(axis.y * axis.x - std::cos(angle) - std::sin(angle) * axis.z),
-                         static_cast<T>(axis.z * axis.x - std::cos(angle) + std::sin(angle) * axis.y),
+      T sin_a = static_cast<T>(0);
+      T cos_a = static_cast<T>(0);
+      sincos_any(angle, sin_a, cos_a);
+      T const cos_a_inv = static_cast<T>(1) - cos_a;
+      return Matrix3<T>(axis.x * axis.x * cos_a_inv + cos_a,
+                        axis.y * axis.x * cos_a_inv - sin_a * axis.z,
+                        axis.z * axis.x * cos_a_inv + sin_a * axis.y,
 
-                         static_cast<T>(axis.x * axis.y - std::cos(angle) + std::sin(angle) * axis.z),
-                         static_cast<T>(axis.y * axis.y - std::cos(angle) + std::cos(angle)),
-                         static_cast<T>(axis.z * axis.y - std::cos(angle) - std::sin(angle) * axis.x),
+                        axis.x * axis.y * cos_a_inv + sin_a * axis.z,
+                        axis.y * axis.y * cos_a_inv + cos_a,
+                        axis.z * axis.y * cos_a_inv - sin_a * axis.x,
 
-                         static_cast<T>(axis.x * axis.z - std::cos(angle) - std::sin(angle) * axis.y),
-                         static_cast<T>(axis.y * axis.z - std::cos(angle) + std::sin(angle) * axis.x),
-                         static_cast<T>(axis.z * axis.z - std::cos(angle) + std::cos(angle))});
+                        axis.x * axis.z * cos_a_inv - sin_a * axis.y,
+                        axis.y * axis.z * cos_a_inv + sin_a * axis.x,
+                        axis.z * axis.z * cos_a_inv + cos_a);
     }
 
     /**
@@ -1998,17 +2040,21 @@ class Matrix3 {
      */
     inline static Matrix3<T> constexpr createRotationBetweenVectors(Vector3<T> from, Vector3<T> to) __attribute__((__always_inline__)) {
       // the static cast is to avoid narrowing conversion warnings when used with ints
-      return Matrix3<T>({static_cast<T>(to.crossProduct(from).x * to.crossProduct(from).x * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.dotProduct(from)),
-                         static_cast<T>(to.crossProduct(from).y * to.crossProduct(from).x * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) - to.crossProduct(from).z),
-                         static_cast<T>(to.crossProduct(from).z * to.crossProduct(from).x * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.crossProduct(from).y),
+      Vector3<T> const cross(to.crossProduct(from));
+      T const dot = from.dotProduct(to);
+      T const temp_k = static_cast<T>(1) / (static_cast<T>(1) + dot);
+      return Matrix3<T>(cross.x * cross.x * temp_k + dot,
+                        cross.y * cross.x * temp_k - cross.z,
+                        cross.z * cross.x * temp_k + cross.y,
 
-                         static_cast<T>(to.crossProduct(from).x * to.crossProduct(from).y * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.crossProduct(from).z),
-                         static_cast<T>(to.crossProduct(from).y * to.crossProduct(from).y * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.dotProduct(from)),
-                         static_cast<T>(to.crossProduct(from).z * to.crossProduct(from).y * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) - to.crossProduct(from).x),
+                        cross.x * cross.y * temp_k + cross.z,
+                        cross.y * cross.y * temp_k + dot,
+                        cross.z * cross.y * temp_k - cross.x,
 
-                         static_cast<T>(to.crossProduct(from).x * to.crossProduct(from).z * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) - to.crossProduct(from).y),
-                         static_cast<T>(to.crossProduct(from).y * to.crossProduct(from).z * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.crossProduct(from).x),
-                         static_cast<T>(to.crossProduct(from).z * to.crossProduct(from).z * (static_cast<T>(1.0) / (static_cast<T>(1.0) + to.dotProduct(from))) + to.dotProduct(from))});
+                        cross.x * cross.z * temp_k - cross.y,
+                        cross.y * cross.z * temp_k + cross.x,
+                        cross.z * cross.z * temp_k + dot);
+
     }
 
     /**
@@ -2016,9 +2062,9 @@ class Matrix3 {
      */
     template<class It>
     inline static Matrix3<T> constexpr fromOde(const It *mat) {
-      return Matrix3<T>({static_cast<T>(mat[0]), static_cast<T>(mat[4]), static_cast<T>(mat[8]),
-                         static_cast<T>(mat[1]), static_cast<T>(mat[5]), static_cast<T>(mat[9]),
-                         static_cast<T>(mat[2]), static_cast<T>(mat[6]), static_cast<T>(mat[10])});
+      return Matrix3<T>(static_cast<T>(mat[0]), static_cast<T>(mat[4]), static_cast<T>(mat[8]),
+                        static_cast<T>(mat[1]), static_cast<T>(mat[5]), static_cast<T>(mat[9]),
+                        static_cast<T>(mat[2]), static_cast<T>(mat[6]), static_cast<T>(mat[10]));
     }
 
     /**
@@ -2029,9 +2075,9 @@ class Matrix3 {
      */
     template<class FromT>
     inline static Matrix3<T> constexpr fromRowMajorArray(const FromT *arr) {
-      return Matrix3<T>({static_cast<T>(arr[0]), static_cast<T>(arr[3]), static_cast<T>(arr[6]),
-                         static_cast<T>(arr[1]), static_cast<T>(arr[4]), static_cast<T>(arr[7]),
-                         static_cast<T>(arr[2]), static_cast<T>(arr[5]), static_cast<T>(arr[8])});
+      return Matrix3<T>(static_cast<T>(arr[0]), static_cast<T>(arr[3]), static_cast<T>(arr[6]),
+                        static_cast<T>(arr[1]), static_cast<T>(arr[4]), static_cast<T>(arr[7]),
+                        static_cast<T>(arr[2]), static_cast<T>(arr[5]), static_cast<T>(arr[8]));
     }
 
     /**
@@ -2042,9 +2088,9 @@ class Matrix3 {
      */
     template<class FromT>
     inline static Matrix3<T> constexpr fromColumnMajorArray(const FromT *arr) {
-      return Matrix3<T>({static_cast<T>(arr[0]), static_cast<T>(arr[1]), static_cast<T>(arr[2]),
-                         static_cast<T>(arr[3]), static_cast<T>(arr[4]), static_cast<T>(arr[5]),
-                         static_cast<T>(arr[6]), static_cast<T>(arr[7]), static_cast<T>(arr[8])});
+      return Matrix3<T>(static_cast<T>(arr[0]), static_cast<T>(arr[1]), static_cast<T>(arr[2]),
+                        static_cast<T>(arr[3]), static_cast<T>(arr[4]), static_cast<T>(arr[5]),
+                        static_cast<T>(arr[6]), static_cast<T>(arr[7]), static_cast<T>(arr[8]));
     }
 
     //---------------------[ equiality operators ]------------------------------
@@ -2180,9 +2226,9 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator+(Matrix3<T> const &rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] + rhs.data[0], data[1] + rhs.data[1], data[2] + rhs.data[2],
-                         data[3] + rhs.data[3], data[4] + rhs.data[4], data[5] + rhs.data[5],
-                         data[6] + rhs.data[6], data[7] + rhs.data[7], data[8] + rhs.data[8]});
+      return Matrix3<T>(data[0] + rhs.data[0], data[1] + rhs.data[1], data[2] + rhs.data[2],
+                        data[3] + rhs.data[3], data[4] + rhs.data[4], data[5] + rhs.data[5],
+                        data[6] + rhs.data[6], data[7] + rhs.data[7], data[8] + rhs.data[8]);
     }
 
     /**
@@ -2190,9 +2236,9 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator-(Matrix3<T> const &rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] - rhs.data[0], data[1] - rhs.data[1], data[2] - rhs.data[2],
-                         data[3] - rhs.data[3], data[4] - rhs.data[4], data[5] - rhs.data[5],
-                         data[6] - rhs.data[6], data[7] - rhs.data[7], data[8] - rhs.data[8]});
+      return Matrix3<T>(data[0] - rhs.data[0], data[1] - rhs.data[1], data[2] - rhs.data[2],
+                        data[3] - rhs.data[3], data[4] - rhs.data[4], data[5] - rhs.data[5],
+                        data[6] - rhs.data[6], data[7] - rhs.data[7], data[8] - rhs.data[8]);
     }
 
     //--------------------[ matrix with scalar operations ]---------------------
@@ -2201,9 +2247,9 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator+(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] + rhs, data[1] + rhs, data[2] + rhs,
-                         data[3] + rhs, data[4] + rhs, data[5] + rhs,
-                         data[6] + rhs, data[7] + rhs, data[8] + rhs});
+      return Matrix3<T>(data[0] + rhs, data[1] + rhs, data[2] + rhs,
+                        data[3] + rhs, data[4] + rhs, data[5] + rhs,
+                        data[6] + rhs, data[7] + rhs, data[8] + rhs);
     }
 
     /**
@@ -2211,9 +2257,9 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator-(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] - rhs, data[1] - rhs, data[2] - rhs,
-                         data[3] - rhs, data[4] - rhs, data[5] - rhs,
-                         data[6] - rhs, data[7] - rhs, data[8] - rhs});
+      return Matrix3<T>(data[0] - rhs, data[1] - rhs, data[2] - rhs,
+                        data[3] - rhs, data[4] - rhs, data[5] - rhs,
+                        data[6] - rhs, data[7] - rhs, data[8] - rhs);
 
     }
 
@@ -2222,9 +2268,9 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator*(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] * rhs, data[1] * rhs, data[2] * rhs,
-                         data[3] * rhs, data[4] * rhs, data[5] * rhs,
-                         data[6] * rhs, data[7] * rhs, data[8] * rhs});
+      return Matrix3<T>(data[0] * rhs, data[1] * rhs, data[2] * rhs,
+                        data[3] * rhs, data[4] * rhs, data[5] * rhs,
+                        data[6] * rhs, data[7] * rhs, data[8] * rhs);
     }
 
     /**
@@ -2232,9 +2278,45 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator/(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0] / rhs, data[1] / rhs, data[2] / rhs,
-                         data[3] / rhs, data[4] / rhs, data[5] / rhs,
-                         data[6] / rhs, data[7] / rhs, data[8] / rhs});
+      return Matrix3<T>(data[0] / rhs, data[1] / rhs, data[2] / rhs,
+                        data[3] / rhs, data[4] / rhs, data[5] / rhs,
+                        data[6] / rhs, data[7] / rhs, data[8] / rhs);
+    }
+
+    /**
+     * Addition operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix3<T> constexpr &operator+=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this + rhs;
+      return *this;
+    }
+
+    /**
+     * Subtraction operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix3<T> constexpr &operator-=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this - rhs;
+      return *this;
+    }
+
+    /**
+     * Multiplication operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix3<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this * rhs;
+      return *this;
+    }
+
+    /**
+     * Division operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix3<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this / rhs;
+      return *this;
     }
 
     //--------------------[ multiply operators ]--------------------------------
@@ -2265,17 +2347,26 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix3<T> constexpr operator*(Matrix3<T> rhs) const __attribute__((__always_inline__)) {
-      return Matrix3<T>({rhs.data[0] * data[0] + rhs.data[1] * data[3] + rhs.data[2] * data[6],
-                         rhs.data[0] * data[1] + rhs.data[1] * data[4] + rhs.data[2] * data[7],
-                         rhs.data[0] * data[2] + rhs.data[1] * data[5] + rhs.data[2] * data[8],
+      return Matrix3<T>(rhs.data[0] * data[0] + rhs.data[1] * data[3] + rhs.data[2] * data[6],
+                        rhs.data[0] * data[1] + rhs.data[1] * data[4] + rhs.data[2] * data[7],
+                        rhs.data[0] * data[2] + rhs.data[1] * data[5] + rhs.data[2] * data[8],
 
-                         rhs.data[3] * data[0] + rhs.data[4] * data[3] + rhs.data[5] * data[6],
-                         rhs.data[3] * data[1] + rhs.data[4] * data[4] + rhs.data[5] * data[7],
-                         rhs.data[3] * data[2] + rhs.data[4] * data[5] + rhs.data[5] * data[8],
+                        rhs.data[3] * data[0] + rhs.data[4] * data[3] + rhs.data[5] * data[6],
+                        rhs.data[3] * data[1] + rhs.data[4] * data[4] + rhs.data[5] * data[7],
+                        rhs.data[3] * data[2] + rhs.data[4] * data[5] + rhs.data[5] * data[8],
 
-                         rhs.data[6] * data[0] + rhs.data[7] * data[3] + rhs.data[8] * data[6],
-                         rhs.data[6] * data[1] + rhs.data[7] * data[4] + rhs.data[8] * data[7],
-                         rhs.data[6] * data[2] + rhs.data[7] * data[5] + rhs.data[8] * data[8]});
+                        rhs.data[6] * data[0] + rhs.data[7] * data[3] + rhs.data[8] * data[6],
+                        rhs.data[6] * data[1] + rhs.data[7] * data[4] + rhs.data[8] * data[7],
+                        rhs.data[6] * data[2] + rhs.data[7] * data[5] + rhs.data[8] * data[8]);
+    }
+
+    /**
+     * Multiplication operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix3<T> constexpr &operator*=(Matrix3<T> rhs) __attribute__((__always_inline__)) {
+      *this = *this * rhs;
+      return *this;
     }
 
     //---------------------------[ misc operations ]----------------------------
@@ -2283,9 +2374,9 @@ class Matrix3 {
      * Transpose matrix.
      */
     inline Matrix3<T> constexpr transpose() const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[0], data[3], data[6],
-                         data[1], data[4], data[7],
-                         data[2], data[5], data[8]});
+      return Matrix3<T>(data[0], data[3], data[6],
+                        data[1], data[4], data[7],
+                        data[2], data[5], data[8]);
     }
 
     /**
@@ -2311,15 +2402,47 @@ class Matrix3 {
      * @return Inverse matrix of this matrix.
      */
     inline Matrix3<T> constexpr inverse() const __attribute__((__always_inline__)) {
-      return Matrix3<T>({data[4] * data[8] - data[7] * data[5],
-                         data[7] * data[2] - data[1] * data[8],
-                         data[1] * data[5] - data[4] * data[2],
-                         data[6] * data[5] - data[3] * data[8],
-                         data[0] * data[8] - data[6] * data[2],
-                         data[3] * data[2] - data[0] * data[5],
-                         data[3] * data[7] - data[6] * data[4],
-                         data[6] * data[1] - data[0] * data[7],
-                         data[0] * data[4] - data[3] * data[1]}) / det();
+      return Matrix3<T>(data[4] * data[8] - data[7] * data[5],
+                        data[7] * data[2] - data[1] * data[8],
+                        data[1] * data[5] - data[4] * data[2],
+                        data[6] * data[5] - data[3] * data[8],
+                        data[0] * data[8] - data[6] * data[2],
+                        data[3] * data[2] - data[0] * data[5],
+                        data[3] * data[7] - data[6] * data[4],
+                        data[6] * data[1] - data[0] * data[7],
+                        data[0] * data[4] - data[3] * data[1]) / det();
+    }
+
+    /**
+     * Orthonormalises the matrix.
+     * 1. Normalises the normal.
+     * 2. Normalises the tangent and makes sure it is orthogonal to normal.
+     * 3. Normalises binormal and makes sure it is orthogonal to both normal and tangent.
+     */
+    inline void constexpr orthonormalize() __attribute__((__always_inline__)) {
+      // normalise x:
+      T const x_length = static_cast<T>(std::sqrt(data[0] * data[0] + data[1] * data[1] + data[2] * data[2]));
+      data[0] /= x_length;
+      data[1] /= x_length;
+      data[2] /= x_length;
+      // z -= z * (x dot z):
+      T const x_dot_z = data[0] * data[6] + data[1] * data[7] + data[2] * data[8];
+      data[6] -= data[6] * x_dot_z;
+      data[7] -= data[7] * x_dot_z;
+      data[8] -= data[8] * x_dot_z;
+      // normalise z:
+      T const z_length = static_cast<T>(std::sqrt(data[6] * data[6] + data[7] * data[7] + data[8] * data[8]));
+      data[6] /= z_length;
+      data[7] /= z_length;
+      data[8] /= z_length;
+      // y = z cross x:
+      data[3] = data[7] * data[2] - data[1] * data[8];
+      data[4] = data[8] * data[0] - data[2] * data[6];
+      data[5] = data[6] * data[1] - data[0] * data[7];
+    }
+    /// Proper English
+    inline void constexpr orthonormalise() __attribute__((__always_inline__)) {
+      orthonormalize();
     }
 
     //-------------[ conversion ]-----------------------------
@@ -2486,26 +2609,41 @@ class Matrix4 {
      * @param zRads Angle (in radians) of rotation around axis Z.
      */
     inline static Matrix4<T> constexpr createRotationAroundAxis_rad(T xRads, T yRads, T zRads) __attribute__((__always_inline__)) {
-      // static_casts are used to avoid narrowing conversion warnings when called with ints
-      return Matrix4<T>({static_cast<T>( std::cos(zRads) * std::cos(yRads)),
-                         static_cast<T>(-std::sin(zRads) * std::cos(xRads) + std::cos(zRads) * std::sin(yRads) * std::sin(xRads)),
-                         static_cast<T>( std::sin(zRads) * std::sin(xRads) + std::cos(zRads) * std::sin(yRads) * std::cos(xRads)),
-                         static_cast<T>(0),
+      // adapted from Inigo Quilez: http://www.iquilezles.org/www/articles/noacos/noacos.htm
+      //T sin_xRads, cos_xRads, sin_yRads, cos_yRads, sin_zRads, cos_zRads;
+      // zero-initialisation is required for gcc not to complain when the function is constexpr
+      // the static cast is to avoid narrowing conversion warnings when used with ints
+      T sin_xRads = static_cast<T>(0);
+      T cos_xRads = static_cast<T>(0);
+      T sin_yRads = static_cast<T>(0);
+      T cos_yRads = static_cast<T>(0);
+      T sin_zRads = static_cast<T>(0);
+      T cos_zRads = static_cast<T>(0);
+      sincos_any(xRads, sin_xRads, cos_xRads);
+      sincos_any(yRads, sin_yRads, cos_yRads);
+      sincos_any(zRads, sin_zRads, cos_zRads);
+      T const temp_sin_z_sin_y = sin_zRads * sin_yRads;
+      T const temp_cos_z_sin_y = cos_zRads * sin_yRads;
+      T const temp_cos_z_cos_y = cos_zRads * cos_yRads;
+      return Matrix4<T>(temp_cos_z_cos_y,
+                        temp_cos_z_sin_y * sin_xRads - sin_zRads * cos_xRads,
+                        temp_cos_z_sin_y * cos_xRads + sin_zRads * sin_xRads,
+                        static_cast<T>(0),
 
-                         static_cast<T>( std::sin(zRads) * std::cos(yRads)),
-                         static_cast<T>( std::cos(zRads) * std::cos(xRads) + std::sin(zRads) * std::sin(yRads) * std::sin(xRads)),
-                         static_cast<T>(-std::cos(zRads) * std::sin(xRads) + std::sin(zRads) * std::sin(yRads) * std::cos(xRads)),
-                         static_cast<T>(0),
+                        sin_zRads * cos_yRads,
+                        temp_sin_z_sin_y * sin_xRads + cos_zRads * cos_xRads,
+                        temp_sin_z_sin_y * cos_xRads - cos_zRads * sin_xRads,
+                        static_cast<T>(0),
 
-                         static_cast<T>(-std::sin(yRads)),
-                         static_cast<T>( std::cos(yRads) * std::sin(xRads)),
-                         static_cast<T>( std::cos(yRads) * std::cos(xRads)),
-                         static_cast<T>(0),
+                       -temp_cos_z_sin_y,
+                        temp_cos_z_cos_y * sin_xRads,
+                        temp_cos_z_cos_y * cos_xRads,
+                        static_cast<T>(0),
 
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(1)});
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(1));
     }
 
     /**
@@ -2524,26 +2662,31 @@ class Matrix4 {
      */
     inline static Matrix4<T> constexpr createRotationAroundAxis_rad(Vector3<T> const &axis, T angle) __attribute__((__always_inline__)) {
       // adapted from Inigo Quilez: http://www.iquilezles.org/www/articles/noacos/noacos.htm
-      // static_casts are used to avoid narrowing conversion warnings when called with ints
-      return Matrix4<T>({static_cast<T>(axis.x * axis.x - std::cos(angle) + std::cos(angle)),
-                         static_cast<T>(axis.y * axis.x - std::cos(angle) - std::sin(angle) * axis.z),
-                         static_cast<T>(axis.z * axis.x - std::cos(angle) + std::sin(angle) * axis.y),
-                         static_cast<T>(0),
+      // zero-initialisation is required for gcc not to complain when the function is constexpr
+      // the static cast is to avoid narrowing conversion warnings when used with ints
+      T sin_a = static_cast<T>(0);
+      T cos_a = static_cast<T>(0);
+      sincos_any(angle, sin_a, cos_a);
+      T const cos_a_inv = static_cast<T>(1) - cos_a;
+      return Matrix4<T>(axis.x * axis.x * cos_a_inv + cos_a,
+                        axis.y * axis.x * cos_a_inv - sin_a * axis.z,
+                        axis.z * axis.x * cos_a_inv + sin_a * axis.y,
+                        static_cast<T>(0),
 
-                         static_cast<T>(axis.x * axis.y - std::cos(angle) + std::sin(angle) * axis.z),
-                         static_cast<T>(axis.y * axis.y - std::cos(angle) + std::cos(angle)),
-                         static_cast<T>(axis.z * axis.y - std::cos(angle) - std::sin(angle) * axis.x),
-                         static_cast<T>(0),
+                        axis.x * axis.y * cos_a_inv + sin_a * axis.z,
+                        axis.y * axis.y * cos_a_inv + cos_a,
+                        axis.z * axis.y * cos_a_inv - sin_a * axis.x,
+                        static_cast<T>(0),
 
-                         static_cast<T>(axis.x * axis.z - std::cos(angle) - std::sin(angle) * axis.y),
-                         static_cast<T>(axis.y * axis.z - std::cos(angle) + std::sin(angle) * axis.x),
-                         static_cast<T>(axis.z * axis.z - std::cos(angle) + std::cos(angle)),
-                         static_cast<T>(0),
+                        axis.x * axis.z * cos_a_inv - sin_a * axis.y,
+                        axis.y * axis.z * cos_a_inv + sin_a * axis.x,
+                        axis.z * axis.z * cos_a_inv + cos_a,
+                        static_cast<T>(0),
 
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(1)});
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(1));
     }
 
     /// Creates translation matrix
@@ -2555,10 +2698,10 @@ class Matrix4 {
      * @param w for W-coordinate translation (implicitly set to 1)
      */
     inline static Matrix4<T> constexpr createTranslation(T x, T y, T z, T w = 1) __attribute__((__always_inline__)) {
-      return Matrix4<T>({static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
-                         static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0),
-                         static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
-                         x,                 y,                 z,                 w});
+      return Matrix4<T>(static_cast<T>(1), static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0), static_cast<T>(1), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0), static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
+                        x,                 y,                 z,                 w);
     }
 
     /**
@@ -2570,10 +2713,10 @@ class Matrix4 {
      * @return Transform matrix 4x4 with scale transformation.
      */
     inline static Matrix4<T> constexpr createScale(T sx, T sy, T sz) __attribute__((__always_inline__)) {
-      return Matrix4<T>({sx,                static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
-                         static_cast<T>(0), sy,                static_cast<T>(0), static_cast<T>(0),
-                         static_cast<T>(0), static_cast<T>(0), sz,                static_cast<T>(0),
-                         static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)});
+      return Matrix4<T>(sx,                static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0), sy,                static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0), static_cast<T>(0), sz,                static_cast<T>(0),
+                        static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1));
     }
 
     /**
@@ -2595,46 +2738,46 @@ class Matrix4 {
       // Recompute up as: up = side x forward
       Vector3<T> const up = side.crossProduct(forward);
 
-      return Matrix4<T>({side.x,
-                         up.x,
-                         -forward.x,
-                         0.0f,
+      return Matrix4<T>(side.x,
+                        up.x,
+                        -forward.x,
+                        0.0f,
 
-                         side.y,
-                         up.y,
-                         -forward.y,
-                         0.0f,
+                        side.y,
+                        up.y,
+                        -forward.y,
+                        0.0f,
 
-                         side.z,
-                         up.z,
-                         -forward.z,
-                         0.0f,
+                        side.z,
+                        up.z,
+                        -forward.z,
+                        0.0f,
 
-                         0.0f,
-                         0.0f,
-                         0.0f,
-                         1.0f}) * Matrix4<T>::createTranslation(-eyePos.x, -eyePos.y, -eyePos.z);
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        1.0f) * Matrix4<T>::createTranslation(-eyePos.x, -eyePos.y, -eyePos.z);
       */
       // constexpr-suitable return-only alternative, may turn out much slower when computed at runtime:
-      return Matrix4<T>({ (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().x,
-                          (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).x,
-                         -(centerPos - eyePos).normalize_copy().x,
-                          static_cast<T>(0),
+      return Matrix4<T>( (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().x,
+                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).x,
+                        -(centerPos - eyePos).normalize_copy().x,
+                         static_cast<T>(0),
 
-                          (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().y,
-                          (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).y,
-                         -(centerPos - eyePos).normalize_copy().y,
-                          static_cast<T>(0),
+                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().y,
+                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).y,
+                        -(centerPos - eyePos).normalize_copy().y,
+                         static_cast<T>(0),
 
-                          (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().z,
-                          (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).z,
-                         -(centerPos - eyePos).normalize_copy().z,
-                          static_cast<T>(0),
+                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().z,
+                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).z,
+                        -(centerPos - eyePos).normalize_copy().z,
+                         static_cast<T>(0),
 
-                          static_cast<T>(0),
-                          static_cast<T>(0),
-                          static_cast<T>(0),
-                          static_cast<T>(1)}) * Matrix4<T>::createTranslation(-eyePos.x, -eyePos.y, -eyePos.z);
+                         static_cast<T>(0),
+                         static_cast<T>(0),
+                         static_cast<T>(0),
+                         static_cast<T>(1)) * Matrix4<T>::createTranslation(-eyePos.x, -eyePos.y, -eyePos.z);
     }
 
     /**
@@ -2668,25 +2811,25 @@ class Matrix4 {
        *  C = - (zFar + zNear) / (zFar - zNear)
        *  D = - (2 zFar zNear) / (zFar - zNear)
        */
-      return Matrix4<T>({static_cast<T>(2) * zNear / (right - left),
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(0),
+      return Matrix4<T>(static_cast<T>(2) * zNear / (right - left),
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(0),
 
-                         static_cast<T>(0),
-                         static_cast<T>(2) * zNear / (top - bottom),
-                         static_cast<T>(0),
-                         static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(2) * zNear / (top - bottom),
+                        static_cast<T>(0),
+                        static_cast<T>(0),
 
-                          (right + left) / (right - left),
-                          (top + bottom) / (top - bottom),
-                         -(zFar + zNear) / (zFar - zNear),
-                         static_cast<T>(-1),
+                         (right + left) / (right - left),
+                         (top + bottom) / (top - bottom),
+                        -(zFar + zNear) / (zFar - zNear),
+                        static_cast<T>(-1),
 
-                         static_cast<T>(0),
-                         static_cast<T>(0),
-                         static_cast<T>(-2) * zNear * zFar / (zFar - zNear),
-                         static_cast<T>(1)});
+                        static_cast<T>(0),
+                        static_cast<T>(0),
+                        static_cast<T>(-2) * zNear * zFar / (zFar - zNear),
+                        static_cast<T>(1));
     }
 
     /**
@@ -2718,10 +2861,10 @@ class Matrix4 {
        *    ty = - (top + bottom) / (top - bottom)
        *    tz = - (zFar + zNear) / (zFar - zNear)
        */
-      return Matrix4<T>({static_cast<T>(2) / (right - left), static_cast<T>(0),                  static_cast<T>(0),                   static_cast<T>(0),
-                         static_cast<T>(0),                  static_cast<T>(2) / (top - bottom), static_cast<T>(0),                   static_cast<T>(0),
-                         static_cast<T>(0),                  static_cast<T>(0),                  static_cast<T>(-2) / (zFar - zNear), static_cast<T>(0),
-                         -(right + left)   / (right - left), -(top + bottom)   / (top - bottom), -(zFar + zNear)    / (zFar - zNear), static_cast<T>(1)});
+      return Matrix4<T>(static_cast<T>(2) / (right - left), static_cast<T>(0),                  static_cast<T>(0),                   static_cast<T>(0),
+                        static_cast<T>(0),                  static_cast<T>(2) / (top - bottom), static_cast<T>(0),                   static_cast<T>(0),
+                        static_cast<T>(0),                  static_cast<T>(0),                  static_cast<T>(-2) / (zFar - zNear), static_cast<T>(0),
+                        -(right + left)   / (right - left), -(top + bottom)   / (top - bottom), -(zFar + zNear)    / (zFar - zNear), static_cast<T>(1));
     }
 
     /**
@@ -2732,10 +2875,10 @@ class Matrix4 {
      */
     template<class FromT>
     inline static Matrix4<T> constexpr fromRowMajorArray(const FromT *arr) {
-      return Matrix4<T>({static_cast<T>(arr[0]), static_cast<T>(arr[4]), static_cast<T>(arr[8]),  static_cast<T>(arr[12]),
-                         static_cast<T>(arr[1]), static_cast<T>(arr[5]), static_cast<T>(arr[9]),  static_cast<T>(arr[13]),
-                         static_cast<T>(arr[2]), static_cast<T>(arr[6]), static_cast<T>(arr[10]), static_cast<T>(arr[14]),
-                         static_cast<T>(arr[3]), static_cast<T>(arr[7]), static_cast<T>(arr[11]), static_cast<T>(arr[15])});
+      return Matrix4<T>(static_cast<T>(arr[0]), static_cast<T>(arr[4]), static_cast<T>(arr[8]),  static_cast<T>(arr[12]),
+                        static_cast<T>(arr[1]), static_cast<T>(arr[5]), static_cast<T>(arr[9]),  static_cast<T>(arr[13]),
+                        static_cast<T>(arr[2]), static_cast<T>(arr[6]), static_cast<T>(arr[10]), static_cast<T>(arr[14]),
+                        static_cast<T>(arr[3]), static_cast<T>(arr[7]), static_cast<T>(arr[11]), static_cast<T>(arr[15]));
     }
 
     /**
@@ -2746,10 +2889,10 @@ class Matrix4 {
      */
     template<class FromT>
     inline static Matrix4<T> constexpr fromColumnMajorArray(const FromT *arr) {
-      return Matrix4<T>({static_cast<T>(arr[0]),  static_cast<T>(arr[1]),  static_cast<T>(arr[2]),  static_cast<T>(arr[3]),
-                         static_cast<T>(arr[4]),  static_cast<T>(arr[5]),  static_cast<T>(arr[6]),  static_cast<T>(arr[7]),
-                         static_cast<T>(arr[8]),  static_cast<T>(arr[9]),  static_cast<T>(arr[10]), static_cast<T>(arr[11]),
-                         static_cast<T>(arr[12]), static_cast<T>(arr[13]), static_cast<T>(arr[14]), static_cast<T>(arr[15])});
+      return Matrix4<T>(static_cast<T>(arr[0]),  static_cast<T>(arr[1]),  static_cast<T>(arr[2]),  static_cast<T>(arr[3]),
+                        static_cast<T>(arr[4]),  static_cast<T>(arr[5]),  static_cast<T>(arr[6]),  static_cast<T>(arr[7]),
+                        static_cast<T>(arr[8]),  static_cast<T>(arr[9]),  static_cast<T>(arr[10]), static_cast<T>(arr[11]),
+                        static_cast<T>(arr[12]), static_cast<T>(arr[13]), static_cast<T>(arr[14]), static_cast<T>(arr[15]));
     }
 
     //---------------------[ Equality operators ]------------------------------
@@ -2930,10 +3073,10 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator+(Matrix4<T> const &rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] + rhs.data[ 0], data[ 1] + rhs.data[ 1], data[ 2] + rhs.data[ 2], data[ 3] + rhs.data[ 3],
-                         data[ 4] + rhs.data[ 4], data[ 5] + rhs.data[ 5], data[ 6] + rhs.data[ 6], data[ 7] + rhs.data[ 7],
-                         data[ 8] + rhs.data[ 8], data[ 9] + rhs.data[ 9], data[10] + rhs.data[10], data[11] + rhs.data[11],
-                         data[12] + rhs.data[12], data[13] + rhs.data[13], data[14] + rhs.data[14], data[15] + rhs.data[15]});
+      return Matrix4<T>(data[ 0] + rhs.data[ 0], data[ 1] + rhs.data[ 1], data[ 2] + rhs.data[ 2], data[ 3] + rhs.data[ 3],
+                        data[ 4] + rhs.data[ 4], data[ 5] + rhs.data[ 5], data[ 6] + rhs.data[ 6], data[ 7] + rhs.data[ 7],
+                        data[ 8] + rhs.data[ 8], data[ 9] + rhs.data[ 9], data[10] + rhs.data[10], data[11] + rhs.data[11],
+                        data[12] + rhs.data[12], data[13] + rhs.data[13], data[14] + rhs.data[14], data[15] + rhs.data[15]);
     }
 
     /**
@@ -2941,10 +3084,10 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator-(Matrix4<T> const &rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] - rhs.data[ 0], data[ 1] - rhs.data[ 1], data[ 2] - rhs.data[ 2], data[ 3] - rhs.data[ 3],
-                         data[ 4] - rhs.data[ 4], data[ 5] - rhs.data[ 5], data[ 6] - rhs.data[ 6], data[ 7] - rhs.data[ 7],
-                         data[ 8] - rhs.data[ 8], data[ 9] - rhs.data[ 9], data[10] - rhs.data[10], data[11] - rhs.data[11],
-                         data[12] - rhs.data[12], data[13] - rhs.data[13], data[14] - rhs.data[14], data[15] - rhs.data[15]});
+      return Matrix4<T>(data[ 0] - rhs.data[ 0], data[ 1] - rhs.data[ 1], data[ 2] - rhs.data[ 2], data[ 3] - rhs.data[ 3],
+                        data[ 4] - rhs.data[ 4], data[ 5] - rhs.data[ 5], data[ 6] - rhs.data[ 6], data[ 7] - rhs.data[ 7],
+                        data[ 8] - rhs.data[ 8], data[ 9] - rhs.data[ 9], data[10] - rhs.data[10], data[11] - rhs.data[11],
+                        data[12] - rhs.data[12], data[13] - rhs.data[13], data[14] - rhs.data[14], data[15] - rhs.data[15]);
     }
 
     //--------------------[ matrix with scalar operations ]---------------------
@@ -2953,10 +3096,10 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator+(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] + rhs, data[ 1] + rhs, data[ 2] + rhs, data[ 3] + rhs,
-                         data[ 4] + rhs, data[ 5] + rhs, data[ 6] + rhs, data[ 7] + rhs,
-                         data[ 8] + rhs, data[ 9] + rhs, data[10] + rhs, data[11] + rhs,
-                         data[12] + rhs, data[13] + rhs, data[14] + rhs, data[15] + rhs});
+      return Matrix4<T>(data[ 0] + rhs, data[ 1] + rhs, data[ 2] + rhs, data[ 3] + rhs,
+                        data[ 4] + rhs, data[ 5] + rhs, data[ 6] + rhs, data[ 7] + rhs,
+                        data[ 8] + rhs, data[ 9] + rhs, data[10] + rhs, data[11] + rhs,
+                        data[12] + rhs, data[13] + rhs, data[14] + rhs, data[15] + rhs);
     }
 
     /**
@@ -2964,10 +3107,10 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator-(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] - rhs, data[ 1] - rhs, data[ 2] - rhs, data[ 3] - rhs,
-                         data[ 4] - rhs, data[ 5] - rhs, data[ 6] - rhs, data[ 7] - rhs,
-                         data[ 8] - rhs, data[ 9] - rhs, data[10] - rhs, data[11] - rhs,
-                         data[12] - rhs, data[13] - rhs, data[14] - rhs, data[15] - rhs});
+      return Matrix4<T>(data[ 0] - rhs, data[ 1] - rhs, data[ 2] - rhs, data[ 3] - rhs,
+                        data[ 4] - rhs, data[ 5] - rhs, data[ 6] - rhs, data[ 7] - rhs,
+                        data[ 8] - rhs, data[ 9] - rhs, data[10] - rhs, data[11] - rhs,
+                        data[12] - rhs, data[13] - rhs, data[14] - rhs, data[15] - rhs);
     }
 
     /**
@@ -2975,10 +3118,10 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator*(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] * rhs, data[ 1] * rhs, data[ 2] * rhs, data[ 3] * rhs,
-                         data[ 4] * rhs, data[ 5] * rhs, data[ 6] * rhs, data[ 7] * rhs,
-                         data[ 8] * rhs, data[ 9] * rhs, data[10] * rhs, data[11] * rhs,
-                         data[12] * rhs, data[13] * rhs, data[14] * rhs, data[15] * rhs});
+      return Matrix4<T>(data[ 0] * rhs, data[ 1] * rhs, data[ 2] * rhs, data[ 3] * rhs,
+                        data[ 4] * rhs, data[ 5] * rhs, data[ 6] * rhs, data[ 7] * rhs,
+                        data[ 8] * rhs, data[ 9] * rhs, data[10] * rhs, data[11] * rhs,
+                        data[12] * rhs, data[13] * rhs, data[14] * rhs, data[15] * rhs);
     }
 
     /**
@@ -2986,10 +3129,46 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator/(T rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[ 0] / rhs, data[ 1] / rhs, data[ 2] / rhs, data[ 3] / rhs,
-                         data[ 4] / rhs, data[ 5] / rhs, data[ 6] / rhs, data[ 7] / rhs,
-                         data[ 8] / rhs, data[ 9] / rhs, data[10] / rhs, data[11] / rhs,
-                         data[12] / rhs, data[13] / rhs, data[14] / rhs, data[15] / rhs});
+      return Matrix4<T>(data[ 0] / rhs, data[ 1] / rhs, data[ 2] / rhs, data[ 3] / rhs,
+                        data[ 4] / rhs, data[ 5] / rhs, data[ 6] / rhs, data[ 7] / rhs,
+                        data[ 8] / rhs, data[ 9] / rhs, data[10] / rhs, data[11] / rhs,
+                        data[12] / rhs, data[13] / rhs, data[14] / rhs, data[15] / rhs);
+    }
+
+    /**
+     * Addition operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix4<T> constexpr &operator+=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this + rhs;
+      return *this;
+    }
+
+    /**
+     * Subtraction operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix4<T> constexpr &operator-=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this - rhs;
+      return *this;
+    }
+
+    /**
+     * Multiplication operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix4<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this * rhs;
+      return *this;
+    }
+
+    /**
+     * Division operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix4<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
+      *this = *this / rhs;
+      return *this;
     }
 
     //--------------------[ multiply operators ]--------------------------------
@@ -3019,25 +3198,34 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     inline Matrix4<T> constexpr operator*(Matrix4<T> rhs) const __attribute__((__always_inline__)) {
-      return Matrix4<T>({rhs.data[ 0] * data[ 0] + rhs.data[ 1] * data[ 4] + rhs.data[ 2] * data[ 8] + rhs.data[ 3] * data[12],
-                         rhs.data[ 0] * data[ 1] + rhs.data[ 1] * data[ 5] + rhs.data[ 2] * data[ 9] + rhs.data[ 3] * data[13],
-                         rhs.data[ 0] * data[ 2] + rhs.data[ 1] * data[ 6] + rhs.data[ 2] * data[10] + rhs.data[ 3] * data[14],
-                         rhs.data[ 0] * data[ 3] + rhs.data[ 1] * data[ 7] + rhs.data[ 2] * data[11] + rhs.data[ 3] * data[15],
+      return Matrix4<T>(rhs.data[ 0] * data[ 0] + rhs.data[ 1] * data[ 4] + rhs.data[ 2] * data[ 8] + rhs.data[ 3] * data[12],
+                        rhs.data[ 0] * data[ 1] + rhs.data[ 1] * data[ 5] + rhs.data[ 2] * data[ 9] + rhs.data[ 3] * data[13],
+                        rhs.data[ 0] * data[ 2] + rhs.data[ 1] * data[ 6] + rhs.data[ 2] * data[10] + rhs.data[ 3] * data[14],
+                        rhs.data[ 0] * data[ 3] + rhs.data[ 1] * data[ 7] + rhs.data[ 2] * data[11] + rhs.data[ 3] * data[15],
 
-                         rhs.data[ 4] * data[ 0] + rhs.data[ 5] * data[ 4] + rhs.data[ 6] * data[ 8] + rhs.data[ 7] * data[12],
-                         rhs.data[ 4] * data[ 1] + rhs.data[ 5] * data[ 5] + rhs.data[ 6] * data[ 9] + rhs.data[ 7] * data[13],
-                         rhs.data[ 4] * data[ 2] + rhs.data[ 5] * data[ 6] + rhs.data[ 6] * data[10] + rhs.data[ 7] * data[14],
-                         rhs.data[ 4] * data[ 3] + rhs.data[ 5] * data[ 7] + rhs.data[ 6] * data[11] + rhs.data[ 7] * data[15],
+                        rhs.data[ 4] * data[ 0] + rhs.data[ 5] * data[ 4] + rhs.data[ 6] * data[ 8] + rhs.data[ 7] * data[12],
+                        rhs.data[ 4] * data[ 1] + rhs.data[ 5] * data[ 5] + rhs.data[ 6] * data[ 9] + rhs.data[ 7] * data[13],
+                        rhs.data[ 4] * data[ 2] + rhs.data[ 5] * data[ 6] + rhs.data[ 6] * data[10] + rhs.data[ 7] * data[14],
+                        rhs.data[ 4] * data[ 3] + rhs.data[ 5] * data[ 7] + rhs.data[ 6] * data[11] + rhs.data[ 7] * data[15],
 
-                         rhs.data[ 8] * data[ 0] + rhs.data[ 9] * data[ 4] + rhs.data[10] * data[ 8] + rhs.data[11] * data[12],
-                         rhs.data[ 8] * data[ 1] + rhs.data[ 9] * data[ 5] + rhs.data[10] * data[ 9] + rhs.data[11] * data[13],
-                         rhs.data[ 8] * data[ 2] + rhs.data[ 9] * data[ 6] + rhs.data[10] * data[10] + rhs.data[11] * data[14],
-                         rhs.data[ 8] * data[ 3] + rhs.data[ 9] * data[ 7] + rhs.data[10] * data[11] + rhs.data[11] * data[15],
+                        rhs.data[ 8] * data[ 0] + rhs.data[ 9] * data[ 4] + rhs.data[10] * data[ 8] + rhs.data[11] * data[12],
+                        rhs.data[ 8] * data[ 1] + rhs.data[ 9] * data[ 5] + rhs.data[10] * data[ 9] + rhs.data[11] * data[13],
+                        rhs.data[ 8] * data[ 2] + rhs.data[ 9] * data[ 6] + rhs.data[10] * data[10] + rhs.data[11] * data[14],
+                        rhs.data[ 8] * data[ 3] + rhs.data[ 9] * data[ 7] + rhs.data[10] * data[11] + rhs.data[11] * data[15],
 
-                         rhs.data[12] * data[ 0] + rhs.data[13] * data[ 4] + rhs.data[14] * data[ 8] + rhs.data[15] * data[12],
-                         rhs.data[12] * data[ 1] + rhs.data[13] * data[ 5] + rhs.data[14] * data[ 9] + rhs.data[15] * data[13],
-                         rhs.data[12] * data[ 2] + rhs.data[13] * data[ 6] + rhs.data[14] * data[10] + rhs.data[15] * data[14],
-                         rhs.data[12] * data[ 3] + rhs.data[13] * data[ 7] + rhs.data[14] * data[11] + rhs.data[15] * data[15]});
+                        rhs.data[12] * data[ 0] + rhs.data[13] * data[ 4] + rhs.data[14] * data[ 8] + rhs.data[15] * data[12],
+                        rhs.data[12] * data[ 1] + rhs.data[13] * data[ 5] + rhs.data[14] * data[ 9] + rhs.data[15] * data[13],
+                        rhs.data[12] * data[ 2] + rhs.data[13] * data[ 6] + rhs.data[14] * data[10] + rhs.data[15] * data[14],
+                        rhs.data[12] * data[ 3] + rhs.data[13] * data[ 7] + rhs.data[14] * data[11] + rhs.data[15] * data[15]);
+    }
+
+    /**
+     * Multiplication operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Matrix4<T> constexpr &operator*=(Matrix4<T> rhs) __attribute__((__always_inline__)) {
+      *this = *this * rhs;
+      return *this;
     }
 
     //---------------------------[ misc operations ]----------------------------
@@ -3074,48 +3262,48 @@ class Matrix4 {
      * (16 * 6 * 3 mul, 16 * 5 add + det() + mul() functions)
      */
     inline Matrix4<T> constexpr inverse() const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[9]  * data[14] * data[7]  - data[13] * data[10] * data[7]  + data[13] * data[6]  * data[11] -
-                         data[5]  * data[14] * data[11] - data[9]  * data[6]  * data[15] + data[5]  * data[10] * data[15],
-                         data[13] * data[10] * data[3]  - data[9]  * data[14] * data[3]  - data[13] * data[2]  * data[11] +
-                         data[1]  * data[14] * data[11] + data[9]  * data[2]  * data[15] - data[1]  * data[10] * data[15],
-                         data[5]  * data[14] * data[3]  - data[13] * data[6]  * data[3]  + data[13] * data[2]  * data[7] -
-                         data[1]  * data[14] * data[7]  - data[5]  * data[2]  * data[15] + data[1]  * data[6]  * data[15],
-                         data[9]  * data[6]  * data[3]  - data[5]  * data[10] * data[3]  - data[9]  * data[2]  * data[7] +
-                         data[1]  * data[10] * data[7]  + data[5]  * data[2]  * data[11] - data[1]  * data[6]  * data[11],
-                         data[12] * data[10] * data[7]  - data[8]  * data[14] * data[7]  - data[12] * data[6]  * data[11] +
-                         data[4]  * data[14] * data[11] + data[8]  * data[6]  * data[15] - data[4]  * data[10] * data[15],
-                         data[8]  * data[14] * data[3]  - data[12] * data[10] * data[3]  + data[12] * data[2]  * data[11] -
-                         data[0]  * data[14] * data[11] - data[8]  * data[2]  * data[15] + data[0]  * data[10] * data[15],
-                         data[12] * data[6]  * data[3]  - data[4]  * data[14] * data[3]  - data[12] * data[2]  * data[7] +
-                         data[0]  * data[14] * data[7]  + data[4]  * data[2]  * data[15] - data[0]  * data[6]  * data[15],
-                         data[4]  * data[10] * data[3]  - data[8]  * data[6]  * data[3]  + data[8]  * data[2]  * data[7] -
-                         data[0]  * data[10] * data[7]  - data[4]  * data[2]  * data[11] + data[0]  * data[6]  * data[11],
-                         data[8]  * data[13] * data[7]  - data[12] * data[9]  * data[7]  + data[12] * data[5]  * data[11] -
-                         data[4]  * data[13] * data[11] - data[8]  * data[5]  * data[15] + data[4]  * data[9]  * data[15],
-                         data[12] * data[9]  * data[3]  - data[8]  * data[13] * data[3]  - data[12] * data[1]  * data[11] +
-                         data[0]  * data[13] * data[11] + data[8]  * data[1]  * data[15] - data[0]  * data[9]  * data[15],
-                         data[4]  * data[13] * data[3]  - data[12] * data[5]  * data[3]  + data[12] * data[1]  * data[7] -
-                         data[0]  * data[13] * data[7]  - data[4]  * data[1]  * data[15] + data[0]  * data[5]  * data[15],
-                         data[8]  * data[5]  * data[3]  - data[4]  * data[9]  * data[3]  - data[8]  * data[1]  * data[7] +
-                         data[0]  * data[9]  * data[7]  + data[4]  * data[1]  * data[11] - data[0]  * data[5]  * data[11],
-                         data[12] * data[9]  * data[6]  - data[8]  * data[13] * data[6]  - data[12] * data[5]  * data[10] +
-                         data[4]  * data[13] * data[10] + data[8]  * data[5]  * data[14] - data[4]  * data[9]  * data[14],
-                         data[8]  * data[13] * data[2]  - data[12] * data[9]  * data[2]  + data[12] * data[1]  * data[10] -
-                         data[0]  * data[13] * data[10] - data[8]  * data[1]  * data[14] + data[0]  * data[9]  * data[14],
-                         data[12] * data[5]  * data[2]  - data[4]  * data[13] * data[2]  - data[12] * data[1]  * data[6] +
-                         data[0]  * data[13] * data[6]  + data[4]  * data[1]  * data[14] - data[0]  * data[5]  * data[14],
-                         data[4]  * data[9]  * data[2]  - data[8]  * data[5]  * data[2]  + data[8]  * data[1]  * data[6] -
-                         data[0]  * data[9]  * data[6]  - data[4]  * data[1]  * data[10] + data[0]  * data[5]  * data[10]}) / det();
+      return Matrix4<T>(data[9]  * data[14] * data[7]  - data[13] * data[10] * data[7]  + data[13] * data[6]  * data[11] -
+                        data[5]  * data[14] * data[11] - data[9]  * data[6]  * data[15] + data[5]  * data[10] * data[15],
+                        data[13] * data[10] * data[3]  - data[9]  * data[14] * data[3]  - data[13] * data[2]  * data[11] +
+                        data[1]  * data[14] * data[11] + data[9]  * data[2]  * data[15] - data[1]  * data[10] * data[15],
+                        data[5]  * data[14] * data[3]  - data[13] * data[6]  * data[3]  + data[13] * data[2]  * data[7] -
+                        data[1]  * data[14] * data[7]  - data[5]  * data[2]  * data[15] + data[1]  * data[6]  * data[15],
+                        data[9]  * data[6]  * data[3]  - data[5]  * data[10] * data[3]  - data[9]  * data[2]  * data[7] +
+                        data[1]  * data[10] * data[7]  + data[5]  * data[2]  * data[11] - data[1]  * data[6]  * data[11],
+                        data[12] * data[10] * data[7]  - data[8]  * data[14] * data[7]  - data[12] * data[6]  * data[11] +
+                        data[4]  * data[14] * data[11] + data[8]  * data[6]  * data[15] - data[4]  * data[10] * data[15],
+                        data[8]  * data[14] * data[3]  - data[12] * data[10] * data[3]  + data[12] * data[2]  * data[11] -
+                        data[0]  * data[14] * data[11] - data[8]  * data[2]  * data[15] + data[0]  * data[10] * data[15],
+                        data[12] * data[6]  * data[3]  - data[4]  * data[14] * data[3]  - data[12] * data[2]  * data[7] +
+                        data[0]  * data[14] * data[7]  + data[4]  * data[2]  * data[15] - data[0]  * data[6]  * data[15],
+                        data[4]  * data[10] * data[3]  - data[8]  * data[6]  * data[3]  + data[8]  * data[2]  * data[7] -
+                        data[0]  * data[10] * data[7]  - data[4]  * data[2]  * data[11] + data[0]  * data[6]  * data[11],
+                        data[8]  * data[13] * data[7]  - data[12] * data[9]  * data[7]  + data[12] * data[5]  * data[11] -
+                        data[4]  * data[13] * data[11] - data[8]  * data[5]  * data[15] + data[4]  * data[9]  * data[15],
+                        data[12] * data[9]  * data[3]  - data[8]  * data[13] * data[3]  - data[12] * data[1]  * data[11] +
+                        data[0]  * data[13] * data[11] + data[8]  * data[1]  * data[15] - data[0]  * data[9]  * data[15],
+                        data[4]  * data[13] * data[3]  - data[12] * data[5]  * data[3]  + data[12] * data[1]  * data[7] -
+                        data[0]  * data[13] * data[7]  - data[4]  * data[1]  * data[15] + data[0]  * data[5]  * data[15],
+                        data[8]  * data[5]  * data[3]  - data[4]  * data[9]  * data[3]  - data[8]  * data[1]  * data[7] +
+                        data[0]  * data[9]  * data[7]  + data[4]  * data[1]  * data[11] - data[0]  * data[5]  * data[11],
+                        data[12] * data[9]  * data[6]  - data[8]  * data[13] * data[6]  - data[12] * data[5]  * data[10] +
+                        data[4]  * data[13] * data[10] + data[8]  * data[5]  * data[14] - data[4]  * data[9]  * data[14],
+                        data[8]  * data[13] * data[2]  - data[12] * data[9]  * data[2]  + data[12] * data[1]  * data[10] -
+                        data[0]  * data[13] * data[10] - data[8]  * data[1]  * data[14] + data[0]  * data[9]  * data[14],
+                        data[12] * data[5]  * data[2]  - data[4]  * data[13] * data[2]  - data[12] * data[1]  * data[6] +
+                        data[0]  * data[13] * data[6]  + data[4]  * data[1]  * data[14] - data[0]  * data[5]  * data[14],
+                        data[4]  * data[9]  * data[2]  - data[8]  * data[5]  * data[2]  + data[8]  * data[1]  * data[6] -
+                        data[0]  * data[9]  * data[6]  - data[4]  * data[1]  * data[10] + data[0]  * data[5]  * data[10]) / det();
     }
 
     /**
      * Transpose matrix.
      */
     inline Matrix4<T> constexpr transpose() const __attribute__((__always_inline__)) {
-      return Matrix4<T>({data[0], data[4], data[8],  data[12],
-                         data[1], data[5], data[9],  data[13],
-                         data[2], data[6], data[10], data[14],
-                         data[3], data[7], data[11], data[15]});
+      return Matrix4<T>(data[0], data[4], data[8],  data[12],
+                        data[1], data[5], data[9],  data[13],
+                        data[2], data[6], data[10], data[14],
+                        data[3], data[7], data[11], data[15]);
     }
 
     /**
@@ -3574,7 +3762,10 @@ class Quaternion {
      * @param angleDeg Angle of rotation around axis (in radians).
      */
     inline static Quaternion<T> constexpr fromAxisRot_rad(Vector3<T> axis, T angleRad) __attribute__((__always_inline__)) {
-      return Quaternion<T>(std::cos(angleRad / static_cast<T>(2.0)), axis * std::sin(angleRad / static_cast<T>(2.0)));
+      T temp_sin = static_cast<T>(0);
+      T temp_cos = static_cast<T>(0);
+      sincos_any(angleRad / static_cast<T>(2.0), temp_sin, temp_cos);
+      return Quaternion<T>(temp_cos, axis * temp_sin);
     }
 
     /**
@@ -3598,9 +3789,9 @@ class Quaternion {
      * @return Rotation matrix expressing this quaternion.
      */
     inline Matrix3<T> constexpr rotMatrix() __attribute__((__always_inline__)) {
-      return Matrix3<T>({1 - 2 * (v.y * v.y + v.z * v.z),     2 * (v.x * v.y + v.z * w),       2 * (v.x * v.z - v.y * w),
-                             2 * (v.x * v.y - v.z * w),   1 - 2 * (v.x * v.x + v.z * v.z),     2 * (v.y * v.z + v.x * w),
-                             2 * (v.x * v.z + v.y * w),       2 * (v.y * v.z - v.x * w),   1 - 2 * (v.x * v.x + v.y * v.y)});
+      return Matrix3<T>(1 - 2 * (v.y * v.y + v.z * v.z),     2 * (v.x * v.y + v.z * w),       2 * (v.x * v.z - v.y * w),
+                            2 * (v.x * v.y - v.z * w),   1 - 2 * (v.x * v.x + v.z * v.z),     2 * (v.y * v.z + v.x * w),
+                            2 * (v.x * v.z + v.y * w),       2 * (v.y * v.z - v.x * w),   1 - 2 * (v.x * v.x + v.y * v.y));
     }
 
     /**
@@ -3610,10 +3801,10 @@ class Quaternion {
      * @return Transformation matrix expressing this quaternion.
      */
     inline Matrix4<T> constexpr transform() const __attribute__((__always_inline__)) {
-      return Matrix4<T>({1 - 2 * (v.y * v.y + v.z * v.z),     2 * (v.x * v.y + v.z * w),       2 * (v.x * v.z - v.y * w),   0.0f,
-                             2 * (v.x * v.y - v.z * w),   1 - 2 * (v.x * v.x + v.z * v.z),     2 * (v.y * v.z + v.x * w),   0.0f,
-                             2 * (v.x * v.z + v.y * w),       2 * (v.y * v.z - v.x * w),   1 - 2 * (v.x * v.x + v.y * v.y), 0.0f,
-                         0.0f,                            0.0f,                            0.0f,                            1.0f});
+      return Matrix4<T>(1 - 2 * (v.y * v.y + v.z * v.z),     2 * (v.x * v.y + v.z * w),       2 * (v.x * v.z - v.y * w),   0.0f,
+                            2 * (v.x * v.y - v.z * w),   1 - 2 * (v.x * v.x + v.z * v.z),     2 * (v.y * v.z + v.x * w),   0.0f,
+                            2 * (v.x * v.z + v.y * w),       2 * (v.y * v.z - v.x * w),   1 - 2 * (v.x * v.x + v.y * v.y), 0.0f,
+                        0.0f,                            0.0f,                            0.0f,                            1.0f);
     }
 
     /**
