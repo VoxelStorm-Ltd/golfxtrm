@@ -286,7 +286,7 @@ class Vector2 {
      * @param nx initial x-coordinate value
      * @param ny initial y-coordinate value
      */
-    inline void assign(T nx = 0, T ny = 0) __attribute__((__always_inline__)) {
+    inline void constexpr assign(T nx = 0, T ny = 0) __attribute__((__always_inline__)) {
       x = nx;
       y = ny;
     }
@@ -297,7 +297,7 @@ class Vector2 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Vector2<T> &operator=(Vector2<FromT> const &rhs) {
+    inline Vector2<T> constexpr &operator=(Vector2<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       return *this;
@@ -307,7 +307,7 @@ class Vector2 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
       x = rhs.x;
       y = rhs.y;
       return *this;
@@ -319,7 +319,7 @@ class Vector2 {
      * @return For n = 0, reference to x coordinate, else reference to y
      * y coordinate.
      */
-    inline T &operator[](int n) __attribute__((__always_inline__)) {
+    inline T constexpr &operator[](int n) __attribute__((__always_inline__)) {
       return n == 0 ? x : y;
     }
 
@@ -370,7 +370,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator+=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator+=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
       x += rhs.x;
       y += rhs.y;
       return *this;
@@ -380,7 +380,7 @@ class Vector2 {
      * Substraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator-=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator-=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
       x -= rhs.x;
       y -= rhs.y;
       return *this;
@@ -390,7 +390,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator*=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator*=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
       x *= rhs.x;
       y *= rhs.y;
       return *this;
@@ -400,7 +400,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator/=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator/=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
       x /= rhs.x;
       y /= rhs.y;
       return *this;
@@ -459,7 +459,7 @@ class Vector2 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator+=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator+=(T rhs) __attribute__((__always_inline__)) {
       x += rhs;
       y += rhs;
       return *this;
@@ -469,7 +469,7 @@ class Vector2 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator-=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator-=(T rhs) __attribute__((__always_inline__)) {
       x -= rhs;
       y -= rhs;
       return *this;
@@ -479,7 +479,7 @@ class Vector2 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator*=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
       x *= rhs;
       y *= rhs;
       return *this;
@@ -489,7 +489,7 @@ class Vector2 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector2<T> &operator/=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
       x /= rhs;
       y /= rhs;
       return *this;
@@ -554,12 +554,12 @@ class Vector2 {
     /**
      * Normalize vector
      */
-    inline void normalize() __attribute__((__always_inline__)) {
+    inline void constexpr normalize() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
     }
-    inline void normalise() {  // proper english
+    inline void constexpr normalise() {  // proper english
       normalize();
     }
     inline Vector2<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
@@ -573,7 +573,7 @@ class Vector2 {
     /**
      * Absolute vector (make all values positive)
      */
-    inline void abs() __attribute__((__always_inline__)) {
+    inline void constexpr abs() __attribute__((__always_inline__)) {
       x = std::abs(x);
       y = std::abs(y);
     }
@@ -586,7 +586,7 @@ class Vector2 {
      * Rotate 2D vector clockwise.
      * @param aa Angle (in degrees) to be rotated.
      */
-    inline void rotate(T aa) __attribute__((__always_inline__)) {
+    inline void constexpr rotate(T aa) __attribute__((__always_inline__)) {
       rotate_rad(deg2rad(aa));
     }
 
@@ -594,7 +594,7 @@ class Vector2 {
      * Rotate 2D vector clockwise, radian version.
      * @param aa Angle (in radians) to be rotated.
      */
-    inline void rotate_rad(T aa) __attribute__((__always_inline__)) {
+    inline void constexpr rotate_rad(T aa) __attribute__((__always_inline__)) {
       T temp_sin = static_cast<T>(0);
       T temp_cos = static_cast<T>(0);
       sincos_any(-aa, temp_sin, temp_cos);
@@ -623,7 +623,7 @@ class Vector2 {
      * @return Pointer to internally stored (in management of class Vector2<T>)
      * used for passing Vector2<T> values to gl*2[fd] functions.
      */
-    inline operator T*() __attribute__((__always_inline__)) {
+    inline constexpr operator T*() __attribute__((__always_inline__)) {
       return reinterpret_cast<T*>(this);
     }
     /**
@@ -650,7 +650,7 @@ class Vector2 {
     /**
      * Gets string representation.
      */
-    inline constexpr std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -665,14 +665,14 @@ class Vector2 {
      * @param line2end The end coordinates of the first line
      */
     template<class FromT>
-    inline bool get_line_intersection(Vector2<FromT> const &line1start,
-                                      Vector2<FromT> const &line1end,
-                                      Vector2<FromT> const &line2start,
-                                      Vector2<FromT> const &line2end) {
+    inline bool constexpr get_line_intersection(Vector2<FromT> const &line1start,
+                                                Vector2<FromT> const &line1end,
+                                                Vector2<FromT> const &line2start,
+                                                Vector2<FromT> const &line2end) {
       Vector2<T> const temp_s1(line1end.x - line1start.x,
-                          line1end.y - line1start.y);
+                               line1end.y - line1start.y);
       Vector2<T> const temp_s2(line2end.x - line2start.x,
-                          line2end.y - line2start.y);
+                               line2end.y - line2start.y);
       T const temp_s = (-temp_s1.y * (line1start.x - line2start.x) + temp_s1.x * (line1start.y - line2start.y)) / (-temp_s2.x * temp_s1.y + temp_s1.x * temp_s2.y);
       T const temp_t = ( temp_s2.x * (line1start.y - line2start.y) - temp_s2.y * (line1start.x - line2start.x)) / (-temp_s2.x * temp_s1.y + temp_s1.x * temp_s2.y);
       if(temp_s >= 0 && temp_s <= 1 && temp_t >= 0 && temp_t <= 1) {
@@ -860,7 +860,7 @@ class Vector3 {
      * @param ny initial y-coordinate value
      * @param nz initial z-coordinate value
      */
-    inline void assign(T nx = 0, T ny = 0, T nz = 0) __attribute__((__always_inline__)) {
+    inline void constexpr assign(T nx = 0, T ny = 0, T nz = 0) __attribute__((__always_inline__)) {
       x = nx;
       y = ny;
       z = nz;
@@ -871,7 +871,7 @@ class Vector3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> operator=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr operator=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -883,7 +883,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Vector3<T> operator=(Vector3<FromT> const &rhs) {
+    inline Vector3<T> constexpr operator=(Vector3<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -894,7 +894,7 @@ class Vector3 {
      * Copy operator to Vector3
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> operator=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr operator=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -906,7 +906,7 @@ class Vector3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Vector3<T> operator=(Vector4<FromT> const &rhs) {
+    inline Vector3<T> constexpr operator=(Vector4<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -920,7 +920,7 @@ class Vector3 {
      * reference to y, else reference to z
      * y coordinate.
      */
-    inline T &operator[](int n) __attribute__((__always_inline__)) {
+    inline T constexpr &operator[](int n) __attribute__((__always_inline__)) {
       return n == 0 ? x : (n == 1 ? y : z);
     }
 
@@ -972,7 +972,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator+=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator+=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x += rhs.x;
       y += rhs.y;
       z += rhs.z;
@@ -983,7 +983,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator-=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator-=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x -= rhs.x;
       y -= rhs.y;
       z -= rhs.z;
@@ -994,7 +994,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator*=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator*=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x *= rhs.x;
       y *= rhs.y;
       z *= rhs.z;
@@ -1005,7 +1005,7 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator/=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator/=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x /= rhs.x;
       y /= rhs.y;
       z /= rhs.z;
@@ -1042,7 +1042,7 @@ class Vector3 {
      * Multiplication by quaternion operator (rotation by quaternion)
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator*=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator*=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       Vector3<T> const temp = rhs.v.crossProduct(*this) * static_cast<T>(2);
       *this += (temp * rhs.w) + rhs.v.crossProduct(temp);
       return *this;
@@ -1085,7 +1085,7 @@ class Vector3 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator+=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator+=(T rhs) __attribute__((__always_inline__)) {
       x += rhs;
       y += rhs;
       z += rhs;
@@ -1096,7 +1096,7 @@ class Vector3 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator-=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator-=(T rhs) __attribute__((__always_inline__)) {
       x -= rhs;
       y -= rhs;
       z -= rhs;
@@ -1107,7 +1107,7 @@ class Vector3 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator*=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
       x *= rhs;
       y *= rhs;
       z *= rhs;
@@ -1118,10 +1118,30 @@ class Vector3 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector3<T> &operator/=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
       x /= rhs;
       y /= rhs;
       z /= rhs;
+      return *this;
+    }
+
+    //-------------[ matrix operations ]-------------------------
+
+    /**
+     * Multiplication by 3x3 matrix operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator*=(Matrix3<T> rhs) __attribute__((__always_inline__)) {
+      *this = rhs * *this;
+      return *this;
+    }
+
+    /**
+     * Multiplication by 4x4 matrix operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator*=(Matrix4<T> rhs) __attribute__((__always_inline__)) {
+      *this = rhs * *this;
       return *this;
     }
 
@@ -1186,13 +1206,13 @@ class Vector3 {
     /**
      * Normalize vector
      */
-    inline void normalize() __attribute__((__always_inline__)) {
+    inline void constexpr normalize() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
       z /= temp;
     }
-    inline void normalise() __attribute__((__always_inline__)) {  // proper english
+    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
       normalize();
     }
     inline Vector3<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
@@ -1206,7 +1226,7 @@ class Vector3 {
     /**
      * Absolute vector (make all values positive)
      */
-    inline void abs() __attribute__((__always_inline__)) {
+    inline void constexpr abs() __attribute__((__always_inline__)) {
       x = std::abs(x);
       y = std::abs(y);
       z = std::abs(z);
@@ -1222,7 +1242,7 @@ class Vector3 {
      * @param ay Angle (in degrees) to be rotated around Y-axis.
      * @param az Angle (in degrees) to be rotated around Z-axis.
      */
-    inline void rotate(T ax, T ay, T az) __attribute__((__always_inline__)) {
+    inline void constexpr rotate(T ax, T ay, T az) __attribute__((__always_inline__)) {
       rotate_rad(deg2rad(ax), deg2rad(ay), deg2rad(az));
     }
 
@@ -1232,7 +1252,7 @@ class Vector3 {
      * @param ay Angle (in radians) to be rotated around Y-axis.
      * @param az Angle (in radians) to be rotated around Z-axis.
      */
-    inline void rotate_rad(T ax, T ay, T az) __attribute__((__always_inline__)) {
+    inline void constexpr rotate_rad(T ax, T ay, T az) __attribute__((__always_inline__)) {
       T cos_x = static_cast<T>(0);
       T sin_x = static_cast<T>(0);
       T cos_y = static_cast<T>(0);
@@ -1253,7 +1273,7 @@ class Vector3 {
      * Rotate vector by a quaternion.
      * @param ax Quaternion to rotate by.
      */
-    inline void rotate(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline void constexpr rotate(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       *this *= rhs;
     }
 
@@ -1277,7 +1297,7 @@ class Vector3 {
      * @return Pointer to internally stored (in management of class Vector3<T>)
      * used for passing Vector3<T> values to gl*3[fd] functions.
      */
-    inline operator T*() __attribute__((__always_inline__)) {
+    inline constexpr operator T*() __attribute__((__always_inline__)) {
       return reinterpret_cast<T*>(this);
     }
 
@@ -1459,7 +1479,7 @@ class Vector4 {
      * @param nz initial z-coordinate value
      * @param nz initial w-coordinate value
      */
-    inline void assign(T nx = 0, T ny = 0, T nz = 0, T nw = 0) __attribute__((__always_inline__)) {
+    inline void constexpr assign(T nx = 0, T ny = 0, T nz = 0, T nw = 0) __attribute__((__always_inline__)) {
       x = nx;
       y = ny;
       z = nz;
@@ -1471,7 +1491,7 @@ class Vector4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> operator=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr operator=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -1484,7 +1504,7 @@ class Vector4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Vector4<T> operator=(Vector4<FromT> const &rhs) {
+    inline Vector4<T> constexpr operator=(Vector4<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -1496,7 +1516,7 @@ class Vector4 {
      * Copy operator to Vector4
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> operator=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr operator=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
       x = rhs.x;
       y = rhs.y;
       z = rhs.z;
@@ -1509,7 +1529,7 @@ class Vector4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Vector4<T> operator=(Vector3<FromT> const &rhs) {
+    inline Vector4<T> constexpr operator=(Vector3<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
       z = static_cast<T>(rhs.z);
@@ -1524,7 +1544,7 @@ class Vector4 {
      * reference to y coordinate, n = 2 reference to z,
      * else reference to w coordinate.
      */
-    inline T &operator[](int n) __attribute__((__always_inline__)) {
+    inline T constexpr &operator[](int n) __attribute__((__always_inline__)) {
       return n == 0 ? x : (n == 1 ? y : (n == 2 ? z : w));
     }
 
@@ -1576,7 +1596,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator+=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator+=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x += rhs.x;
       y += rhs.y;
       z += rhs.z;
@@ -1588,7 +1608,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator-=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator-=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x -= rhs.x;
       y -= rhs.y;
       z -= rhs.z;
@@ -1600,7 +1620,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator*=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator*=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x *= rhs.x;
       y *= rhs.y;
       z *= rhs.z;
@@ -1612,7 +1632,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator/=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator/=(Vector4<T> const &rhs) __attribute__((__always_inline__)) {
       x /= rhs.x;
       y /= rhs.y;
       z /= rhs.z;
@@ -1620,7 +1640,28 @@ class Vector4 {
       return *this;
     }
 
-    //--------------[ equiality operator ]------------------------
+    //-------------[ matrix operations ]-------------------------
+
+    /**
+     * Multiplication by 3x3 matrix operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator*=(Matrix3<T> rhs) __attribute__((__always_inline__)) {
+      *this = rhs * *this;
+      return *this;
+    }
+
+    /**
+     * Multiplication by 4x4 matrix operator
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator*=(Matrix4<T> rhs) __attribute__((__always_inline__)) {
+      *this = rhs * *this;
+      return *this;
+    }
+
+    //--------------[ equality operator ]------------------------
+
     /**
      * Equality test operator
      * @param rhs Right hand side argument of binary operator.
@@ -1698,7 +1739,7 @@ class Vector4 {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator+=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator+=(T rhs) __attribute__((__always_inline__)) {
       x += rhs;
       y += rhs;
       z += rhs;
@@ -1710,7 +1751,7 @@ class Vector4 {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator-=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator-=(T rhs) __attribute__((__always_inline__)) {
       x -= rhs;
       y -= rhs;
       z -= rhs;
@@ -1722,7 +1763,7 @@ class Vector4 {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator*=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
       x *= rhs;
       y *= rhs;
       z *= rhs;
@@ -1734,7 +1775,7 @@ class Vector4 {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Vector4<T> &operator/=(T rhs) __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
       x /= rhs;
       y /= rhs;
       z /= rhs;
@@ -1765,14 +1806,14 @@ class Vector4 {
     /**
      * Normalize vector
      */
-    inline void normalize() __attribute__((__always_inline__)) {
+    inline void constexpr normalize() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
       z /= temp;
       w /= temp;
     }
-    inline void normalise() __attribute__((__always_inline__)) {  // proper english
+    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
       normalize();
     }
     inline Vector4<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
@@ -1786,7 +1827,7 @@ class Vector4 {
     /**
      * Absolute vector (make all values positive)
      */
-    inline void abs() __attribute__((__always_inline__)) {
+    inline void constexpr abs() __attribute__((__always_inline__)) {
       x = std::abs(x);
       y = std::abs(y);
       z = std::abs(z);
@@ -1817,7 +1858,7 @@ class Vector4 {
      * @return Pointer to internally stored (in management of class Vector4<T>)
      * used for passing Vector4<T> values to gl*4[fd] functions.
      */
-    inline operator T*() __attribute__((__always_inline__)) {
+    inline constexpr operator T*() __attribute__((__always_inline__)) {
       return reinterpret_cast<T*>(this);
     }
 
@@ -1835,7 +1876,7 @@ class Vector4 {
      * transform. If the w coordinate is equal to zero, the result is not divided.
      * @return (x/w, y/w, z/w) iff w != 0 otherwise (x,y,z)
      */
-    inline constexpr Vector3<T> xyz() const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr xyz() const __attribute__((__always_inline__)) {
       return w == 0 ? Vector3<T>(x, y, z) : Vector3<T>(x / w, y / w, z / w);
     }
 
@@ -1945,7 +1986,7 @@ class Matrix3 {
     /**
      * Resets matrix to be identity matrix
      */
-    inline void identity() __attribute__((__always_inline__)) {
+    inline void constexpr identity() __attribute__((__always_inline__)) {
       data = {1, 0, 0,
               0, 1, 0,
               0, 0, 1};
@@ -2141,7 +2182,7 @@ class Matrix3 {
      * @param x Number of column (0..2)
      * @param y Number of row (0..2)
      */
-    inline T &at(int x, int y) __attribute__((__always_inline__)) {
+    inline T constexpr &at(int x, int y) __attribute__((__always_inline__)) {
       return data[x * 3 + y];
     }
 
@@ -2159,7 +2200,7 @@ class Matrix3 {
      * @param i Number of row (1..3)
      * @param j Number of column (1..3)
      */
-    inline T &operator()(int i, int j) __attribute__((__always_inline__)) {
+    inline T constexpr &operator()(int i, int j) __attribute__((__always_inline__)) {
       return data[(j - 1) * 3 + i - 1];
     }
 
@@ -2186,7 +2227,7 @@ class Matrix3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Matrix3<T> &operator=(Matrix3<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Matrix3<T> constexpr &operator=(Matrix3<T> const &rhs) __attribute__((__always_inline__)) {
       std::memcpy(data.data(), rhs.data.data(), sizeof(T) * 9);
       return *this;
     }
@@ -2196,10 +2237,16 @@ class Matrix3 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Matrix3<T> &operator=(Matrix3<FromT> const &rhs) {
-      for(int i = 0; i != 9; ++i) {
-        data[i] = static_cast<T>(rhs.data[i]);
-      }
+    inline Matrix3<T> constexpr &operator=(Matrix3<FromT> const &rhs) {
+      data[0] = static_cast<T>(rhs.data[0]);
+      data[1] = static_cast<T>(rhs.data[1]);
+      data[2] = static_cast<T>(rhs.data[2]);
+      data[3] = static_cast<T>(rhs.data[3]);
+      data[4] = static_cast<T>(rhs.data[4]);
+      data[5] = static_cast<T>(rhs.data[5]);
+      data[6] = static_cast<T>(rhs.data[6]);
+      data[7] = static_cast<T>(rhs.data[7]);
+      data[8] = static_cast<T>(rhs.data[8]);
       return *this;
     }
 
@@ -2207,18 +2254,19 @@ class Matrix3 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Matrix3<T> &operator=(T const *rhs) __attribute__((__always_inline__)) {
+    inline Matrix3<T> constexpr &operator=(T const *rhs) __attribute__((__always_inline__)) {
       std::memcpy(data.data(), rhs, sizeof(T) * 9);
       return *this;
     }
 
-    /*inline Matrix3<T> & operator=(const T *rhs)
-     {
-     for(int i = 0; i != 9; ++i) __attribute__((__always_inline__)) {
-       data[i] = (T)rhs[i];
-     }
-     return *this;
-     }*/
+    /*
+    inline Matrix3<T> constexpr &operator=(const T *rhs) __attribute__((__always_inline__)) {
+      for(int i = 0; i != 9; ++i) {
+        data[i] = (T)rhs[i];
+      }
+      return *this;
+    }
+    */
 
     //--------------------[ matrix with matrix operations ]---------------------
     /**
@@ -2452,7 +2500,7 @@ class Matrix3 {
      * @return Pointer to internally stored (in management of class Matrix3<T>)
      * used for passing Matrix3<T> values to gl*[fd]v functions.
      */
-    inline operator T*() __attribute__((__always_inline__)) {
+    inline constexpr operator T*() __attribute__((__always_inline__)) {
       return reinterpret_cast<T*>(data.data());
     }
 
@@ -2585,7 +2633,7 @@ class Matrix4 {
     /**
      * Resets matrix to be identity matrix
      */
-    inline void identity() __attribute__((__always_inline__)) {
+    inline void constexpr identity() __attribute__((__always_inline__)) {
       data = {1, 0, 0, 0,
               0, 1, 0, 0,
               0, 0, 1, 0,
@@ -2957,7 +3005,7 @@ class Matrix4 {
      * @param x Number of column (0..3)
      * @param y Number of row (0..3)
      */
-    inline T &at(int x, int y) __attribute__((__always_inline__)) {
+    inline T constexpr &at(int x, int y) __attribute__((__always_inline__)) {
       return data[x * 4 + y];
     }
 
@@ -2975,7 +3023,7 @@ class Matrix4 {
      * @param i Number of row (1..4)
      * @param j Number of column (1..4)
      */
-    inline T &operator()(int i, int j) __attribute__((__always_inline__)) {
+    inline T constexpr &operator()(int i, int j) __attribute__((__always_inline__)) {
       return data[(j - 1) * 4 + i - 1];
     }
 
@@ -2993,7 +3041,7 @@ class Matrix4 {
      *
      * @param v Vector of translation to be set.
      */
-    inline void setTranslation(Vector3<T> const &v) __attribute__((__always_inline__)) {
+    inline void constexpr setTranslation(Vector3<T> const &v) __attribute__((__always_inline__)) {
       data[12] = v.x;
       data[13] = v.y;
       data[14] = v.z;
@@ -3012,12 +3060,16 @@ class Matrix4 {
      *
      * @param m Rotation part of matrix
      */
-    inline void setRotation(Matrix3<T> const &m) __attribute__((__always_inline__)) {
-      for(int i = 0; i != 3; ++i) {
-        for(int j = 0; j != 3; ++j) {
-          at(i, j) = m.at(i, j);
-        }
-      }
+    inline void constexpr setRotation(Matrix3<T> const &m) __attribute__((__always_inline__)) {
+      data[ 0] = m.data[0];
+      data[ 1] = m.data[1];
+      data[ 2] = m.data[2];
+      data[ 4] = m.data[3];
+      data[ 5] = m.data[4];
+      data[ 6] = m.data[5];
+      data[ 8] = m.data[6];
+      data[ 9] = m.data[7];
+      data[10] = m.data[8];
     }
 
     /**
@@ -3033,7 +3085,7 @@ class Matrix4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Matrix4<T> &operator=(Matrix4<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Matrix4<T> constexpr &operator=(Matrix4<T> const &rhs) __attribute__((__always_inline__)) {
       std::memcpy(data.data(), rhs.data.data(), sizeof(T) * 16);
       return *this;
     }
@@ -3043,10 +3095,23 @@ class Matrix4 {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Matrix4<T> &operator=(Matrix4<FromT> const &rhs) {
-      for(int i = 0; i != 16; ++i) {
-        data[i] = static_cast<T>(rhs.data[i]);
-      }
+    inline Matrix4<T> constexpr &operator=(Matrix4<FromT> const &rhs) {
+      data[ 0] = static_cast<T>(rhs.data[ 0]);
+      data[ 1] = static_cast<T>(rhs.data[ 1]);
+      data[ 2] = static_cast<T>(rhs.data[ 2]);
+      data[ 3] = static_cast<T>(rhs.data[ 3]);
+      data[ 4] = static_cast<T>(rhs.data[ 4]);
+      data[ 5] = static_cast<T>(rhs.data[ 5]);
+      data[ 6] = static_cast<T>(rhs.data[ 6]);
+      data[ 7] = static_cast<T>(rhs.data[ 7]);
+      data[ 8] = static_cast<T>(rhs.data[ 8]);
+      data[ 9] = static_cast<T>(rhs.data[ 9]);
+      data[10] = static_cast<T>(rhs.data[10]);
+      data[11] = static_cast<T>(rhs.data[11]);
+      data[12] = static_cast<T>(rhs.data[12]);
+      data[13] = static_cast<T>(rhs.data[13]);
+      data[14] = static_cast<T>(rhs.data[14]);
+      data[15] = static_cast<T>(rhs.data[15]);
       return *this;
     }
 
@@ -3054,18 +3119,19 @@ class Matrix4 {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Matrix4<T> &operator=(T const *rhs) __attribute__((__always_inline__)) {
+    inline Matrix4<T> constexpr &operator=(T const *rhs) __attribute__((__always_inline__)) {
       std::memcpy(data.data(), rhs, sizeof(T) * 16);
       return *this;
     }
 
-    /*inline Matrix4<T> & operator=(T const *rhs)
-     {
-     for(int i = 0; i != 16; ++i) {
-       data[i] = (T)rhs[i];
-     }
-     return *this;
-     }*/
+    /*
+    inline Matrix4<T> constexpr &operator=(T const *rhs) __attribute__((__always_inline__)) {
+      for(int i = 0; i != 16; ++i) {
+        data[i] = (T)rhs[i];
+      }
+      return *this;
+    }
+    */
 
     //--------------------[ matrix with matrix operations ]---------------------
     /**
@@ -3325,7 +3391,7 @@ class Matrix4 {
      * @return Pointer to internally stored (in management of class Matrix4<T>)
      * used for passing Matrix4<T> values to gl*[fd]v functions.
      */
-    inline operator T*() __attribute__((__always_inline__)) {
+    inline constexpr operator T*() __attribute__((__always_inline__)) {
       return reinterpret_cast<T*>(data.data());
     }
 
@@ -3446,6 +3512,8 @@ class Quaternion {
       : w(w_), v(x, y, z) {
     }
 
+    #ifdef WAITING_FOR_GCC_BUG_FIX
+    // note: this code is broken in gcc, pending fix to http://hastebin.com/ohinevokir.gcc_crash.cpp
     /**
      * Construct quaternion from rotation matrix.
      * @return Rotation matrix expressing this quaternion.
@@ -3520,6 +3588,7 @@ class Quaternion {
         *quaternion[k] = (matrix.at(k, i) + matrix.at(i, k)) * root;
       }
     }
+    #endif // WAITING_FOR_GCC_BUG_FIX
 
     //----------------[ assignment ]-------------------------
     /**
@@ -3529,7 +3598,7 @@ class Quaternion {
      * @param y Complex coefficient for j complex constant.
      * @param z Complex coefficient for k complex constant.
      */
-    inline void assign(T w_ = 0, T x = 0, T y = 0, T z = 0) __attribute__((__always_inline__)) {
+    inline void constexpr assign(T w_ = 0, T x = 0, T y = 0, T z = 0) __attribute__((__always_inline__)) {
       w = w_;
       v.assign(x, y, z);
     }
@@ -3538,7 +3607,7 @@ class Quaternion {
      * Copy operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       v = rhs.v;
       w = rhs.w;
       return *this;
@@ -3549,7 +3618,7 @@ class Quaternion {
      * @param rhs Right hand side argument of binary operator.
      */
     template<class FromT>
-    inline Quaternion<T> &operator=(Quaternion<FromT> const &rhs) {
+    inline Quaternion<T> constexpr &operator=(Quaternion<FromT> const &rhs) {
       v = rhs.v;
       w = static_cast<T>(rhs.w);
       return *this;
@@ -3602,7 +3671,7 @@ class Quaternion {
      * Addition operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator+=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator+=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       w += rhs.w;
       v += rhs.v;
       return *this;
@@ -3612,7 +3681,7 @@ class Quaternion {
      * Subtraction operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator-=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator-=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       w -= rhs.w;
       v -= rhs.v;
       return *this;
@@ -3622,7 +3691,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator*=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator*=(Quaternion<T> const &rhs) __attribute__((__always_inline__)) {
       Quaternion q = (*this) * rhs;
       v = q.v;
       w = q.w;
@@ -3633,7 +3702,7 @@ class Quaternion {
      * Multiplication operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator*=(T rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator*=(T rhs) __attribute__((__always_inline__)) {
       w *= rhs;
       v *= rhs;
       return *this;
@@ -3643,7 +3712,7 @@ class Quaternion {
      * Division operator
      * @param rhs Right hand side argument of binary operator.
      */
-    inline Quaternion<T> &operator/=(T rhs) __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr &operator/=(T rhs) __attribute__((__always_inline__)) {
       w /= rhs;
       v /= rhs;
       return *this;
@@ -3712,12 +3781,12 @@ class Quaternion {
     /**
      * Normalize quaternion
      */
-    inline void normalize() __attribute__((__always_inline__)) {
+    inline void constexpr normalize() __attribute__((__always_inline__)) {
       T len = length();
       w /= len;
       v /= len;
     }
-    inline void normalise() __attribute__((__always_inline__)) {  // proper english
+    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
       normalize();
     }
     inline Quaternion<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
@@ -3728,7 +3797,7 @@ class Quaternion {
       return normalize_copy();
     }
 
-    inline void conjugate() __attribute__((__always_inline__)) {
+    inline void constexpr conjugate() __attribute__((__always_inline__)) {
       v = -v;
     }
 
@@ -3746,7 +3815,7 @@ class Quaternion {
      * @return The quaternion q such that q * (*this) == (*this) * q
      * == [ 0 0 0 1 ]<sup>T</sup>.
      */
-    inline void invert() __attribute__((__always_inline__)) {
+    inline void constexpr invert() __attribute__((__always_inline__)) {
       T l = length();
       conjugate();
       (*this) /= l;
@@ -3879,13 +3948,12 @@ class Quaternion {
      * @return Quaternion representing rotation of matrix m.
      */
     // 2011-07-02: Davide Bacchet: changed formula to fix degenerate cases
-    inline static Quaternion<T> fromMatrix(Matrix4<T> const &m) __attribute__((__always_inline__)) {
+    inline static Quaternion<T> constexpr fromMatrix(Matrix4<T> const &m) __attribute__((__always_inline__)) {
       Quaternion<T> q;
 
-      T s;
       T const tr = m(1, 1) + m(2, 2) + m(3, 3);
       if(tr >= static_cast<T>(epsilon)) {
-        s = static_cast<T>(0.5) / static_cast<T>(std::sqrt(tr + static_cast<T>(1.0)));
+        T const s = static_cast<T>(0.5) / static_cast<T>(std::sqrt(tr + static_cast<T>(1.0)));
         q.w = static_cast<T>(0.25) / s;
         q.v.x = (m(3, 2) - m(2, 3)) * s;
         q.v.y = (m(1, 3) - m(3, 1)) * s;
@@ -3898,19 +3966,19 @@ class Quaternion {
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
 
         if(bigIdx == 0) {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(1, 1) - m(2, 2) - m(3, 3)));
+          T const s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(1, 1) - m(2, 2) - m(3, 3)));
           q.w = (m(3, 2) - m(2, 3)) / s;
           q.v.x = static_cast<T>(0.25) * s;
           q.v.y = (m(1, 2) + m(2, 1)) / s;
           q.v.z = (m(1, 3) + m(3, 1)) / s;
         } else if(bigIdx == 1) {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(2, 2) - m(1, 1) - m(3, 3)));
+          T s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(2, 2) - m(1, 1) - m(3, 3)));
           q.w = (m(1, 3) - m(3, 1)) / s;
           q.v.x = (m(1, 2) + m(2, 1)) / s;
           q.v.y = static_cast<T>(0.25) * s;
           q.v.z = (m(2, 3) + m(3, 2)) / s;
         } else {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(3, 3) - m(1, 1) - m(2, 2)));
+          T s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(3, 3) - m(1, 1) - m(2, 2)));
           q.w = (m(2, 1) - m(1, 2)) / s;
           q.v.x = (m(1, 3) + m(3, 1)) / s;
           q.v.y = (m(2, 3) + m(3, 2)) / s;
@@ -3929,13 +3997,12 @@ class Quaternion {
      */
 
     // 2011-07-02: Davide Bacchet: changed formula to fix degenerate cases
-    inline static Quaternion<T> fromMatrix(Matrix3<T> const &m) __attribute__((__always_inline__)) {
+    inline static Quaternion<T> constexpr fromMatrix(Matrix3<T> const &m) __attribute__((__always_inline__)) {
       Quaternion<T> q;
 
-      T s;
       T const tr = m(1, 1) + m(2, 2) + m(3, 3);
       if(tr >= static_cast<T>(epsilon)) {
-        s = static_cast<T>(0.5) / static_cast<T>(std::sqrt(tr + static_cast<T>(1.0)));
+        T const s = static_cast<T>(0.5) / static_cast<T>(std::sqrt(tr + static_cast<T>(1.0)));
         q.w = static_cast<T>(0.25) / s;
         q.v.x = (m(3, 2) - m(2, 3)) * s;
         q.v.y = (m(1, 3) - m(3, 1)) * s;
@@ -3948,19 +4015,19 @@ class Quaternion {
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
 
         if(bigIdx == 0) {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(1, 1) - m(2, 2) - m(3, 3)));
+          T const s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(1, 1) - m(2, 2) - m(3, 3)));
           q.w = (m(3, 2) - m(2, 3)) / s;
           q.v.x = static_cast<T>(0.25) * s;
           q.v.y = (m(1, 2) + m(2, 1)) / s;
           q.v.z = (m(1, 3) + m(3, 1)) / s;
         } else if(bigIdx == 1) {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(2, 2) - m(1, 1) - m(3, 3)));
+          T const s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(2, 2) - m(1, 1) - m(3, 3)));
           q.w = (m(1, 3) - m(3, 1)) / s;
           q.v.x = (m(1, 2) + m(2, 1)) / s;
           q.v.y = static_cast<T>(0.25) * s;
           q.v.z = (m(2, 3) + m(3, 2)) / s;
         } else {
-          s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(3, 3) - m(1, 1) - m(2, 2)));
+          T const s = static_cast<T>(2.0) * static_cast<T>(std::sqrt(static_cast<T>(1.0) + m(3, 3) - m(1, 1) - m(2, 2)));
           q.w = (m(2, 1) - m(1, 2)) / s;
           q.v.x = (m(1, 3) + m(3, 1)) / s;
           q.v.y = (m(2, 3) + m(3, 2)) / s;
@@ -3979,7 +4046,7 @@ class Quaternion {
      * @param q2 Second quaternion for interpolation.
      * @return Result of interpolation.
      */
-    inline Quaternion<T> slerp(T r, Quaternion<T> const &q2) const __attribute__((__always_inline__)) {
+    inline Quaternion<T> constexpr slerp(T r, Quaternion<T> const &q2) const __attribute__((__always_inline__)) {
       Quaternion<T> ret;
       T const cosTheta = w * q2.w + v.x * q2.v.x + v.y * q2.v.y + v.z * q2.v.z;
       T const theta = static_cast<T>(std::acos(cosTheta));
@@ -4195,7 +4262,7 @@ class Aabb2 {
      * @return refenrence to this
      */
     template<class SrcT>
-    inline Aabb2<T> &operator=(const Aabb2<SrcT> &rhs) {
+    inline Aabb2<T> constexpr &operator=(const Aabb2<SrcT> &rhs) {
       min = rhs.min;
       max = rhs.max;
       return *this;
@@ -4215,7 +4282,7 @@ class Aabb2 {
      * Makes this bounding-box invalid. So calling valid() gets false.
      * @see valid() method for more info on usage of invalid bounding-boxes.
      */
-    inline void invalidate() __attribute__((__always_inline__)) {
+    inline void constexpr invalidate() __attribute__((__always_inline__)) {
       min = Vector2<T>( 1,  1);
       max = Vector2<T>(-1, -1);
     }
@@ -4225,7 +4292,7 @@ class Aabb2 {
      * @param point A point to extend bounding-box by.
      */
     template<class SrcT>
-    inline void extend(const Vector2<SrcT> &point) {
+    inline void constexpr extend(const Vector2<SrcT> &point) {
       if(!valid()) {
         min = max = point;
       } else {
@@ -4239,7 +4306,7 @@ class Aabb2 {
      * @param box A box to extend this bounding-box by.
      */
     template<class SrcT>
-    inline void extend(const Aabb2<SrcT> &box) {
+    inline void constexpr extend(const Aabb2<SrcT> &box) {
       if(!valid()) {
         min = box.min;
         max = box.max;
@@ -4410,7 +4477,7 @@ class Aabb2 {
      * @return Reference to this
      */
     template<class SrcT>
-    inline Aabb2<T> &operator<<(const Vector2<SrcT> &rhs) {
+    inline Aabb2<T> constexpr &operator<<(const Vector2<SrcT> &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4421,7 +4488,7 @@ class Aabb2 {
      * @return Reference to this
      */
     template<class SrcT>
-    inline Aabb2<T> &operator<<(const Aabb2<SrcT> &rhs) {
+    inline Aabb2<T> constexpr &operator<<(const Aabb2<SrcT> &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4432,7 +4499,7 @@ class Aabb2 {
      * @return A resulting bounding-box representing union
      */
     template<class RhsT>
-    inline constexpr Aabb2<T> operator|(const Aabb2<RhsT> &rhs) const {
+    inline Aabb2<T> constexpr operator|(const Aabb2<RhsT> &rhs) const {
       return extended(rhs);
     }
 
@@ -4442,7 +4509,7 @@ class Aabb2 {
      * @return Resulting bounding-box representing the intersection.
      */
     template<class RhsT>
-    inline constexpr Aabb2<T> operator&(const Aabb2<RhsT> &rhs) const {
+    inline Aabb2<T> constexpr operator&(const Aabb2<RhsT> &rhs) const {
       return intersection(rhs);
     }
 
@@ -4557,7 +4624,7 @@ class Aabb3 {
      * @return refenrence to this
      */
     template<class SrcT>
-    inline Aabb3<T> &operator=(const Aabb3<SrcT> &rhs) {
+    inline Aabb3<T> constexpr &operator=(const Aabb3<SrcT> &rhs) {
       min = rhs.min;
       max = rhs.max;
       return *this;
@@ -4577,7 +4644,7 @@ class Aabb3 {
      * Makes this bounding-box invalid. So calling valid() gets false.
      * @see valid() method for more info on usage of invalid bounding-boxes.
      */
-    inline void invalidate() __attribute__((__always_inline__)) {
+    inline void constexpr invalidate() __attribute__((__always_inline__)) {
       min = Vector3<T>(1, 1, 1);
       max = Vector3<T>(-1, -1, -1);
     }
@@ -4587,7 +4654,7 @@ class Aabb3 {
      * @param point A point to extend bounding-box by.
      */
     template<class SrcT>
-    inline void extend(const Vector3<SrcT> &point) {
+    inline void constexpr extend(const Vector3<SrcT> &point) {
       if(!valid()) {
         min = max = point;
       } else {
@@ -4601,7 +4668,7 @@ class Aabb3 {
      * @param box A box to extend this bounding-box by.
      */
     template<class SrcT>
-    inline void extend(const Aabb3<SrcT> &box) {
+    inline void constexpr extend(const Aabb3<SrcT> &box) {
       if(!valid()) {
         min = box.min;
         max = box.max;
@@ -4719,7 +4786,7 @@ class Aabb3 {
      * Gets center point of bounding-box.
      * @return A center point of bounding-box.
      */
-    inline constexpr Vector3<T> center() const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr center() const __attribute__((__always_inline__)) {
       return (min + max) * static_cast<T>(0.5);
     }
 
@@ -4727,7 +4794,7 @@ class Aabb3 {
      * Gets extent of bounding-box.
      * @return Extent of bounding-box.
      */
-    inline constexpr Vector3<T> extent() const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr extent() const __attribute__((__always_inline__)) {
       return (max - min) * static_cast<T>(0.5);
     }
 
@@ -4735,7 +4802,7 @@ class Aabb3 {
      * Gets diagonal size of bounding-box
      * @return Sizes for particular dimensions.
      */
-    inline constexpr Vector3<T> size() const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr size() const __attribute__((__always_inline__)) {
       return max - min;
     }
 
@@ -4754,7 +4821,7 @@ class Aabb3 {
      * 8. (@c - @c - @c -)
      *
      */
-    inline constexpr Vector3<T> point(unsigned int i) const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr point(unsigned int i) const __attribute__((__always_inline__)) {
       return Vector3<T>(i & 1 ? min.x : max.x, i & 2 ? min.y : max.y, i & 4 ? min.z : max.z);
     }
 
@@ -4763,7 +4830,7 @@ class Aabb3 {
      * @param t A transform matrix
      * @return Transformed bounding-box
      */
-    inline Aabb3<T> transformed(const Matrix4<T> &t) const __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr transformed(const Matrix4<T> &t) const __attribute__((__always_inline__)) {
       Aabb3<T> ret;
       for(unsigned int i = 0; i != 8; ++i) {
         const Vector4<T> p(point(i), 1);
@@ -4800,7 +4867,7 @@ class Aabb3 {
      * @param rhs Matrix 4x4 representing the transform
      * @return Transformed bounding-box
      */
-    inline constexpr Aabb3<T> operator*(const Matrix4<T> &rhs) const __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr operator*(const Matrix4<T> &rhs) const __attribute__((__always_inline__)) {
       return transformed(rhs);
     }
 
@@ -4809,7 +4876,7 @@ class Aabb3 {
      * @param rhs A transform to be applied
      * @return Reference to this
      */
-    inline Aabb3<T> &operator*=(const Matrix4<T> &rhs) __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr &operator*=(const Matrix4<T> &rhs) __attribute__((__always_inline__)) {
       *this = transformed(rhs);
       return *this;
     }
@@ -4820,7 +4887,7 @@ class Aabb3 {
      * @return Reference to this
      */
     template<class SrcT>
-    inline Aabb3<T> &operator<<(const Vector3<SrcT> &rhs) {
+    inline Aabb3<T> constexpr &operator<<(const Vector3<SrcT> &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4831,7 +4898,7 @@ class Aabb3 {
      * @return Reference to this
      */
     template<class SrcT>
-    inline Aabb3<T> &operator<<(const Aabb3<SrcT> &rhs) {
+    inline Aabb3<T> constexpr &operator<<(const Aabb3<SrcT> &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4842,7 +4909,7 @@ class Aabb3 {
      * @return A resulting bounding-box representing union
      */
     template<class RhsT>
-    inline constexpr Aabb3<T> operator|(const Aabb3<RhsT> &rhs) const {
+    inline Aabb3<T> constexpr operator|(const Aabb3<RhsT> &rhs) const {
       return extended(rhs);
     }
 
@@ -4852,7 +4919,7 @@ class Aabb3 {
      * @return Resulting bounding-box representing the intersection.
      */
     template<class RhsT>
-    inline constexpr Aabb3<T> operator&(const Aabb3<RhsT> &rhs) const {
+    inline Aabb3<T> constexpr operator&(const Aabb3<RhsT> &rhs) const {
       return intersection(rhs);
     }
 
