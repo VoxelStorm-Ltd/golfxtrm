@@ -3450,31 +3450,66 @@ class Quaternion {
      * Construct quaternion from rotation matrix.
      * @return Rotation matrix expressing this quaternion.
      */
-    inline Quaternion(Matrix4<T> const &matrix) __attribute__((__always_inline__)) {
+    inline constexpr Quaternion(Matrix3<T> const &matrix) __attribute__((__always_inline__)) {
       // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
       // article "Quaternion Calculus and Fast Animation".
-      T const trace = matrix.at(1, 1) + matrix.at(2, 2) + matrix.at(3, 3);
+      T const trace = matrix.at(0, 0) + matrix.at(1, 1) + matrix.at(2, 2);
       if(trace > 0) {
         // |w| > 1/2, may as well choose w > 1/2
         T root = std::sqrt(trace + static_cast<T>(1.0));  // 2w
         w = static_cast<T>(0.5) * root;
         root = static_cast<T>(0.5) / root;  // 1/(4w)
-        v.x = (matrix.at(3, 2) - matrix.at(2, 3)) * root;
-        v.y = (matrix.at(1, 3) - matrix.at(3, 1)) * root;
-        v.z = (matrix.at(2, 1) - matrix.at(1, 2)) * root;
+        v.x = (matrix.at(2, 1) - matrix.at(1, 2)) * root;
+        v.y = (matrix.at(0, 2) - matrix.at(2, 0)) * root;
+        v.z = (matrix.at(1, 0) - matrix.at(0, 1)) * root;
       } else {
         // |w| <= 1/2
-        static int constexpr next[3] = {2, 3, 1};
+        unsigned int constexpr next[3] = {1, 2, 0};
 
-        int i = 1;
-        if(matrix.at(2, 2) > matrix.at(1, 1)) {
+        unsigned int i = 0;
+        if(matrix.at(1, 1) > matrix.at(0, 0)) {
+          i = 1;
+        }
+        if(matrix.at(2, 2) > matrix.at(i, i)) {
           i = 2;
         }
-        if(matrix.at(3, 3) > matrix.at(i, i)) {
-          i = 3;
+        unsigned int j = next[i];
+        unsigned int k = next[j];
+
+        T root = std::sqrt(matrix.at(i, i) - matrix.at(j, j) - matrix.at(k, k) + static_cast<T>(1.0));
+        T *quaternion[3] = {&v.x, &v.y, &v.z};
+        *quaternion[i] = static_cast<T>(0.5) * root;
+        root = static_cast<T>(0.5) / root;
+        w = (matrix.at(k, j) - matrix.at(j, k)) * root;
+        *quaternion[j] = (matrix.at(j, i) + matrix.at(i, j)) * root;
+        *quaternion[k] = (matrix.at(k, i) + matrix.at(i, k)) * root;
+      }
+    }
+    inline constexpr Quaternion(Matrix4<T> const &matrix) __attribute__((__always_inline__)) {
+      // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+      // article "Quaternion Calculus and Fast Animation".
+      T const trace = matrix.at(0, 0) + matrix.at(1, 1) + matrix.at(2, 2);
+      if(trace > 0) {
+        // |w| > 1/2, may as well choose w > 1/2
+        T root = std::sqrt(trace + static_cast<T>(1.0));  // 2w
+        w = static_cast<T>(0.5) * root;
+        root = static_cast<T>(0.5) / root;  // 1/(4w)
+        v.x = (matrix.at(2, 1) - matrix.at(1, 2)) * root;
+        v.y = (matrix.at(0, 2) - matrix.at(2, 0)) * root;
+        v.z = (matrix.at(1, 0) - matrix.at(0, 1)) * root;
+      } else {
+        // |w| <= 1/2
+        unsigned int constexpr next[3] = {1, 2, 0};
+
+        unsigned int i = 0;
+        if(matrix.at(1, 1) > matrix.at(0, 0)) {
+          i = 1;
         }
-        int j = next[i];
-        int k = next[j];
+        if(matrix.at(2, 2) > matrix.at(i, i)) {
+          i = 2;
+        }
+        unsigned int j = next[i];
+        unsigned int k = next[j];
 
         T root = std::sqrt(matrix.at(i, i) - matrix.at(j, j) - matrix.at(k, k) + static_cast<T>(1.0));
         T *quaternion[3] = {&v.x, &v.y, &v.z};
