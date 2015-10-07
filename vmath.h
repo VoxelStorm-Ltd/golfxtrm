@@ -569,6 +569,33 @@ class Vector2 {
     inline Vector2<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
     }
+    /**
+     * Normalize vector. with added zero safety check
+     */
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+      T const temp = length();
+      if(temp == static_cast<T>(0)) {
+        x = static_cast<T>(0);
+        y = static_cast<T>(0);
+      } else {
+        x /= temp;
+        y /= temp;
+      }
+    }
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
+      normalize_safe();
+    }
+    inline Vector2<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+      T const temp(length());
+      if(temp == static_cast<T>(0)) {
+        return Vector2<T>();
+      } else {
+        return Vector2<T>(x / temp, y / temp);
+      }
+    }
+    inline Vector2<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
+      return normalize_safe_copy();
+    }
 
     /**
      * Absolute vector (make all values positive)
@@ -1222,6 +1249,35 @@ class Vector3 {
     inline Vector3<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
     }
+    /**
+     * Normalize vector. with added zero safety check
+     */
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+      T const temp = length();
+      if(temp == static_cast<T>(0)) {
+        x = static_cast<T>(0);
+        y = static_cast<T>(0);
+        z = static_cast<T>(0);
+      } else {
+        x /= temp;
+        y /= temp;
+        z /= temp;
+      }
+    }
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
+      normalize_safe();
+    }
+    inline Vector3<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+      T const temp(length());
+      if(temp == static_cast<T>(0)) {
+        return Vector3<T>();
+      } else {
+        return Vector3<T>(x / temp, y / temp, z / temp);
+      }
+    }
+    inline Vector3<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
+      return normalize_safe_copy();
+    }
 
     /**
      * Absolute vector (make all values positive)
@@ -1822,6 +1878,37 @@ class Vector4 {
     }
     inline Vector4<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
       return normalize_copy();
+    }
+    /**
+     * Normalize vector. with added zero safety check
+     */
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+      T const temp = length();
+      if(temp == static_cast<T>(0)) {
+        x = static_cast<T>(0);
+        y = static_cast<T>(0);
+        z = static_cast<T>(0);
+        w = static_cast<T>(0);
+      } else {
+        x /= temp;
+        y /= temp;
+        z /= temp;
+        w /= temp;
+      }
+    }
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
+      normalize_safe();
+    }
+    inline Vector4<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+      T const temp(length());
+      if(temp == static_cast<T>(0)) {
+        return Vector4<T>();
+      } else {
+        return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
+      }
+    }
+    inline Vector4<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
+      return normalize_safe_copy();
     }
 
     /**
