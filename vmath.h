@@ -871,13 +871,13 @@ class Vector3 {
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) {
     }
 
-    inline constexpr Vector3(Vector2<T> const &src, T z)
-      : x(src.x), y(src.y), z(z) {
+    inline constexpr Vector3(Vector2<T> const &src, T new_z)
+      : x(src.x), y(src.y), z(new_z) {
     }
 
     template<class FromT>
-    inline constexpr Vector3(Vector2<FromT> const &src, FromT z)
-      : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(z)) {
+    inline constexpr Vector3(Vector2<FromT> const &src, FromT new_z)
+      : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(new_z)) {
     }
 
     //----------------[ assignment ]-------------------------
@@ -1342,8 +1342,8 @@ class Vector3 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    inline Vector3<T> constexpr lerp(T fact, Vector3<T> const &r) const __attribute__((__always_inline__)) {
-      return (*this) + (r - (*this)) * fact;
+    inline Vector3<T> constexpr lerp(T fact, Vector3<T> const &new_r) const __attribute__((__always_inline__)) {
+      return (*this) + (new_r - (*this)) * fact;
     }
 
     //-------------[ conversion ]--------------------------------
@@ -1518,13 +1518,13 @@ class Vector4 {
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(src.w)) {
     }
 
-    inline constexpr Vector4(Vector3<T> const &src, T w) __attribute__((__always_inline__))
-      : x(src.x), y(src.y), z(src.z), w(w) {
+    inline constexpr Vector4(Vector3<T> const &src, T new_w) __attribute__((__always_inline__))
+      : x(src.x), y(src.y), z(src.z), w(new_w) {
     }
 
     template<class FromT>
-    inline constexpr Vector4(Vector3<FromT> const &src, FromT w)
-      : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(w)) {
+    inline constexpr Vector4(Vector3<FromT> const &src, FromT new_w)
+      : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(new_w)) {
     }
 
     //----------------[ assignment ]-------------------------
@@ -1934,8 +1934,8 @@ class Vector4 {
      * [0.0 , 1.0], you can pass also values outside of this interval and you
      * can get result (extrapolation?)
      */
-    inline Vector4<T> constexpr lerp(T fact, Vector4<T> const &r) const __attribute__((__always_inline__)) {
-      return (*this) + (r - (*this)) * fact;
+    inline Vector4<T> constexpr lerp(T fact, Vector4<T> const &new_r) const __attribute__((__always_inline__)) {
+      return (*this) + (new_r - (*this)) * fact;
     }
 
     //-------------[ conversion ]-----------------------------
@@ -4319,9 +4319,9 @@ class Aabb2 {
      * @param max X-coordinate of second point
      */
     template<class SrcT>
-    inline constexpr Aabb2(Vector2<SrcT> const &min, Vector2<SrcT> const &max)
-      : min(min),
-        max(max) {
+    inline constexpr Aabb2(Vector2<SrcT> const &new_min, Vector2<SrcT> const &new_max)
+      : min(new_min),
+        max(new_max) {
     }
 
     /**
@@ -4680,9 +4680,9 @@ class Aabb3 {
      * @param max X-coordinate of second point
      */
     template<class SrcT>
-    inline constexpr Aabb3(Vector3<SrcT> const &min, Vector3<SrcT> const &max)
-      : min(min),
-        max(max) {
+    inline constexpr Aabb3(Vector3<SrcT> const &new_min, Vector3<SrcT> const &new_max)
+      : min(new_min),
+        max(new_max) {
     }
 
     /**
