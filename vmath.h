@@ -135,12 +135,7 @@ namespace VMATH_NAMESPACE {
 
 // use boost's constants if available
 #ifndef VMATH_NO_BOOST
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wfloat-conversion"
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <boost/math/constants/constants.hpp>
-#pragma GCC diagnostic pop
 #else  // VMATH_NO_BOOST
 #ifndef M_PI
 #define M_PI           3.14159265358979323846  /* pi */
