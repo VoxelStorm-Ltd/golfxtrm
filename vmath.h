@@ -1035,6 +1035,78 @@ class Vector3 {
     }
 
     /**
+     * Addition operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr operator+(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector3<T>(x + rhs.x, y + rhs.y, z);
+    }
+
+    /**
+     * Subtraction operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr operator-(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector3<T>(x - rhs.x, y - rhs.y, z);
+    }
+
+    /**
+     * Multiplication operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr operator*(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector3<T>(x * rhs.x, y * rhs.y, z);
+    }
+
+    /**
+     * Division operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr operator/(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector3<T>(x / rhs.x, y / rhs.y, z);
+    }
+
+    /**
+     * Addition operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator+=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x += rhs.x;
+      y += rhs.y;
+      return *this;
+    }
+
+    /**
+     * Subtraction operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator-=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x -= rhs.x;
+      y -= rhs.y;
+      return *this;
+    }
+
+    /**
+     * Multiplication operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator*=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x *= rhs.x;
+      y *= rhs.y;
+      return *this;
+    }
+
+    /**
+     * Division operator with a 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector3<T> constexpr &operator/=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x /= rhs.x;
+      y /= rhs.y;
+      return *this;
+    }
+
+    /**
      * Dot product of two vectors.
      * @param rhs Right hand side argument of binary operator.
      */
@@ -1688,6 +1760,154 @@ class Vector4 {
       y /= rhs.y;
       z /= rhs.z;
       w /= rhs.w;
+      return *this;
+    }
+
+    /**
+     * Addition operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator+(Vector3<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x + rhs.x, y + rhs.y, z + rhs.z, w);
+    }
+
+    /**
+     * Subtraction operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator-(Vector3<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x - rhs.x, y - rhs.y, z - rhs.z, w);
+    }
+
+    /**
+     * Multiplication operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator*(Vector3<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x * rhs.x, y * rhs.y, z * rhs.z, w);
+    }
+
+    /**
+     * Division operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator/(Vector3<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x / rhs.x, y / rhs.y, z / rhs.z, w);
+    }
+
+    /**
+     * Addition operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator+=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+      x += rhs.x;
+      y += rhs.y;
+      z += rhs.z;
+      return *this;
+    }
+
+    /**
+     * Subtraction operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator-=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+      x -= rhs.x;
+      y -= rhs.y;
+      z -= rhs.z;
+      return *this;
+    }
+
+    /**
+     * Multiplication operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator*=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+      x *= rhs.x;
+      y *= rhs.y;
+      z *= rhs.z;
+      return *this;
+    }
+
+    /**
+     * Division operator with 3-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator/=(Vector3<T> const &rhs) __attribute__((__always_inline__)) {
+      x /= rhs.x;
+      y /= rhs.y;
+      z /= rhs.z;
+      return *this;
+    }
+
+    /**
+     * Addition operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator+(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x + rhs.x, y + rhs.y, z, w);
+    }
+
+    /**
+     * Subtraction operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator-(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x - rhs.x, y - rhs.y, z, w);
+    }
+
+    /**
+     * Multiplication operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator*(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x * rhs.x, y * rhs.y, z, w);
+    }
+
+    /**
+     * Division operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr operator/(Vector2<T> const &rhs) const __attribute__((__always_inline__)) {
+      return Vector4<T>(x / rhs.x, y / rhs.y, z, w);
+    }
+
+    /**
+     * Addition operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator+=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x += rhs.x;
+      y += rhs.y;
+      return *this;
+    }
+
+    /**
+     * Subtraction operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator-=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x -= rhs.x;
+      y -= rhs.y;
+      return *this;
+    }
+
+    /**
+     * Multiplication operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator*=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x *= rhs.x;
+      y *= rhs.y;
+      return *this;
+    }
+
+    /**
+     * Division operator with 2-vector
+     * @param rhs Right hand side argument of binary operator.
+     */
+    inline Vector4<T> constexpr &operator/=(Vector2<T> const &rhs) __attribute__((__always_inline__)) {
+      x /= rhs.x;
+      y /= rhs.y;
       return *this;
     }
 
