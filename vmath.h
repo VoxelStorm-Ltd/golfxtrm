@@ -3814,8 +3814,6 @@ class Quaternion {
       : w(w_), v(x, y, z) {
     }
 
-    #ifdef WAITING_FOR_GCC_BUG_FIX
-    // note: this code is broken in gcc, pending fix to http://hastebin.com/ohinevokir.gcc_crash.cpp
     /**
      * Construct quaternion from rotation matrix.
      * @return Rotation matrix expressing this quaternion.
@@ -3890,7 +3888,6 @@ class Quaternion {
         *quaternion[k] = (matrix.at(k, i) + matrix.at(i, k)) * root;
       }
     }
-    #endif // WAITING_FOR_GCC_BUG_FIX
 
     //----------------[ assignment ]-------------------------
     /**
