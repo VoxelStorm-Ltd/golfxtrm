@@ -113,10 +113,11 @@
 // Modified 2011-06-12, Davide Bacchet (davide.bacchet at gmail dot com)
 //                      added () operators with standard matrix notation (opposite wrt at() ).
 
-// Modified 2013-2015, Eugene Hopkinson for VoxelStorm Ltd
+// Modified 2013-2016, Eugene Hopkinson for VoxelStorm Ltd
 //                     various expansions and conversions
 //                     Version 2.0: C++11 specific optimisations, including constexpr
 //                     Version 2.1: C++14 optimisations, intersection algorithms
+//                     Version 2.2: Many additional functions
 
 #ifndef __vmath_Header_File__
 #define __vmath_Header_File__
@@ -1368,7 +1369,6 @@ class Vector3 {
     inline void constexpr rotate(T ax, T ay, T az) __attribute__((__always_inline__)) {
       rotate_rad(deg2rad(ax), deg2rad(ay), deg2rad(az));
     }
-
     /**
      * Rotate vector around three axis, radian version.
      * @param ax Angle (in radians) to be rotated around X-axis.
@@ -1391,6 +1391,66 @@ class Vector3 {
       x = nx;
       y = ny;
       z = nz;
+    }
+    /**
+     * Rotate vector around the X axis.
+     * @param ax Angle (in degrees) to be rotated around X-axis.
+     */
+    inline void constexpr rotate_x(T ax) __attribute__((__always_inline__)) {
+      rotate_rad_x(ax);
+    }
+    /**
+     * Rotate vector around the Y axis.
+     * @param ay Angle (in degrees) to be rotated around Y-axis.
+     */
+    inline void constexpr rotate_y(T ay) __attribute__((__always_inline__)) {
+      rotate_rad_y(ay);
+    }
+    /**
+     * Rotate vector around the Z axis.
+     * @param az Angle (in degrees) to be rotated around Z-axis.
+     */
+    inline void constexpr rotate_z(T az) __attribute__((__always_inline__)) {
+      rotate_rad_z(az);
+    }
+    /**
+     * Rotate vector around the X axis, radian version.
+     * @param ax Angle (in radians) to be rotated around X-axis.
+     */
+    inline void constexpr rotate_rad_x(T ax) __attribute__((__always_inline__)) {
+      T cos_x = static_cast<T>(0);
+      T sin_x = static_cast<T>(0);
+      sincos_any(ax, sin_x, cos_x);
+      T const ny = static_cast<T>((cos_x * y) - (sin_x * z));
+      T const nz = static_cast<T>((sin_x * y) + (cos_x * z));
+      y = ny;
+      z = nz;
+    }
+    /**
+     * Rotate vector around the Y axis, radian version.
+     * @param ay Angle (in radians) to be rotated around Y-axis.
+     */
+    inline void constexpr rotate_rad_y(T ay) __attribute__((__always_inline__)) {
+      T cos_y = static_cast<T>(0);
+      T sin_y = static_cast<T>(0);
+      sincos_any(ay, sin_y, cos_y);
+      T const nx = static_cast<T>(( cos_y * x) + (sin_y * z));
+      T const nz = static_cast<T>((-sin_y * x) + (cos_y * z));
+      x = nx;
+      z = nz;
+    }
+    /**
+     * Rotate vector around the Z axis, radian version.
+     * @param az Angle (in radians) to be rotated around Z-axis.
+     */
+    inline void constexpr rotate_rad_z(T az) __attribute__((__always_inline__)) {
+      T cos_z = static_cast<T>(0);
+      T sin_z = static_cast<T>(0);
+      sincos_any(az, sin_z, cos_z);
+      T const nx = static_cast<T>((cos_z * x) - (sin_z * y));
+      T const ny = static_cast<T>((sin_z * x) + (cos_z * y));
+      x = nx;
+      y = ny;
     }
     /**
      * Rotate vector by a quaternion.
