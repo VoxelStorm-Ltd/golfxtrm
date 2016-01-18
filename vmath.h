@@ -621,8 +621,8 @@ class Vector2 {
       T temp_sin = static_cast<T>(0);
       T temp_cos = static_cast<T>(0);
       sincos_any(-aa, temp_sin, temp_cos);
-      T const nx = static_cast<T>((x * temp_cos) - (y * temp_sin));
-      T const ny = static_cast<T>((x * temp_sin) + (y * temp_cos));
+      T const nx = static_cast<T>((temp_cos * x) - (temp_sin * y));
+      T const ny = static_cast<T>((temp_cos * y) + (temp_sin * x));
       x = nx;
       y = ny;
     }
@@ -1397,21 +1397,21 @@ class Vector3 {
      * @param ax Angle (in degrees) to be rotated around X-axis.
      */
     inline void constexpr rotate_x(T ax) __attribute__((__always_inline__)) {
-      rotate_rad_x(ax);
+      rotate_rad_x(deg2rad(ax));
     }
     /**
      * Rotate vector around the Y axis.
      * @param ay Angle (in degrees) to be rotated around Y-axis.
      */
     inline void constexpr rotate_y(T ay) __attribute__((__always_inline__)) {
-      rotate_rad_y(ay);
+      rotate_rad_y(deg2rad(ay));
     }
     /**
      * Rotate vector around the Z axis.
      * @param az Angle (in degrees) to be rotated around Z-axis.
      */
     inline void constexpr rotate_z(T az) __attribute__((__always_inline__)) {
-      rotate_rad_z(az);
+      rotate_rad_z(deg2rad(az));
     }
     /**
      * Rotate vector around the X axis, radian version.
@@ -1422,7 +1422,7 @@ class Vector3 {
       T sin_x = static_cast<T>(0);
       sincos_any(ax, sin_x, cos_x);
       T const ny = static_cast<T>((cos_x * y) - (sin_x * z));
-      T const nz = static_cast<T>((sin_x * y) + (cos_x * z));
+      T const nz = static_cast<T>((cos_x * z) + (sin_x * y));
       y = ny;
       z = nz;
     }
@@ -1434,8 +1434,8 @@ class Vector3 {
       T cos_y = static_cast<T>(0);
       T sin_y = static_cast<T>(0);
       sincos_any(ay, sin_y, cos_y);
-      T const nx = static_cast<T>(( cos_y * x) + (sin_y * z));
-      T const nz = static_cast<T>((-sin_y * x) + (cos_y * z));
+      T const nx = static_cast<T>((cos_y * x) + (sin_y * z));
+      T const nz = static_cast<T>((cos_y * z) - (sin_y * x));
       x = nx;
       z = nz;
     }
@@ -1448,7 +1448,7 @@ class Vector3 {
       T sin_z = static_cast<T>(0);
       sincos_any(az, sin_z, cos_z);
       T const nx = static_cast<T>((cos_z * x) - (sin_z * y));
-      T const ny = static_cast<T>((sin_z * x) + (cos_z * y));
+      T const ny = static_cast<T>((cos_z * y) + (sin_z * x));
       x = nx;
       y = ny;
     }
