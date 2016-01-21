@@ -55,18 +55,18 @@ void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
   _Exit(EXIT_SUCCESS);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   bool fullscreen, largewindow, skipintro;
   fullscreen = false;
   largewindow = true;
   skipintro = false;
   cout << "Starting up " << argv[0] << " with " << argc << " arguments" << endl;
-  for (int i = 1; i < argc; i++) {
+  for(int i = 1; i < argc; i++) {
     cout << "Parsing commandline option " << i << endl;
-    if (i != argc) {  // Check that we haven't finished parsing already
+    if(i != argc) {  // Check that we haven't finished parsing already
       cout << "arg " << i << " = " << argv[i] << endl;
       string thisargstring = string(argv[i]);
-      if (thisargstring == "-skipintro") {
+      if(thisargstring == "-skipintro") {
         skipintro = true;
         cout << "  skipping intro" << endl;
       } else if (thisargstring == "-fullscreen") {
@@ -350,8 +350,8 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	{
+  glPushMatrix();
+  {
     glLoadIdentity();
     glOrtho(-windowwidth/2, windowwidth/2, -windowheight/2, windowheight/2, 0, 1);
     glMatrixMode(GL_MODELVIEW);
@@ -381,8 +381,8 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     }
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-	}
-	glPopMatrix();
+  }
+  glPopMatrix();
   glfwSwapBuffers(window_main);
   //glBindTexture(GL_TEXTURE_2D, NULL);
   glDisable(GL_TEXTURE_2D);

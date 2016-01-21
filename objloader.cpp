@@ -12,14 +12,14 @@ objloader::objloader(std::string const &filename) {
 void objloader::load() {
   std::string line;
 
-  if (this->file->is_open()) {
+  if(this->file->is_open()) {
     while(this->file->good()) {
       getline(*file, line);
 
       std::vector<std::string> toks;
       boost::split(toks, line, boost::is_any_of(" /"));
 
-      if (toks[0] == "v" && toks.size() >= 4) {
+      if(toks[0] == "v" && toks.size() >= 4) {
         vertices.push_back(atof(toks[1].c_str()));
         vertices.push_back(atof(toks[2].c_str()));
         vertices.push_back(atof(toks[3].c_str()));
@@ -28,7 +28,7 @@ void objloader::load() {
         normals.push_back(atof(toks[2].c_str()));
         normals.push_back(atof(toks[3].c_str()));
       } else if (toks[0] == "f" && toks.size() >= 7) {
-        for (int i = 0; i < 6; i++) {
+        for(int i = 0; i < 6; i++) {
           faces.push_back(atoi(toks[i].c_str()));
         }
       }

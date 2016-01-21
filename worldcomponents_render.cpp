@@ -95,7 +95,7 @@ void world::render() {
 void universe::render() {
   /// Renders every planet in this universe
   // search the universe for worlds to render
-  for (int p = 0; p < numplanets; ++p) {
+  for(int p = 0; p < numplanets; ++p) {
     planet[p]->render();
   }
 }

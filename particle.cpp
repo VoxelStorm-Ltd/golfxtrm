@@ -36,10 +36,10 @@ void particle::update(double timedelta) {
     //currentplanet->particles.erase(std::find(currentplanet->particles.begin(), currentplanet->particles.end(), this));
     //currentplanet->items.release(std::find(currentplanet->items.begin(), currentplanet->items.end(), this));
     // why won't that work?
-    //holdable* ptr = this;
+    //holdable *ptr = this;
     //currentplanet->items.erase(std::find_if(currentplanet->items.begin(),
     //                                        currentplanet->items.end(),
-    //                                        [ptr](const holdable &other)
+    //                                        [ptr](holdable const &other)
     //                                        {return ptr == &other;} ));
     //delete this;
   //}

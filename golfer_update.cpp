@@ -8,7 +8,7 @@
 
 /// This file contains all the player's control and movement physics
 
-extern irrklang::ISoundEngine* soundengine;
+extern irrklang::ISoundEngine *soundengine;
 
 void golfer::update(double timedelta) {
   /// update position and velocity based on force and time delta

@@ -128,7 +128,7 @@ void world::update(double timedelta) {
 void universe::update(double timedelta) {
   /// Runs physics update for every planet in this universe
   // search the universe for worlds to update
-  for (int p = 0; p < numplanets; ++p) {
+  for(int p = 0; p < numplanets; ++p) {
     planet[p]->update(timedelta);
   }
 }

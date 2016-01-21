@@ -4,7 +4,7 @@
 #include "golfer.h"
 #include "globalvars_client_extern.h"
 
-extern irrklang::ISoundEngine* soundengine;
+extern irrklang::ISoundEngine *soundengine;
 
 golfclub::golfclub(world *parentplanet) {
   held_by = NULL;

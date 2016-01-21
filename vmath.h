@@ -151,7 +151,7 @@ double constexpr epsilon = 4.37114e-05;
 #define DEG2RAD deg2rad
 #define RAD2DEG rad2deg
 
-template<class T>
+template<typename T>
 inline static T constexpr const deg2rad(T const angle_deg) {
   #ifndef VMATH_NO_BOOST
     //return (angle_deg * boost::math::constants::pi<T>()) / 180.0;
@@ -161,7 +161,7 @@ inline static T constexpr const deg2rad(T const angle_deg) {
   #endif // VMATH_NO_BOOST
 }
 
-template<class T>
+template<typename T>
 inline static T constexpr const rad2deg(T const angle_rad) {
   #ifndef VMATH_NO_BOOST
     return angle_rad * boost::math::constants::radian<T>();
@@ -170,7 +170,7 @@ inline static T constexpr const rad2deg(T const angle_rad) {
   #endif // VMATH_NO_BOOST
 }
 
-template<class T>
+template<typename T>
 inline static void constexpr sincos_any(T const angle_rad, T &out_sin, T &out_cos) {
   __builtin_sincos(angle_rad, &out_sin, &out_cos);
 }
@@ -189,14 +189,14 @@ inline static void constexpr sincos_any(long double const angle_rad, long double
   __builtin_sincosl(angle_rad, &out_sin, &out_cos);
 }
 
-template<class T> class Vector2;  // forward declarations
-template<class T> class Vector3;
-template<class T> class Vector4;
-template<class T> class Matrix3;
-template<class T> class Matrix4;
-template<class T> class Quaternion;
-template<class T> class Aabb2;
-template<class T> class Aabb3;
+template<typename T> class Vector2;  // forward declarations
+template<typename T> class Vector3;
+template<typename T> class Vector4;
+template<typename T> class Matrix3;
+template<typename T> class Matrix4;
+template<typename T> class Quaternion;
+template<typename T> class Aabb2;
+template<typename T> class Aabb3;
 
 /**
  * Class for two dimensional vector.
@@ -208,7 +208,7 @@ template<class T> class Aabb3;
  *  <li>access via operator[] &mdash; <code>v[0] = v[1] = 3;</code></li>
  * </ul>
  */
-template<class T>
+template<typename T>
 class Vector2 {
   public:
     union {
@@ -271,7 +271,7 @@ class Vector2 {
      * Copy casting constructor.
      * @param src Source of data for new created instance.
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Vector2(Vector2<FromT> const &src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)) {
     }
@@ -292,7 +292,7 @@ class Vector2 {
      * Copy casting operator
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Vector2<T> constexpr &operator=(Vector2<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
@@ -687,7 +687,7 @@ class Vector2 {
      * @param line2start The start coordinates of the first line
      * @param line2end The end coordinates of the first line
      */
-    template<class FromT>
+    template<typename FromT>
     inline bool constexpr get_line_intersection(Vector2<FromT> const &line1start,
                                                 Vector2<FromT> const &line1end,
                                                 Vector2<FromT> const &line2start,
@@ -713,7 +713,7 @@ class Vector2 {
      * @param line2start The start coordinates of the first line
      * @param line2end The end coordinates of the first line
      */
-    template<class FromT>
+    template<typename FromT>
     inline static bool constexpr do_lines_intersect(Vector2<FromT> const &line1start,
                                                     Vector2<FromT> const &line1end,
                                                     Vector2<FromT> const &line2start,
@@ -774,7 +774,7 @@ using Vector2i = Vector2<int>;
  *  <li>access via operator[] &mdash; <code>v[0] = v[1] = v[2] = 1;</code></li>
  * </ul>
  */
-template<class T>
+template<typename T>
 class Vector3 {
   public:
     //T x, y, z;
@@ -862,7 +862,7 @@ class Vector3 {
      * Copy casting constructor.
      * @param src Source of data for new created Vector3 instance.
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Vector3(Vector3<FromT> const &src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) {
     }
@@ -871,7 +871,7 @@ class Vector3 {
       : x(src.x), y(src.y), z(new_z) {
     }
 
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Vector3(Vector2<FromT> const &src, FromT new_z)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(new_z)) {
     }
@@ -905,7 +905,7 @@ class Vector3 {
      * Copy casting operator.
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Vector3<T> constexpr operator=(Vector3<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
@@ -928,7 +928,7 @@ class Vector3 {
      * Copy casting operator to Vector3
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Vector3<T> constexpr operator=(Vector4<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
@@ -1555,7 +1555,7 @@ using Vector3i = Vector3<int>;
  *  <li>access via operator[] &mdash; <code>v[0] = v[1] = v[2] = v[3] = 1;</code></li>
  * </ul>
  */
-template<class T>
+template<typename T>
 class Vector4 {
   public:
 
@@ -1640,7 +1640,7 @@ class Vector4 {
      * Copy casting constructor.
      * @param src Source of data for new created Vector4 instance.
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Vector4(Vector4<FromT> const &src)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(src.w)) {
     }
@@ -1649,7 +1649,7 @@ class Vector4 {
       : x(src.x), y(src.y), z(src.z), w(new_w) {
     }
 
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Vector4(Vector3<FromT> const &src, FromT new_w)
       : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)), w(static_cast<T>(new_w)) {
     }
@@ -1686,7 +1686,7 @@ class Vector4 {
      * Copy casting operator
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Vector4<T> constexpr operator=(Vector4<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
@@ -1711,7 +1711,7 @@ class Vector4 {
      * Copy casting operator to Vector4
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Vector4<T> constexpr operator=(Vector3<FromT> const &rhs) {
       x = static_cast<T>(rhs.x);
       y = static_cast<T>(rhs.y);
@@ -2280,7 +2280,7 @@ using Vector4i = Vector4<int>;
  * If you're using row major matrix, consider using fromRowMajorArray as way for construction
  * Matrix3<T> instance.
  */
-template<class T>
+template<typename T>
 class Matrix3 {
   public:
     /// Data stored in column major order
@@ -2325,7 +2325,7 @@ class Matrix3 {
      * Copy casting constructor.
      * @param src Data source for new created instance of Matrix3
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Matrix3(Matrix3<FromT> const &src)
       : data{static_cast<T>(src.data[0]), static_cast<T>(src.data[1]), static_cast<T>(src.data[2]),
              static_cast<T>(src.data[3]), static_cast<T>(src.data[4]), static_cast<T>(src.data[5]),
@@ -2463,8 +2463,8 @@ class Matrix3 {
     /**
      * Creates rotation matrix from ODE Matrix.
      */
-    template<class It>
-    inline static Matrix3<T> constexpr fromOde(const It *mat) {
+    template<typename It>
+    inline static Matrix3<T> constexpr fromOde(It const *mat) {
       return Matrix3<T>(static_cast<T>(mat[0]), static_cast<T>(mat[4]), static_cast<T>(mat[8]),
                         static_cast<T>(mat[1]), static_cast<T>(mat[5]), static_cast<T>(mat[9]),
                         static_cast<T>(mat[2]), static_cast<T>(mat[6]), static_cast<T>(mat[10]));
@@ -2476,8 +2476,8 @@ class Matrix3 {
      * @param arr An array of elements for 3x3 matrix in row major order.
      * @return An instance of Matrix3<T> representing @a arr
      */
-    template<class FromT>
-    inline static Matrix3<T> constexpr fromRowMajorArray(const FromT *arr) {
+    template<typename FromT>
+    inline static Matrix3<T> constexpr fromRowMajorArray(FromT const *arr) {
       return Matrix3<T>(static_cast<T>(arr[0]), static_cast<T>(arr[3]), static_cast<T>(arr[6]),
                         static_cast<T>(arr[1]), static_cast<T>(arr[4]), static_cast<T>(arr[7]),
                         static_cast<T>(arr[2]), static_cast<T>(arr[5]), static_cast<T>(arr[8]));
@@ -2489,8 +2489,8 @@ class Matrix3 {
      * @param arr An array of elements for 3x3 matrix in column major order.
      * @return An instance of Matrix3<T> representing @a arr
      */
-    template<class FromT>
-    inline static Matrix3<T> constexpr fromColumnMajorArray(const FromT *arr) {
+    template<typename FromT>
+    inline static Matrix3<T> constexpr fromColumnMajorArray(FromT const *arr) {
       return Matrix3<T>(static_cast<T>(arr[0]), static_cast<T>(arr[1]), static_cast<T>(arr[2]),
                         static_cast<T>(arr[3]), static_cast<T>(arr[4]), static_cast<T>(arr[5]),
                         static_cast<T>(arr[6]), static_cast<T>(arr[7]), static_cast<T>(arr[8]));
@@ -2598,7 +2598,7 @@ class Matrix3 {
      * Copy casting operator
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Matrix3<T> constexpr &operator=(Matrix3<FromT> const &rhs) {
       data[0] = static_cast<T>(rhs.data[0]);
       data[1] = static_cast<T>(rhs.data[1]);
@@ -2622,7 +2622,7 @@ class Matrix3 {
     }
 
     /*
-    inline Matrix3<T> constexpr &operator=(const T *rhs) __attribute__((__always_inline__)) {
+    inline Matrix3<T> constexpr &operator=(T const *rhs) __attribute__((__always_inline__)) {
       for(int i = 0; i != 9; ++i) {
         data[i] = (T)rhs[i];
       }
@@ -2918,7 +2918,7 @@ using Matrix3i = Matrix3<int>;
  * If you're using row major matrix, consider using fromRowMajorArray as way for construction
  * Matrix4<T> instance.
  */
-template<class T>
+template<typename T>
 class Matrix4 {
   public:
     /// Data stored in column major order
@@ -2967,7 +2967,7 @@ class Matrix4 {
      * Copy casting constructor.
      * @param src Data source for new created instance of Matrix4.
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Matrix4(Matrix4<FromT> const &src)
       : data{static_cast<T>(src.data[ 0]), static_cast<T>(src.data[ 1]), static_cast<T>(src.data[ 2]), static_cast<T>(src.data[ 3]),
              static_cast<T>(src.data[ 4]), static_cast<T>(src.data[ 5]), static_cast<T>(src.data[ 6]), static_cast<T>(src.data[ 7]),
@@ -3283,8 +3283,8 @@ class Matrix4 {
      * @param arr An array of elements for 4x4 matrix in row major order.
      * @return An instance of Matrix4<T> representing @a arr
      */
-    template<class FromT>
-    inline static Matrix4<T> constexpr fromRowMajorArray(const FromT *arr) {
+    template<typename FromT>
+    inline static Matrix4<T> constexpr fromRowMajorArray(FromT const *arr) {
       return Matrix4<T>(static_cast<T>(arr[0]), static_cast<T>(arr[4]), static_cast<T>(arr[8]),  static_cast<T>(arr[12]),
                         static_cast<T>(arr[1]), static_cast<T>(arr[5]), static_cast<T>(arr[9]),  static_cast<T>(arr[13]),
                         static_cast<T>(arr[2]), static_cast<T>(arr[6]), static_cast<T>(arr[10]), static_cast<T>(arr[14]),
@@ -3297,8 +3297,8 @@ class Matrix4 {
      * @param arr An array of elements for 4x4 matrix in column major order.
      * @return An instance of Matrix4<T> representing @a arr
      */
-    template<class FromT>
-    inline static Matrix4<T> constexpr fromColumnMajorArray(const FromT *arr) {
+    template<typename FromT>
+    inline static Matrix4<T> constexpr fromColumnMajorArray(FromT const *arr) {
       return Matrix4<T>(static_cast<T>(arr[0]),  static_cast<T>(arr[1]),  static_cast<T>(arr[2]),  static_cast<T>(arr[3]),
                         static_cast<T>(arr[4]),  static_cast<T>(arr[5]),  static_cast<T>(arr[6]),  static_cast<T>(arr[7]),
                         static_cast<T>(arr[8]),  static_cast<T>(arr[9]),  static_cast<T>(arr[10]), static_cast<T>(arr[11]),
@@ -3456,7 +3456,7 @@ class Matrix4 {
      * Copy casting operator
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Matrix4<T> constexpr &operator=(Matrix4<FromT> const &rhs) {
       data[ 0] = static_cast<T>(rhs.data[ 0]);
       data[ 1] = static_cast<T>(rhs.data[ 1]);
@@ -3810,7 +3810,7 @@ using Matrix4i = Matrix4<int>;
  * can express it as xi + yj + zk . Note that coordinates of (x,y,z) are
  * hold inside v field.
  */
-template<class T>
+template<typename T>
 class Quaternion {
   public:
 
@@ -3849,7 +3849,7 @@ class Quaternion {
     /**
      * Copy casting constructor.
      */
-    template<class FromT>
+    template<typename FromT>
     inline constexpr Quaternion(Quaternion<FromT> const &q)
       : w(static_cast<T>(q.w)), v(q.v) {
     }
@@ -3976,7 +3976,7 @@ class Quaternion {
      * Copy convert operator
      * @param rhs Right hand side argument of binary operator.
      */
-    template<class FromT>
+    template<typename FromT>
     inline Quaternion<T> constexpr &operator=(Quaternion<FromT> const &rhs) {
       v = rhs.v;
       w = static_cast<T>(rhs.w);
@@ -4465,8 +4465,8 @@ namespace std {
  * Gets vector containing minimal values of @a a and @a b coordinates.
  * @return Vector of minimal coordinates.
  */
-template<class T>
-constexpr VEC2<T> min(const VEC2<T> &a, const VEC2<T> &b) {
+template<typename T>
+constexpr VEC2<T> min(VEC2<T> const &a, const VEC2<T> &b) {
   return VEC2<T>(::std::min(a.x, b.x), ::std::min(a.y, b.y));
 }
 
@@ -4474,8 +4474,8 @@ constexpr VEC2<T> min(const VEC2<T> &a, const VEC2<T> &b) {
  * Gets vector containing minimal values of @a a and @a b coordinates.
  * @return Vector of minimal coordinates.
  */
-template<class T>
-constexpr VEC3<T> min(const VEC3<T> &a, const VEC3<T> &b) {
+template<typename T>
+constexpr VEC3<T> min(VEC3<T> const &a, const VEC3<T> &b) {
   return VEC3<T>(::std::min(a.x, b.x), ::std::min(a.y, b.y), ::std::min(a.z, b.z));
 }
 
@@ -4483,8 +4483,8 @@ constexpr VEC3<T> min(const VEC3<T> &a, const VEC3<T> &b) {
  * Gets vector containing minimal values of @a a and @a b coordinates.
  * @return Vector of minimal coordinates.
  */
-template<class T>
-constexpr VEC4<T> min(const VEC4<T> &a, const VEC4<T> &b) {
+template<typename T>
+constexpr VEC4<T> min(VEC4<T> const &a, const VEC4<T> &b) {
   return VEC4<T>(::std::min(a.x, b.x), ::std::min(a.y, b.y), ::std::min(a.z, b.z), ::std::min(a.w, b.w));
 }
 
@@ -4492,8 +4492,8 @@ constexpr VEC4<T> min(const VEC4<T> &a, const VEC4<T> &b) {
  * Gets vector containing maximal values of @a a and @a b coordinates.
  * @return Vector of maximal coordinates.
  */
-template<class T>
-constexpr VEC2<T> max(const VEC2<T> &a, const VEC2<T> &b) {
+template<typename T>
+constexpr VEC2<T> max(VEC2<T> const &a, const VEC2<T> &b) {
   return VEC2<T>(::std::max(a.x, b.x), ::std::max(a.y, b.y));
 }
 
@@ -4501,8 +4501,8 @@ constexpr VEC2<T> max(const VEC2<T> &a, const VEC2<T> &b) {
  * Gets vector containing maximal values of @a a and @a b coordinates.
  * @return Vector of maximal coordinates.
  */
-template<class T>
-constexpr VEC3<T> max(const VEC3<T> &a, const VEC3<T> &b) {
+template<typename T>
+constexpr VEC3<T> max(VEC3<T> const &a, const VEC3<T> &b) {
   return VEC3<T>(::std::max(a.x, b.x), ::std::max(a.y, b.y), ::std::max(a.z, b.z));
 }
 
@@ -4510,8 +4510,8 @@ constexpr VEC3<T> max(const VEC3<T> &a, const VEC3<T> &b) {
  * Gets vector containing maximal values of @a a and @a b coordinates.
  * @return Vector of maximal coordinates.
  */
-template<class T>
-constexpr VEC4<T> max(const VEC4<T> &a, const VEC4<T> &b) {
+template<typename T>
+constexpr VEC4<T> max(VEC4<T> const &a, const VEC4<T> &b) {
   return VEC4<T>(::std::max(a.x, b.x), ::std::max(a.y, b.y), ::std::max(a.z, b.z), ::std::max(a.w, b.w));
 }
 }
@@ -4541,7 +4541,7 @@ namespace VMATH_NAMESPACE {
  * aabb << Vector2f(1, 2) << Aabb2f(-3,-3, 2, 2);
  * @endcode
  */
-template<class T>
+template<typename T>
 class Aabb2 {
   public:
     /**
@@ -4566,8 +4566,8 @@ class Aabb2 {
      * Constructs axes-aligned bound-box containing one point @a point
      * @param point
      */
-    template<class SrcT>
-    inline constexpr Aabb2(const Vector2<SrcT> &point)
+    template<typename SrcT>
+    inline constexpr Aabb2(Vector2<SrcT> const &point)
       : min(point), max(point) {
     }
 
@@ -4579,7 +4579,7 @@ class Aabb2 {
      * @param x1 X-coordinate of second point
      * @param y1 Y-coordinate of second point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb2(SrcT x0, SrcT y0, SrcT x1, SrcT y1)
       : min(std::min(x0, x1), std::min(y0, y1)),
         max(std::max(x0, x1), std::max(y0, y1)) {
@@ -4590,7 +4590,7 @@ class Aabb2 {
      * @param min X-coordinate of first point
      * @param max X-coordinate of second point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb2(Vector2<SrcT> const &new_min, Vector2<SrcT> const &new_max)
       : min(new_min),
         max(new_max) {
@@ -4601,7 +4601,7 @@ class Aabb2 {
      * @param x X-coordinate of point
      * @param y Y-coordinate of point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb2(SrcT x, SrcT y)
       : min(x, y), max(x, y) {
     }
@@ -4610,8 +4610,8 @@ class Aabb2 {
      * Creates copy of axis-aligned bounding-box
      * @param src Source bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb2(const Aabb2<SrcT> &src)
+    template<typename SrcT>
+    inline constexpr Aabb2(Aabb2<SrcT> const &src)
       : min(src.min), max(src.max) {
     }
 
@@ -4620,8 +4620,8 @@ class Aabb2 {
      * @param rhs source bounding-box
      * @return refenrence to this
      */
-    template<class SrcT>
-    inline Aabb2<T> constexpr &operator=(const Aabb2<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb2<T> constexpr &operator=(Aabb2<SrcT> const &rhs) {
       min = rhs.min;
       max = rhs.max;
       return *this;
@@ -4650,8 +4650,8 @@ class Aabb2 {
      * Extends this bounding-box by a point @a point.
      * @param point A point to extend bounding-box by.
      */
-    template<class SrcT>
-    inline void constexpr extend(const Vector2<SrcT> &point) {
+    template<typename SrcT>
+    inline void constexpr extend(Vector2<SrcT> const &point) {
       if(!valid()) {
         min = max = point;
       } else {
@@ -4664,8 +4664,8 @@ class Aabb2 {
      * Extends this bounding-box by a box @a box.
      * @param box A box to extend this bounding-box by.
      */
-    template<class SrcT>
-    inline void constexpr extend(const Aabb2<SrcT> &box) {
+    template<typename SrcT>
+    inline void constexpr extend(Aabb2<SrcT> const &box) {
       if(!valid()) {
         min = box.min;
         max = box.max;
@@ -4680,8 +4680,8 @@ class Aabb2 {
      * @param point A point to extend the box by
      * @return Copy of extended bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb2<T> extended(const Vector2<SrcT> &point) const {
+    template<typename SrcT>
+    inline constexpr Aabb2<T> extended(Vector2<SrcT> const &point) const {
       Aabb2<T> ret(*this);
       ret.extend(point);
       return ret;
@@ -4692,8 +4692,8 @@ class Aabb2 {
      * @param box A box to extend the copy be.
      * @return Copy of extended bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb2<T> extended(const Aabb2<SrcT> &box) const {
+    template<typename SrcT>
+    inline constexpr Aabb2<T> extended(Aabb2<SrcT> const &box) const {
       Aabb2<T> ret(*this);
       ret.extend(box);
       return *this;
@@ -4704,8 +4704,8 @@ class Aabb2 {
      * @param point A point to be tested
      * @return True if point @a point lies within bounding-box, otherwise false.
      */
-    template<class SrcT>
-    inline bool constexpr intersects(const Vector2<SrcT> &point) const {
+    template<typename SrcT>
+    inline bool constexpr intersects(Vector2<SrcT> const &point) const {
       return min.x <= point.x && point.x <= max.x &&
              min.y <= point.y && point.y <= max.y;
     }
@@ -4715,8 +4715,8 @@ class Aabb2 {
      * @param box A box to be tested for intersection.
      * @return True if there's intersection between boxes, otherwise false.
      */
-    template<class SrcT>
-    inline bool constexpr intersects(const Aabb2<SrcT> &box) const {
+    template<typename SrcT>
+    inline bool constexpr intersects(Aabb2<SrcT> const &box) const {
       return max.x >= box.min.x && min.x <= box.max.x &&
              max.y >= box.min.y && min.y <= box.max.y;
     }
@@ -4728,8 +4728,8 @@ class Aabb2 {
      * @return Result of intersection.
      * @see valid() method for more information on invalid bounding-boxes.
      */
-    template<class SrcT>
-    inline constexpr Aabb2<T> intersection(const Aabb2<SrcT> &other) const {
+    template<typename SrcT>
+    inline constexpr Aabb2<T> intersection(Aabb2<SrcT> const &other) const {
       return (max.x < other.min.x || min.x > other.max.x ||
               max.y < other.min.y || min.y > other.max.y) ? Aabb2<T>() : Aabb2<T>(std::max(min, other.min), std::min(max, other.max));
     }
@@ -4740,7 +4740,7 @@ class Aabb2 {
      * @param ray The intersecting ray; does not need to be normalised
      * @return True if the ray intersects the box, otherwise false.
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline bool constexpr ray_intersects(Vector2<SrcT> const &ray, Vector2<SrcT> const &origin = Vector2<SrcT>()) const {
       // adapted from http://tavianator.com/2011/05/fast-branchless-raybounding-box-intersections/
       /*
@@ -4815,8 +4815,8 @@ class Aabb2 {
      * @param rhs Right-hand side
      * @return True if @a rhs and this bounding-boxes are equal, otherwise false
      */
-    template<class RhsT>
-    inline bool constexpr operator==(const Aabb2<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline bool constexpr operator==(Aabb2<RhsT> const &rhs) const {
       return min == rhs.min && max == rhs.max;
     }
 
@@ -4825,8 +4825,8 @@ class Aabb2 {
      * @param rhs Right-hand side
      * @return True if @a rhs and this bounding-boxes are not equal, otherwise false
      */
-    template<class RhsT>
-    inline bool constexpr operator!=(const Aabb2<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline bool constexpr operator!=(Aabb2<RhsT> const &rhs) const {
       return min != rhs.min || max != rhs.max;
     }
 
@@ -4835,8 +4835,8 @@ class Aabb2 {
      * @param rhs A point to extend this bounding-box by
      * @return Reference to this
      */
-    template<class SrcT>
-    inline Aabb2<T> constexpr &operator<<(const Vector2<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb2<T> constexpr &operator<<(Vector2<SrcT> const &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4846,8 +4846,8 @@ class Aabb2 {
      * @param rhs A box to extend this bounding-box by
      * @return Reference to this
      */
-    template<class SrcT>
-    inline Aabb2<T> constexpr &operator<<(const Aabb2<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb2<T> constexpr &operator<<(Aabb2<SrcT> const &rhs) {
       extend(rhs);
       return *this;
     }
@@ -4857,8 +4857,8 @@ class Aabb2 {
      * @param rhs Right-hand side of union
      * @return A resulting bounding-box representing union
      */
-    template<class RhsT>
-    inline Aabb2<T> constexpr operator|(const Aabb2<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline Aabb2<T> constexpr operator|(Aabb2<RhsT> const &rhs) const {
       return extended(rhs);
     }
 
@@ -4867,8 +4867,8 @@ class Aabb2 {
      * @param rhs Right-hand side
      * @return Resulting bounding-box representing the intersection.
      */
-    template<class RhsT>
-    inline Aabb2<T> constexpr operator&(const Aabb2<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline Aabb2<T> constexpr operator&(Aabb2<RhsT> const &rhs) const {
       return intersection(rhs);
     }
 
@@ -4900,7 +4900,7 @@ class Aabb2 {
  * aabb << Vector3f(1, 1, 2) << Aabb3f(-3,-3,-3, 2, 2, 2);
  * @endcode
  */
-template<class T>
+template<typename T>
 class Aabb3 {
   public:
     /**
@@ -4925,8 +4925,8 @@ class Aabb3 {
      * Constructs axes-aligned bound-box containing one point @a point
      * @param point
      */
-    template<class SrcT>
-    inline constexpr Aabb3(const Vector3<SrcT> &point)
+    template<typename SrcT>
+    inline constexpr Aabb3(Vector3<SrcT> const &point)
       : min(point), max(point) {
     }
 
@@ -4940,7 +4940,7 @@ class Aabb3 {
      * @param y1 Y-coordinate of second point
      * @param z1 Z-coordinate of second point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb3(SrcT x0, SrcT y0, SrcT z0, SrcT x1, SrcT y1, SrcT z1)
       : min(std::min(x0, x1), std::min(y0, y1), std::min(z0, z1)),
         max(std::max(x0, x1), std::max(y0, y1), std::max(z0, z1)) {
@@ -4951,7 +4951,7 @@ class Aabb3 {
      * @param min X-coordinate of first point
      * @param max X-coordinate of second point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb3(Vector3<SrcT> const &new_min, Vector3<SrcT> const &new_max)
       : min(new_min),
         max(new_max) {
@@ -4963,7 +4963,7 @@ class Aabb3 {
      * @param y Y-coordinate of point
      * @param z Z-coordinate of point
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline constexpr Aabb3(SrcT x, SrcT y, SrcT z)
       : min(x, y, z), max(x, y, z) {
     }
@@ -4972,8 +4972,8 @@ class Aabb3 {
      * Creates copy of axis-aligned bounding-box
      * @param src Source bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb3(const Aabb3<SrcT> &src)
+    template<typename SrcT>
+    inline constexpr Aabb3(Aabb3<SrcT> const &src)
       : min(src.min), max(src.max) {
     }
 
@@ -4982,8 +4982,8 @@ class Aabb3 {
      * @param rhs source bounding-box
      * @return refenrence to this
      */
-    template<class SrcT>
-    inline Aabb3<T> constexpr &operator=(const Aabb3<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb3<T> constexpr &operator=(Aabb3<SrcT> const &rhs) {
       min = rhs.min;
       max = rhs.max;
       return *this;
@@ -5012,8 +5012,8 @@ class Aabb3 {
      * Extends this bounding-box by a point @a point.
      * @param point A point to extend bounding-box by.
      */
-    template<class SrcT>
-    inline void constexpr extend(const Vector3<SrcT> &point) {
+    template<typename SrcT>
+    inline void constexpr extend(Vector3<SrcT> const &point) {
       if(!valid()) {
         min = max = point;
       } else {
@@ -5026,8 +5026,8 @@ class Aabb3 {
      * Extends this bounding-box by a box @a box.
      * @param box A box to extend this bounding-box by.
      */
-    template<class SrcT>
-    inline void constexpr extend(const Aabb3<SrcT> &box) {
+    template<typename SrcT>
+    inline void constexpr extend(Aabb3<SrcT> const &box) {
       if(!valid()) {
         min = box.min;
         max = box.max;
@@ -5042,8 +5042,8 @@ class Aabb3 {
      * @param point A point to extend the box by
      * @return Copy of extended bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb3<T> extended(const Vector3<SrcT> &point) const {
+    template<typename SrcT>
+    inline constexpr Aabb3<T> extended(Vector3<SrcT> const &point) const {
       Aabb3<T> ret(*this);
       ret.extend(point);
       return ret;
@@ -5054,8 +5054,8 @@ class Aabb3 {
      * @param box A box to extend the copy be.
      * @return Copy of extended bounding-box
      */
-    template<class SrcT>
-    inline constexpr Aabb3<T> extended(const Aabb3<SrcT> &box) const {
+    template<typename SrcT>
+    inline constexpr Aabb3<T> extended(Aabb3<SrcT> const &box) const {
       Aabb3<T> ret(*this);
       ret.extend(box);
       return *this;
@@ -5066,8 +5066,8 @@ class Aabb3 {
      * @param point A point to be tested
      * @return True if point @a point lies within bounding-box, otherwise false.
      */
-    template<class SrcT>
-    inline bool constexpr intersects(const Vector3<SrcT> &point) const {
+    template<typename SrcT>
+    inline bool constexpr intersects(Vector3<SrcT> const &point) const {
       return min.x <= point.x && point.x <= max.x &&
              min.y <= point.y && point.y <= max.y &&
              min.z <= point.z && point.z <= max.z;
@@ -5078,8 +5078,8 @@ class Aabb3 {
      * @param box A box to be tested for intersection.
      * @return True if there's intersection between boxes, otherwise false.
      */
-    template<class SrcT>
-    inline bool constexpr intersects(const Aabb3<SrcT> &box) const {
+    template<typename SrcT>
+    inline bool constexpr intersects(Aabb3<SrcT> const &box) const {
       return max.x >= box.min.x && min.x <= box.max.x &&
              max.y >= box.min.y && min.y <= box.max.y &&
              max.z >= box.min.z && min.z <= box.max.z;
@@ -5092,8 +5092,8 @@ class Aabb3 {
      * @return Result of intersection.
      * @see valid() method for more information on invalid bounding-boxes.
      */
-    template<class SrcT>
-    inline constexpr Aabb3<T> intersection(const Aabb3<SrcT> &other) const {
+    template<typename SrcT>
+    inline constexpr Aabb3<T> intersection(Aabb3<SrcT> const &other) const {
       return (max.x < other.min.x || min.x > other.max.x ||
               max.y < other.min.y || min.y > other.max.y ||
               max.z < other.min.z || min.z > other.max.z) ? Aabb3<T>() : Aabb3<T>(std::max(min, other.min), std::min(max, other.max));
@@ -5105,7 +5105,7 @@ class Aabb3 {
      * @param origin Origin of the intersecting ray
      * @return True if the ray intersects the box, otherwise false.
      */
-    template<class SrcT>
+    template<typename SrcT>
     inline bool constexpr ray_intersects(Vector3<SrcT> const &ray, Vector3<SrcT> const &origin = Vector3<SrcT>()) const {
       // adapted from http://tavianator.com/2011/05/fast-branchless-raybounding-box-intersections/
       /*
@@ -5189,7 +5189,7 @@ class Aabb3 {
      * @param t A transform matrix
      * @return Transformed bounding-box
      */
-    inline Aabb3<T> constexpr transformed(const Matrix4<T> &t) const __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr transformed(Matrix4<T> const &t) const __attribute__((__always_inline__)) {
       Aabb3<T> ret;
       for(unsigned int i = 0; i != 8; ++i) {
         const Vector4<T> p(point(i), 1);
@@ -5206,8 +5206,8 @@ class Aabb3 {
      * @param rhs Right-hand side
      * @return True if @a rhs and this bounding-boxes are equal, otherwise false
      */
-    template<class RhsT>
-    inline bool constexpr operator==(const Aabb3<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline bool constexpr operator==(Aabb3<RhsT> const &rhs) const {
       return min == rhs.min && max == rhs.max;
     }
 
@@ -5216,8 +5216,8 @@ class Aabb3 {
      * @param rhs Right-hand side
      * @return True if @a rhs and this bounding-boxes are not equal, otherwise false
      */
-    template<class RhsT>
-    inline bool constexpr operator!=(const Aabb3<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline bool constexpr operator!=(Aabb3<RhsT> const &rhs) const {
       return min != rhs.min || max != rhs.max;
     }
 
@@ -5226,7 +5226,7 @@ class Aabb3 {
      * @param rhs Matrix 4x4 representing the transform
      * @return Transformed bounding-box
      */
-    inline Aabb3<T> constexpr operator*(const Matrix4<T> &rhs) const __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr operator*(Matrix4<T> const &rhs) const __attribute__((__always_inline__)) {
       return transformed(rhs);
     }
 
@@ -5235,7 +5235,7 @@ class Aabb3 {
      * @param rhs A transform to be applied
      * @return Reference to this
      */
-    inline Aabb3<T> constexpr &operator*=(const Matrix4<T> &rhs) __attribute__((__always_inline__)) {
+    inline Aabb3<T> constexpr &operator*=(Matrix4<T> const &rhs) __attribute__((__always_inline__)) {
       *this = transformed(rhs);
       return *this;
     }
@@ -5245,8 +5245,8 @@ class Aabb3 {
      * @param rhs A point to extend this bounding-box by
      * @return Reference to this
      */
-    template<class SrcT>
-    inline Aabb3<T> constexpr &operator<<(const Vector3<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb3<T> constexpr &operator<<(Vector3<SrcT> const &rhs) {
       extend(rhs);
       return *this;
     }
@@ -5256,8 +5256,8 @@ class Aabb3 {
      * @param rhs A box to extend this bounding-box by
      * @return Reference to this
      */
-    template<class SrcT>
-    inline Aabb3<T> constexpr &operator<<(const Aabb3<SrcT> &rhs) {
+    template<typename SrcT>
+    inline Aabb3<T> constexpr &operator<<(Aabb3<SrcT> const &rhs) {
       extend(rhs);
       return *this;
     }
@@ -5267,8 +5267,8 @@ class Aabb3 {
      * @param rhs Right-hand side of union
      * @return A resulting bounding-box representing union
      */
-    template<class RhsT>
-    inline Aabb3<T> constexpr operator|(const Aabb3<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline Aabb3<T> constexpr operator|(Aabb3<RhsT> const &rhs) const {
       return extended(rhs);
     }
 
@@ -5277,8 +5277,8 @@ class Aabb3 {
      * @param rhs Right-hand side
      * @return Resulting bounding-box representing the intersection.
      */
-    template<class RhsT>
-    inline Aabb3<T> constexpr operator&(const Aabb3<RhsT> &rhs) const {
+    template<typename RhsT>
+    inline Aabb3<T> constexpr operator&(Aabb3<RhsT> const &rhs) const {
       return intersection(rhs);
     }
 
