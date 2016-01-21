@@ -47,24 +47,24 @@ void world::update(double timedelta) {
     if(timeofday > 21600) {
       if(timeofday < 64800) {
         float thisangle = (timeofday + 21600) / (float)43200 * M_PI;
-        sundirection.z = -cos(thisangle);
-        sundirection.y = -sin(thisangle);
+        sundirection.z = -std::cos(thisangle);
+        sundirection.y = -std::sin(thisangle);
       } else {
         sundirection.z = -1;
         sundirection.y = 0;
-        sundiffuse.r = sundiffuse.g = sundiffuse.b = sin((timeofday - 32400) / (float)43200 * M_PI);
+        sundiffuse.r = sundiffuse.g = sundiffuse.b = std::sin((timeofday - 32400) / (float)43200 * M_PI);
         sunspecular = sundiffuse;
       }
     } else {
       sundirection.z = 1;
       sundirection.y = 0;
-      sundiffuse.r = sundiffuse.g = sundiffuse.b = sin(timeofday / (float)43200 * M_PI);
+      sundiffuse.r = sundiffuse.g = sundiffuse.b = std::sin(timeofday / (float)43200 * M_PI);
       sunspecular = sundiffuse;
     }
     //std::cout << "Sun coords " << sundirection.z << " " << sundirection.y << " " << " brightness " << (float)sundiffuse.r << std::endl;
 
     // update meteorological visuals here
-    float skybrightness = sin(timeofday / (float)86400 * M_PI);
+    float skybrightness = std::sin(timeofday / (float)86400 * M_PI);
     glFogfv(GL_FOG_COLOR, fogcolour);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientcolour * skybrightness);
     glClearColor(clearcolour.r, clearcolour.g, clearcolour.b, 1);

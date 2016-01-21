@@ -525,26 +525,26 @@ void controls() {
 
   player->state = golfer::GOLFER_STANDING;
   if(glfwGetKey(window_main, GLFW_KEY_W) == GLFW_PRESS) {                  // wasd for movement
-    player->moveforce.x += sin(player->bodyyaw * M_PI / 180) * thismoveforce;
-    player->moveforce.z -= cos(player->bodyyaw * M_PI / 180) * thismoveforce;
+    player->moveforce.x += std::sin(player->bodyyaw * M_PI / 180) * thismoveforce;
+    player->moveforce.z -= std::cos(player->bodyyaw * M_PI / 180) * thismoveforce;
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey(window_main, GLFW_KEY_S) == GLFW_PRESS) {
-    player->moveforce.x -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce; // you can't run as fast
-    player->moveforce.z += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce; // backwards as forwards
+    player->moveforce.x -= std::sin(player->bodyyaw * M_PI / 180) * thisstrafeforce; // you can't run as fast
+    player->moveforce.z += std::cos(player->bodyyaw * M_PI / 180) * thisstrafeforce; // backwards as forwards
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey(window_main, GLFW_KEY_A) == GLFW_PRESS) {
-    player->moveforce.x -= cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
-    player->moveforce.z -= sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.x -= std::cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.z -= std::sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }
   if(glfwGetKey(window_main, GLFW_KEY_D) == GLFW_PRESS) {
-    player->moveforce.x += cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
-    player->moveforce.z += sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.x += std::cos(player->bodyyaw * M_PI / 180) * thisstrafeforce;
+    player->moveforce.z += std::sin(player->bodyyaw * M_PI / 180) * thisstrafeforce;
     keyspressed++;
     player->state = movestate;
   }

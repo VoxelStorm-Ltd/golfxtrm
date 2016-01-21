@@ -151,7 +151,7 @@ double Perlin::noise3(double vec[3]) {
 void Perlin::normalize2(double v[2]) {
   double s;
 
-  s = static_cast<double>(sqrt(v[0] * v[0] + v[1] * v[1]));
+  s = static_cast<double>(std::sqrt(v[0] * v[0] + v[1] * v[1]));
   s = 1.0 / s;
   v[0] = v[0] * s;
   v[1] = v[1] * s;
@@ -160,7 +160,7 @@ void Perlin::normalize2(double v[2]) {
 void Perlin::normalize3(double v[3]) {
   double s;
 
-  s = static_cast<double>(sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
+  s = static_cast<double>(std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
   s = 1.0 / s;
 
   v[0] = v[0] * s;

@@ -57,8 +57,8 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
         double randfactor = 0;
         ///double randfactor = 0.2;
 
-        //double centredist = sqrt(pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
-        double centredist_sq = (pow(x - xcentre, (double)2) + pow(z - zcentre, (double)2));
+        //double centredist = std::sqrt(std::pow(x - xcentre, (double)2) + std::pow(z - zcentre, (double)2));
+        double centredist_sq = (std::pow(x - xcentre, (double)2) + std::pow(z - zcentre, (double)2));
         //double offsetheight = heightscale - ((centredist_sq / gridwidth * heightscale * 2) / (gridwidth / 2));
         double centredist_qu = centredist_sq * centredist_sq;
         double offsetheight = heightscale - ((centredist_qu * heightscale * 2) / (gridwidth * gridwidth * gridwidth * 25));
@@ -75,7 +75,7 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
           randfactor = 0;
         }
 
-        double holedist = sqrt(pow(x - holepositiongridx, (double)2) + pow(z - holepositiongridz, (double)2));
+        double holedist = std::sqrt(std::pow(x - holepositiongridx, (double)2) + std::pow(z - holepositiongridz, (double)2));
         if(holedist < greensize / bounds.x * (double)gridwidth) {
           offsetheight = holeposition.y;
           randfactor = 0.01;
@@ -283,8 +283,8 @@ double terrain::get_height_at(double x, double z) {
     //int zgrid = zgridinterp / gridsquarewidth;
     int xgrid = (x - origin.x) / gridsquarewidth;
     int zgrid = (z - origin.z) / gridsquarewidth;
-    //double xgridremainder = fmod((x - origin.x), gridsquarewidth) / gridsquarewidth;
-    //double zgridremainder = fmod((z - origin.z), gridsquarewidth) / gridsquarewidth;
+    //double xgridremainder = std::fmod((x - origin.x), gridsquarewidth) / gridsquarewidth;
+    //double zgridremainder = std::fmod((z - origin.z), gridsquarewidth) / gridsquarewidth;
 
     double g    = heightmap[ (xgrid      * gridwidth) +  zgrid   ];
     double gx   = heightmap[((xgrid + 1) * gridwidth) +  zgrid   ];

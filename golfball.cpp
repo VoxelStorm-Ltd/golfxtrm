@@ -21,8 +21,8 @@ golfball::golfball(world *parentplanet) {
   currentplanet->items.push_back(this);
 
   // icosahedron!
-  float t = (1 + sqrt(5)) / 2;
-  float scale = radius / sqrt(1 + (t * t));
+  float t = (1 + std::sqrt(5)) / 2;
+  float scale = radius / std::sqrt(1 + (t * t));
   GLfloat vbodata[] = {
     t  * scale, 1  * scale, 0  * scale,
     -t * scale, 1  * scale, 0  * scale,

@@ -119,11 +119,11 @@ void golfer::update(double timedelta) {
         //difference.rotate(armspitch, 0, 0);  // tilt back for our current pitch
         //difference.rotate(0, armsyaw, 0);    // finally adjust for our arm position
         // now collision is just a matter of being close enough to 0...
-        double targetyaw   = atan2(difference.x, -difference.z) * 180 / M_PI;
-        double targetpitch = atan2(-difference.y, -difference.z) * 180 / M_PI;
+        double targetyaw   = std::atan2(difference.x, -difference.z) * 180 / M_PI;
+        double targetpitch = std::atan2(-difference.y, -difference.z) * 180 / M_PI;
         // use angles and compare the yaw velocity in that
-        double bbox_angle    = atan2(helditem->bbox_end.x, helditem->bbox_end.y + armlength) * 180 / M_PI;
-        double bbox_angle_up = atan2(helditem->bbox_end.z, helditem->bbox_end.y + armlength) * 180 / M_PI;
+        double bbox_angle    = std::atan2(helditem->bbox_end.x, helditem->bbox_end.y + armlength) * 180 / M_PI;
+        double bbox_angle_up = std::atan2(helditem->bbox_end.z, helditem->bbox_end.y + armlength) * 180 / M_PI;
         //std::cout << i->name << " at " << difference.x << " " << difference.y << " " << difference.z << std::endl;
         //std::cout << i->name << " at " << targetyaw << " " << targetpitch << " " << std::endl;
         if(armsyawvelocity < 0) {   // right to left
