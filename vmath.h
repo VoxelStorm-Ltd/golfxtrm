@@ -48,7 +48,7 @@
  *
  *  // use texture coordinates
  *  v.s = 0; v.t = 1; v.u = 0.5;
- *  // use color coordinates
+ *  // use colour coordinates
  *  v.r = 1; v.g = 0.5; v.b = 0;
  *    </pre>
  *    </li>
@@ -152,6 +152,8 @@ double constexpr epsilon = 4.37114e-05;
 #define RAD2DEG rad2deg
 
 template<typename T>
+inline static T constexpr const deg2rad(T const angle_deg) __attribute__((__always_inline__));
+template<typename T>
 inline static T constexpr const deg2rad(T const angle_deg) {
   #ifndef VMATH_NO_BOOST
     //return (angle_deg * boost::math::constants::pi<T>()) / 180.0;
@@ -162,6 +164,8 @@ inline static T constexpr const deg2rad(T const angle_deg) {
 }
 
 template<typename T>
+inline static T constexpr const rad2deg(T const angle_rad) __attribute__((__always_inline__));
+template<typename T>
 inline static T constexpr const rad2deg(T const angle_rad) {
   #ifndef VMATH_NO_BOOST
     return angle_rad * boost::math::constants::radian<T>();
@@ -171,9 +175,12 @@ inline static T constexpr const rad2deg(T const angle_rad) {
 }
 
 template<typename T>
+inline static void constexpr sincos_any(T const angle_rad, T &out_sin, T &out_cos) __attribute__((__always_inline__));
+template<typename T>
 inline static void constexpr sincos_any(T const angle_rad, T &out_sin, T &out_cos) {
   __builtin_sincos(angle_rad, &out_sin, &out_cos);
 }
+inline static void constexpr sincos_any(int const angle_rad, int &out_sin, int &out_cos) __attribute__((__always_inline__));
 inline static void constexpr sincos_any(int const angle_rad, int &out_sin, int &out_cos) {
   // if we're only working with integers, assume single precision is enough
   float out_sin_temp = 0.0f;
@@ -182,11 +189,105 @@ inline static void constexpr sincos_any(int const angle_rad, int &out_sin, int &
   out_sin = static_cast<int>(out_sin_temp);
   out_cos = static_cast<int>(out_cos_temp);
 }
+inline static void constexpr sincos_any(float const angle_rad, float &out_sin, float &out_cos) __attribute__((__always_inline__));
 inline static void constexpr sincos_any(float const angle_rad, float &out_sin, float &out_cos) {
   __builtin_sincosf(angle_rad, &out_sin, &out_cos);
 }
+inline static void constexpr sincos_any(long double const angle_rad, long double &out_sin, long double &out_cos) __attribute__((__always_inline__));
 inline static void constexpr sincos_any(long double const angle_rad, long double &out_sin, long double &out_cos) {
   __builtin_sincosl(angle_rad, &out_sin, &out_cos);
+}
+
+inline static float constexpr sqrt_inv_fast(float number) __attribute__((__always_inline__));
+inline static float constexpr sqrt_inv_fast(float number) {
+  /// Adapted from Quake III's fast inverse square root approximation
+  float constexpr const threehalfs = 1.5f;
+
+  float x = number * 0.5f;
+  float y = number;
+  uint32_t i  = *(uint32_t*)&y;                                                 // evil floating point bit level hacking
+  //i = 0x5f3759df - (i >> 1);                                                    // what the fuck?
+  i = 0x5f375a84 - (i >> 1);                                                    // improved magic number from http://jheriko-rtw.blogspot.co.uk/2009/04/understanding-and-improving-fast.html
+  y = *(float*)&i;
+  y = y * (threehalfs - (x * y * y));                                           // 1st iteration
+  y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
+  return y;
+}
+inline static double constexpr sqrt_inv_fast(double number) __attribute__((__always_inline__));
+inline static double constexpr sqrt_inv_fast(double number) {
+  /// Similar to the Quake III fast inverse square root but for doubles
+  double constexpr const threehalfs = 1.5;
+
+  double x = number * 0.5;
+  double y = number;
+  uint64_t i  = *(uint64_t*)&y;                                                 // evil floating point bit level hacking
+  i = 0x5fe6eb50c7b537a9 - (i >> 1);                                            // even more magic than "what the fuck" number
+  y = *(double*)&i;
+  y = y * (threehalfs - (x * y * y));                                           // 1st iteration
+  y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
+  return y;
+}
+template<typename T>
+inline static T constexpr sqrt_fast(T number) __attribute__((__always_inline__));
+template<typename T>
+inline static T constexpr sqrt_fast(T number) {
+  return sqrt_inv_fast(number) * number;
+}
+inline static long double constexpr sqrt_fast(long double number) __attribute__((__always_inline__));
+inline static long double constexpr sqrt_fast(long double number) {
+  // we don't have a way to handle long doubles with the fast approximation, so just cast to double
+  return static_cast<long double>(sqrt_inv_fast(static_cast<double>(number))) * number;
+}
+inline static int constexpr sqrt_fast(int number) __attribute__((__always_inline__));
+inline static int constexpr sqrt_fast(int number) {
+  // convert ints to floats and back
+  return static_cast<int>(sqrt_inv_fast(static_cast<float>(number)) * static_cast<float>(number));
+}
+
+inline static float constexpr sqrt_inv_faster(float number) __attribute__((__always_inline__));
+inline static float constexpr sqrt_inv_faster(float number) {
+  /// Adapted from Quake III's fast inverse square root approximation - one iteration version
+  float constexpr const threehalfs = 1.5f;
+
+  float x = number * 0.5f;
+  float y = number;
+  uint32_t i  = *(uint32_t*)&y;                                                 // evil floating point bit level hacking
+  //i = 0x5f3759df - (i >> 1);                                                    // what the fuck?
+  i = 0x5f375a84 - (i >> 1);                                                    // improved magic number from http://jheriko-rtw.blogspot.co.uk/2009/04/understanding-and-improving-fast.html
+  y = *(float*)&i;
+  y = y * (threehalfs - (x * y * y));                                           // 1st iteration
+  //y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
+  return y;
+}
+inline static double constexpr sqrt_inv_faster(double number) __attribute__((__always_inline__));
+inline static double constexpr sqrt_inv_faster(double number) {
+  /// Similar to the Quake III fast inverse square root but for doubles
+  double constexpr const threehalfs = 1.5;
+
+  double x = number * 0.5;
+  double y = number;
+  uint64_t i  = *(uint64_t*)&y;                                                 // evil floating point bit level hacking
+  i = 0x5fe6eb50c7b537a9 - (i >> 1);                                            // even more magic than "what the fuck" number
+  y = *(double*)&i;
+  y = y * (threehalfs - (x * y * y));                                           // 1st iteration
+  //y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
+  return y;
+}
+template<typename T>
+inline static T constexpr sqrt_faster(T number) __attribute__((__always_inline__));
+template<typename T>
+inline static T constexpr sqrt_faster(T number) {
+  return sqrt_inv_faster(number) * number;
+}
+inline static long double constexpr sqrt_faster(long double number) __attribute__((__always_inline__));
+inline static long double constexpr sqrt_faster(long double number) {
+  // we don't have a way to handle long doubles with the fast approximation, so just cast to double
+  return static_cast<long double>(sqrt_inv_faster(static_cast<double>(number))) * number;
+}
+inline static int constexpr sqrt_faster(int number) __attribute__((__always_inline__));
+inline static int constexpr sqrt_faster(int number) {
+  // convert ints to floats and back
+  return static_cast<int>(sqrt_inv_faster(static_cast<float>(number)) * static_cast<float>(number));
 }
 
 template<typename T> class Vector2;  // forward declarations
@@ -529,14 +630,6 @@ class Vector2 {
 
     //-------------[ size operations ]---------------------------
     /**
-     * Get length of vector.
-     * @return length of vector
-     */
-    inline T constexpr length() const __attribute__((__always_inline__)) {
-      return static_cast<T>(std::sqrt(x * x + y * y));
-    }
-
-    /**
      * Return square of length.
      * @return length ^ 2
      * @note This method is faster then length(). For comparison
@@ -548,27 +641,79 @@ class Vector2 {
     }
 
     /**
-     * Normalize vector
+     * Get length of vector.
+     * @return length of vector
      */
-    inline void constexpr normalize() __attribute__((__always_inline__)) {
+    inline T constexpr length() const __attribute__((__always_inline__)) {
+      return static_cast<T>(std::sqrt(lengthSq()));
+    }
+    /**
+     * Get length of vector, fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_fast() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_fast(lengthSq()));
+    }
+    /**
+     * Get length of vector, rougher fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_faster() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_faster(lengthSq()));
+    }
+
+    /**
+     * normalise vector
+     */
+    inline void constexpr normalise() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
     }
-    inline void constexpr normalise() {  // proper english
-      normalize();
+    inline void constexpr normalise_fast() __attribute__((__always_inline__)) {
+      T const temp = length_fast();
+      x /= temp;
+      y /= temp;
     }
-    inline Vector2<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
+    inline void constexpr normalise_faster() __attribute__((__always_inline__)) {
+      T const temp = length_faster();
+      x /= temp;
+      y /= temp;
+    }
+    inline void constexpr normalize() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise();
+    }
+    inline void constexpr normalize_fast() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_fast();
+    }
+    inline void constexpr normalize_faster() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_faster();
+    }
+    inline Vector2<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       return Vector2<T>(x / temp, y / temp);
     }
-    inline Vector2<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_copy();
+    inline Vector2<T> constexpr normalise_copy_fast() const __attribute__((__always_inline__)) {
+      T const temp(length_fast());
+      return Vector2<T>(x / temp, y / temp);
+    }
+    inline Vector2<T> constexpr normalise_copy_faster() const __attribute__((__always_inline__)) {
+      T const temp(length_faster());
+      return Vector2<T>(x / temp, y / temp);
+    }
+    inline Vector2<T> constexpr normalize_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy();
+    }
+    inline Vector2<T> constexpr normalize_copy_fast() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_fast();
+    }
+    inline Vector2<T> constexpr normalize_copy_faster() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_faster();
     }
     /**
-     * Normalize vector. with added zero safety check
+     * normalise vector. with added zero safety check
      */
-    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) {
       T const temp = length();
       if(temp == static_cast<T>(0)) {
         x = static_cast<T>(0);
@@ -578,10 +723,10 @@ class Vector2 {
         y /= temp;
       }
     }
-    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
-      normalize_safe();
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_safe();
     }
-    inline Vector2<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+    inline Vector2<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       if(temp == static_cast<T>(0)) {
         return Vector2<T>();
@@ -589,8 +734,8 @@ class Vector2 {
         return Vector2<T>(x / temp, y / temp);
       }
     }
-    inline Vector2<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_safe_copy();
+    inline Vector2<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_safe_copy();
     }
 
     /**
@@ -770,7 +915,7 @@ using Vector2i = Vector2<int>;
  * <ul>
  *  <li>access as position (x,y,z) &mdash; <code>v.x = v.y = v.z = 1;</code></li>
  *  <li>access as texture coordinate (s,t,u) &mdash; <code>v.s = v.t = v.u = 1;</code></li>
- *  <li>access as color (r,g,b) &mdash; <code>v.r = v.g = v.b = 1;</code></li>
+ *  <li>access as colour (r,g,b) &mdash; <code>v.r = v.g = v.b = 1;</code></li>
  *  <li>access via operator[] &mdash; <code>v[0] = v[1] = v[2] = 1;</code></li>
  * </ul>
  */
@@ -792,7 +937,7 @@ class Vector3 {
 
       /**
        * First element of vector, alias for R-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T r;
     };
@@ -809,7 +954,7 @@ class Vector3 {
       T t;
       /**
        * Second element of vector, alias for G-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T g;
     };
@@ -827,7 +972,7 @@ class Vector3 {
       T u;
       /**
        * Third element of vector, alias for B-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T b;
     };
@@ -1280,14 +1425,6 @@ class Vector3 {
 
     //-------------[ size operations ]---------------------------
     /**
-     * Get length of vector.
-     * @return length of vector
-     */
-    inline T constexpr length() const __attribute__((__always_inline__)) {
-      return static_cast<T>(std::sqrt(x * x + y * y + z * z));
-    }
-
-    /**
      * Return square of length.
      * @return length ^ 2
      * @note This method is faster then length(). For comparison
@@ -1299,28 +1436,82 @@ class Vector3 {
     }
 
     /**
-     * Normalize vector
+     * Get length of vector.
+     * @return length of vector
      */
-    inline void constexpr normalize() __attribute__((__always_inline__)) {
+    inline T constexpr length() const __attribute__((__always_inline__)) {
+      return static_cast<T>(std::sqrt(lengthSq()));
+    }
+    /**
+     * Get length of vector, fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_fast() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_fast(lengthSq()));
+    }
+    /**
+     * Get length of vector, rougher fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_faster() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_faster(lengthSq()));
+    }
+
+    /**
+     * normalise vector
+     */
+    inline void constexpr normalise() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
       z /= temp;
     }
-    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
-      normalize();
+    inline void constexpr normalise_fast() __attribute__((__always_inline__)) {
+      T const temp = length_fast();
+      x /= temp;
+      y /= temp;
+      z /= temp;
     }
-    inline Vector3<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
+    inline void constexpr normalise_faster() __attribute__((__always_inline__)) {
+      T const temp = length_faster();
+      x /= temp;
+      y /= temp;
+      z /= temp;
+    }
+    inline void constexpr normalize() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise();
+    }
+    inline void constexpr normalize_fast() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_fast();
+    }
+    inline void constexpr normalize_faster() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_faster();
+    }
+    inline Vector3<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       return Vector3<T>(x / temp, y / temp, z / temp);
     }
-    inline Vector3<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_copy();
+    inline Vector3<T> constexpr normalise_copy_fast() const __attribute__((__always_inline__)) {
+      T const temp(length_fast());
+      return Vector3<T>(x / temp, y / temp, z / temp);
+    }
+    inline Vector3<T> constexpr normalise_copy_faster() const __attribute__((__always_inline__)) {
+      T const temp(length_faster());
+      return Vector3<T>(x / temp, y / temp, z / temp);
+    }
+    inline Vector3<T> constexpr normalize_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy();
+    }
+    inline Vector3<T> constexpr normalize_copy_fast() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_fast();
+    }
+    inline Vector3<T> constexpr normalize_copy_faster() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_faster();
     }
     /**
-     * Normalize vector. with added zero safety check
+     * normalise vector. with added zero safety check
      */
-    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) {
       T const temp = length();
       if(temp == static_cast<T>(0)) {
         x = static_cast<T>(0);
@@ -1332,10 +1523,10 @@ class Vector3 {
         z /= temp;
       }
     }
-    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
-      normalize_safe();
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_safe();
     }
-    inline Vector3<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+    inline Vector3<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       if(temp == static_cast<T>(0)) {
         return Vector3<T>();
@@ -1343,8 +1534,8 @@ class Vector3 {
         return Vector3<T>(x / temp, y / temp, z / temp);
       }
     }
-    inline Vector3<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_safe_copy();
+    inline Vector3<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_safe_copy();
     }
 
     /**
@@ -1551,7 +1742,7 @@ using Vector3i = Vector3<int>;
  * <ul>
  *  <li>access as position in projective space (x,y,z,w) &mdash; <code>v.x = v.y = v.z = v.w = 1;</code></li>
  *  <li>access as texture coordinate (s,t,u,v) &mdash; <code>v.s = v.t = v.u = v.v = 1;</code></li>
- *  <li>access as color (r,g,b,a) &mdash; <code>v.r = v.g = v.b = v.a = 1;</code></li>
+ *  <li>access as colour (r,g,b,a) &mdash; <code>v.r = v.g = v.b = v.a = 1;</code></li>
  *  <li>access via operator[] &mdash; <code>v[0] = v[1] = v[2] = v[3] = 1;</code></li>
  * </ul>
  */
@@ -1562,7 +1753,7 @@ class Vector4 {
     union {
       /**
        * First element of vector, alias for R-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T r
       /**
@@ -1574,7 +1765,7 @@ class Vector4 {
     union {
       /**
        * Second element of vector, alias for G-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T g;
       /**
@@ -1586,7 +1777,7 @@ class Vector4 {
     union {
       /**
        * Third element of vector, alias for B-coordinate.
-       * For color notation.
+       * For colour notation.
        */
       T b;
       /**
@@ -1598,7 +1789,7 @@ class Vector4 {
     union {
       /**
        * Fourth element of vector, alias for A-coordinate.
-       * For color notation. This represnt aplha chanell
+       * For colour notation. This represnt aplha channel
        */
       T a;
       /**
@@ -2116,14 +2307,6 @@ class Vector4 {
 
     //-------------[ size operations ]---------------------------
     /**
-     * Get length of vector.
-     * @return length of vector
-     */
-    inline T constexpr length() const __attribute__((__always_inline__)) {
-      return static_cast<T>(std::sqrt(x * x + y * y + z * z + w * w));
-    }
-
-    /**
      * Return square of length.
      * @return length ^ 2
      * @note This method is faster then length(). For comparison
@@ -2135,29 +2318,85 @@ class Vector4 {
     }
 
     /**
-     * Normalize vector
+     * Get length of vector.
+     * @return length of vector
      */
-    inline void constexpr normalize() __attribute__((__always_inline__)) {
+    inline T constexpr length() const __attribute__((__always_inline__)) {
+      return static_cast<T>(std::sqrt(lengthSq()));
+    }
+    /**
+     * Get length of vector, fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_fast() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_fast(lengthSq()));
+    }
+    /**
+     * Get length of vector, rougher fast approximation.
+     * @return length of vector
+     */
+    inline T constexpr length_faster() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_faster(lengthSq()));
+    }
+
+    /**
+     * normalise vector
+     */
+    inline void constexpr normalise() __attribute__((__always_inline__)) {
       T const temp = length();
       x /= temp;
       y /= temp;
       z /= temp;
       w /= temp;
     }
-    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
-      normalize();
+    inline void constexpr normalise_fast() __attribute__((__always_inline__)) {
+      T const temp = length_fast();
+      x /= temp;
+      y /= temp;
+      z /= temp;
+      w /= temp;
     }
-    inline Vector4<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
+    inline void constexpr normalise_faster() __attribute__((__always_inline__)) {
+      T const temp = length_faster();
+      x /= temp;
+      y /= temp;
+      z /= temp;
+      w /= temp;
+    }
+    inline void constexpr normalize() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise();
+    }
+    inline void constexpr normalize_fast() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_fast();
+    }
+    inline void constexpr normalize_faster() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_faster();
+    }
+    inline Vector4<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
     }
-    inline Vector4<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_copy();
+    inline Vector4<T> constexpr normalise_copy_fast() const __attribute__((__always_inline__)) {
+      T const temp(length_fast());
+      return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
+    }
+    inline Vector4<T> constexpr normalise_copy_faster() const __attribute__((__always_inline__)) {
+      T const temp(length_faster());
+      return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
+    }
+    inline Vector4<T> constexpr normalize_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy();
+    }
+    inline Vector4<T> constexpr normalize_copy_fast() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_fast();
+    }
+    inline Vector4<T> constexpr normalize_copy_faster() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_faster();
     }
     /**
-     * Normalize vector. with added zero safety check
+     * normalise vector. with added zero safety check
      */
-    inline void constexpr normalize_safe() __attribute__((__always_inline__)) {
+    inline void constexpr normalise_safe() __attribute__((__always_inline__)) {
       T const temp = length();
       if(temp == static_cast<T>(0)) {
         x = static_cast<T>(0);
@@ -2171,10 +2410,10 @@ class Vector4 {
         w /= temp;
       }
     }
-    inline void constexpr normalise_safe() __attribute__((__always_inline__)) { // proper english
-      normalize_safe();
+    inline void constexpr normalize_safe() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_safe();
     }
-    inline Vector4<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) {
+    inline Vector4<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       if(temp == static_cast<T>(0)) {
         return Vector4<T>();
@@ -2182,8 +2421,8 @@ class Vector4 {
         return Vector4<T>(x / temp, y / temp, z / temp, w / temp);
       }
     }
-    inline Vector4<T> constexpr normalise_safe_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_safe_copy();
+    inline Vector4<T> constexpr normalize_safe_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_safe_copy();
     }
 
     /**
@@ -2824,13 +3063,13 @@ class Matrix3 {
     }
 
     /**
-     * Orthonormalises the matrix.
-     * 1. Normalises the normal.
-     * 2. Normalises the tangent and makes sure it is orthogonal to normal.
-     * 3. Normalises binormal and makes sure it is orthogonal to both normal and tangent.
+     * Orthonormalizes the matrix.
+     * 1. normalizes the normal.
+     * 2. normalizes the tangent and makes sure it is orthogonal to normal.
+     * 3. normalizes binormal and makes sure it is orthogonal to both normal and tangent.
      */
-    inline void constexpr orthonormalize() __attribute__((__always_inline__)) {
-      // normalise x:
+    inline void constexpr orthonormalise() __attribute__((__always_inline__)) {
+      // normalize x:
       T const x_length = static_cast<T>(std::sqrt(data[0] * data[0] + data[1] * data[1] + data[2] * data[2]));
       data[0] /= x_length;
       data[1] /= x_length;
@@ -2840,7 +3079,7 @@ class Matrix3 {
       data[6] -= data[6] * x_dot_z;
       data[7] -= data[7] * x_dot_z;
       data[8] -= data[8] * x_dot_z;
-      // normalise z:
+      // normalize z:
       T const z_length = static_cast<T>(std::sqrt(data[6] * data[6] + data[7] * data[7] + data[8] * data[8]));
       data[6] /= z_length;
       data[7] /= z_length;
@@ -2851,8 +3090,8 @@ class Matrix3 {
       data[5] = data[6] * data[1] - data[0] * data[7];
     }
     /// Proper English
-    inline void constexpr orthonormalise() __attribute__((__always_inline__)) {
-      orthonormalize();
+    inline void constexpr orthonormalize() __attribute__((__always_inline__)) {
+      orthonormalise();
     }
 
     //-------------[ conversion ]-----------------------------
@@ -3139,11 +3378,11 @@ class Matrix4 {
     inline static Matrix4<T> constexpr createLookAt(Vector3<T> const &eyePos, Vector3<T> const &centerPos, Vector3<T> const &upDir) __attribute__((__always_inline__)) {
       /*
       Vector3<T> forward = centerPos - eyePos;
-      forward.normalize();
+      forward.normalise();
 
       // Side = forward x up
       Vector3<T> side = forward.crossProduct(upDir);
-      side.normalize();
+      side.normalise();
 
       // Recompute up as: up = side x forward
       Vector3<T> const up = side.crossProduct(forward);
@@ -3169,19 +3408,19 @@ class Matrix4 {
                         1.0f) * Matrix4<T>::createTranslation(-eyePos.x, -eyePos.y, -eyePos.z);
       */
       // constexpr-suitable return-only alternative, may turn out much slower when computed at runtime:
-      return Matrix4<T>( (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().x,
-                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).x,
-                        -(centerPos - eyePos).normalize_copy().x,
+      return Matrix4<T>( (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().x,
+                         (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().crossProduct((centerPos - eyePos).normalise_copy()).x,
+                        -(centerPos - eyePos).normalise_copy().x,
                          static_cast<T>(0),
 
-                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().y,
-                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).y,
-                        -(centerPos - eyePos).normalize_copy().y,
+                         (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().y,
+                         (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().crossProduct((centerPos - eyePos).normalise_copy()).y,
+                        -(centerPos - eyePos).normalise_copy().y,
                          static_cast<T>(0),
 
-                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().z,
-                         (centerPos - eyePos).normalize_copy().crossProduct(upDir).normalize_copy().crossProduct((centerPos - eyePos).normalize_copy()).z,
-                        -(centerPos - eyePos).normalize_copy().z,
+                         (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().z,
+                         (centerPos - eyePos).normalise_copy().crossProduct(upDir).normalise_copy().crossProduct((centerPos - eyePos).normalise_copy()).z,
+                        -(centerPos - eyePos).normalise_copy().z,
                          static_cast<T>(0),
 
                          static_cast<T>(0),
@@ -4123,7 +4362,21 @@ class Quaternion {
      * @return Length of quaternion.
      */
     inline T constexpr length() const __attribute__((__always_inline__)) {
-      return static_cast<T>(std::sqrt(w * w + v.lengthSq()));
+      return static_cast<T>(std::sqrt(lengthSq()));
+    }
+    /**
+     * Get length of quaternion, fast approximation.
+     * @return Length of quaternion.
+     */
+    inline T constexpr length_fast() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_fast(lengthSq()));
+    }
+    /**
+     * Get length of quaternion, rougher fast approximation.
+     * @return Length of quaternion.
+     */
+    inline T constexpr length_faster() const __attribute__((__always_inline__)) {
+      return static_cast<T>(sqrt_faster(lengthSq()));
     }
 
     /**
@@ -4138,22 +4391,52 @@ class Quaternion {
     }
 
     /**
-     * Normalize quaternion
+     * normalise quaternion
      */
-    inline void constexpr normalize() __attribute__((__always_inline__)) {
+    inline void constexpr normalise() __attribute__((__always_inline__)) {
       T len = length();
       w /= len;
       v /= len;
     }
-    inline void constexpr normalise() __attribute__((__always_inline__)) {  // proper english
-      normalize();
+    inline void constexpr normalise_fast() __attribute__((__always_inline__)) {
+      T len = length_fast();
+      w /= len;
+      v /= len;
     }
-    inline Quaternion<T> constexpr normalize_copy() const __attribute__((__always_inline__)) {
+    inline void constexpr normalise_faster() __attribute__((__always_inline__)) {
+      T len = length_faster();
+      w /= len;
+      v /= len;
+    }
+    inline void constexpr normalize() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise();
+    }
+    inline void constexpr normalize_fast() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_fast();
+    }
+    inline void constexpr normalize_faster() __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      normalise_faster();
+    }
+    inline Quaternion<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {
       T const temp(length());
       return Quaternion<T>(w / temp, v / temp);
     }
-    inline Quaternion<T> constexpr normalise_copy() const __attribute__((__always_inline__)) {  // proper english
-      return normalize_copy();
+    inline Quaternion<T> constexpr normalise_copy_fast() const __attribute__((__always_inline__)) {
+      T const temp(length_fast());
+      return Quaternion<T>(w / temp, v / temp);
+    }
+    inline Quaternion<T> constexpr normalise_copy_faster() const __attribute__((__always_inline__)) {
+      T const temp(length_faster());
+      return Quaternion<T>(w / temp, v / temp);
+    }
+    inline Quaternion<T> constexpr normalize_copy() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy();
+    }
+    inline Quaternion<T> constexpr normalize_copy_fast() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_fast();
+    }
+    inline Quaternion<T> constexpr normalize_copy_faster() const __attribute__((__always_inline__)) __attribute__((__deprecated__("Proper English, please!"))) {
+      return normalise_copy_faster();
     }
 
     inline void constexpr conjugate() __attribute__((__always_inline__)) {
