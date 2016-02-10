@@ -221,7 +221,9 @@ inline static double constexpr sqrt_inv_fast(double number) {
   double x = number * 0.5;
   double y = number;
   uint64_t i  = *(uint64_t*)&y;                                                 // evil floating point bit level hacking
-  i = 0x5fe6eb50c7b537a9 - (i >> 1);                                            // even more magic than "what the fuck" number
+  //i = 0x5fe6eb50c7b537a9ll - (i >> 1);                                          // even more magic than "what the fuck" number
+  uint64_t constexpr const magic = (uint64_t(0x5fe6eb50) << (8 * 4)) + uint64_t(0xc7b537a9);  // hack to produce 0x5fe6eb50c7b537a9ll without triggering -Wlong-long warning
+  i = magic - (i >> 1);
   y = *(double*)&i;
   y = y * (threehalfs - (x * y * y));                                           // 1st iteration
   y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
@@ -267,7 +269,9 @@ inline static double constexpr sqrt_inv_faster(double number) {
   double x = number * 0.5;
   double y = number;
   uint64_t i  = *(uint64_t*)&y;                                                 // evil floating point bit level hacking
-  i = 0x5fe6eb50c7b537a9 - (i >> 1);                                            // even more magic than "what the fuck" number
+  //i = 0x5fe6eb50c7b537a9ll - (i >> 1);                                          // even more magic than "what the fuck" number
+  uint64_t constexpr const magic = (uint64_t(0x5fe6eb50) << (8 * 4)) + uint64_t(0xc7b537a9);  // hack to produce 0x5fe6eb50c7b537a9ll without triggering -Wlong-long warning
+  i = magic - (i >> 1);
   y = *(double*)&i;
   y = y * (threehalfs - (x * y * y));                                           // 1st iteration
   //y = y * (threehalfs - (x * y * y));                                           // 2nd iteration, this can be removed
@@ -288,6 +292,19 @@ inline static int constexpr sqrt_faster(int number) __attribute__((__always_inli
 inline static int constexpr sqrt_faster(int number) {
   // convert ints to floats and back
   return static_cast<int>(sqrt_inv_faster(static_cast<float>(number)) * static_cast<float>(number));
+}
+
+inline static float sqrt_inv_sse(float number) __attribute__((__always_inline__));
+inline static float sqrt_inv_sse(float number) {
+  /// Scalar SSE inverse square root approximation
+  float result;
+  _mm_store_ss(&result, _mm_rsqrt_ss(_mm_load_ss(&number)));
+  return result;
+}
+inline static float sqrt_sse(float number) __attribute__((__always_inline__));
+inline static float sqrt_sse(float number) {
+  /// Scalar SSE square root approximation
+  return sqrt_inv_sse(number) * number;
 }
 
 template<typename T> class Vector2;  // forward declarations
