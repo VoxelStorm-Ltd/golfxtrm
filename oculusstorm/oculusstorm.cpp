@@ -1,4 +1,5 @@
 #include "oculusstorm.h"
+#include <iostream>
 
 oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   : nearplane(new_nearplane == 0.0f ? 0.2f : new_nearplane),  // 20cm default clip plane
@@ -100,10 +101,10 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   //OVR::Util::Render::Viewport viewport_right = eyeparams_right.VP;
   //std::cout << "  viewport left  = " << viewport_left.w << "x" << viewport_left.h << " at " << viewport_left.x << "," << viewport_left.y << std::endl;
   //std::cout << "  viewport right = " << viewport_right.w << "x" << viewport_right.h << " at " << viewport_right.x << "," << viewport_right.y << std::endl;
-  //projection_left  = Matrix4f::fromRowMajorArray(*eyeparams_left.Projection.M);
-  //projection_right = Matrix4f::fromRowMajorArray(*eyeparams_right.Projection.M);
-  //viewadjust_left  = Matrix4f::fromRowMajorArray(*eyeparams_left.ViewAdjust.M);
-  //viewadjust_right = Matrix4f::fromRowMajorArray(*eyeparams_right.ViewAdjust.M);
+  //projection_left  = matrix4f::fromRowMajorArray(*eyeparams_left.Projection.M);
+  //projection_right = matrix4f::fromRowMajorArray(*eyeparams_right.Projection.M);
+  //viewadjust_left  = matrix4f::fromRowMajorArray(*eyeparams_left.ViewAdjust.M);
+  //viewadjust_right = matrix4f::fromRowMajorArray(*eyeparams_right.ViewAdjust.M);
   //std::cout << projection_left.M[0][0] << " " << projection_left.M[0][1] << " " << projection_left.M[0][2] << std::endl;
   //std::cout << projection_left  << std::endl;
   //std::cout << projection_right << std::endl;
@@ -136,21 +137,21 @@ void oculusstorm::dumpinfo() {
                " Z=" << acceleration.z << std::endl;
 }
 
-Quatf oculusstorm::getquat() {
+quatf oculusstorm::getquat() {
   /// Fetch the rotation quaternion
   OVR::Quatf const orientation = sensorfusion->GetOrientation();
   // translate from OVR quat to vmath quat (w + Xi + Yj + Zk)
-  return Quatf(orientation.w, orientation.x, orientation.y, orientation.z);
+  return quatf(orientation.w, orientation.x, orientation.y, orientation.z);
 }
 
-Matrix4f oculusstorm::getmatrix() {
+matrix4f oculusstorm::getmatrix() {
   /// Generate a matrix with a yaw offset
   return getquat().transform();
 }
 
-Matrix4f oculusstorm::convertmatrix(OVR::Matrix4f ovrmatrix) {
+matrix4f oculusstorm::convertmatrix(OVR::Matrix4f ovrmatrix) {
   /// Convert from OVR row-major matrices to vmath opengl-compatible column-major
-  return Matrix4f::fromRowMajorArray(*ovrmatrix.M);
+  return matrix4f::fromRowMajorArray(*ovrmatrix.M);
 }
 
 void oculusstorm::cachematrices() {

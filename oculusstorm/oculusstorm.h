@@ -14,7 +14,8 @@
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
 #include <OVR.h>
 #pragma GCC diagnostic pop
-#include "vmath.h"
+#include "vectorstorm/matrix/matrix4.h"
+#include "vectorstorm/quat/quat.h"
 
 class oculusstorm {
 public:
@@ -31,10 +32,10 @@ public:
   GLfloat nearplane;
   GLfloat farplane;
 
-  Matrix4<GLfloat> projection_left;
-  Matrix4<GLfloat> projection_right;
-  Matrix4<GLfloat> viewadjust_left;
-  Matrix4<GLfloat> viewadjust_right;
+  matrix4<GLfloat> projection_left;
+  matrix4<GLfloat> projection_right;
+  matrix4<GLfloat> viewadjust_left;
+  matrix4<GLfloat> viewadjust_right;
 
   OVR::Ptr<OVR::DeviceManager>    manager       = nullptr;
   OVR::Ptr<OVR::HMDDevice>        device        = nullptr;
@@ -50,9 +51,9 @@ public:
   ~oculusstorm();
 
   void dumpinfo();
-  Quatf getquat();
-  Matrix4f getmatrix();
-  Matrix4f convertmatrix(OVR::Matrix4f ovrmatrix);
+  quatf getquat();
+  matrix4f getmatrix();
+  matrix4f convertmatrix(OVR::Matrix4f ovrmatrix);
   void cachematrices();
   void setup_left();
   void setup_right();
