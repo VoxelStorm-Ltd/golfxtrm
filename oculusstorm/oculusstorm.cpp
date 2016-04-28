@@ -2,7 +2,7 @@
 #include <iostream>
 
 oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
-  : nearplane(new_nearplane == 0.0f ? 0.2f : new_nearplane),  // 20cm default clip plane
+  : nearplane(new_nearplane == 0.0f ? 0.2f : new_nearplane),                    // 20cm default clip plane
     farplane(new_farplane) {
   /// Default constructor
   // oculus rift initialisation
@@ -18,7 +18,10 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   //manager->SetMessageHandler(this);
   try {
     device.Clear();
-    device = *manager->EnumerateDevices<OVR::HMDDevice>().CreateDevice();
+    auto deviceptr = manager->EnumerateDevices<OVR::HMDDevice>().CreateDevice();
+    if(deviceptr) {
+      device = *deviceptr;
+    }
   } catch(std::exception &e) {
     std::cout << "Oculus: Exception while creating hmd device: " << e.what() << std::endl;
   }
@@ -29,7 +32,10 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
     sensor = *device->GetSensor();
   } else {
     std::cout << "Oculus: Device not found" << std::endl;
-    sensor = *manager->EnumerateDevices<OVR::SensorDevice>().CreateDevice();
+    auto sensorptr = manager->EnumerateDevices<OVR::SensorDevice>().CreateDevice();
+    if(sensorptr) {
+      sensor = *sensorptr;
+    }
   }
   if(!sensor) {
     std::cout << "Oculus: Sensor not found" << std::endl;
@@ -50,8 +56,8 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   enabled = true;
 
   // setup:
-  sensorfusion->EnableMotionTracking();     // make sure motion tracking is enabled
-  sensorfusion->SetGravityEnabled(true);    // gravity correction
+  sensorfusion->EnableMotionTracking();                                         // make sure motion tracking is enabled
+  sensorfusion->SetGravityEnabled(true);                                        // gravity correction
 
   std::cout << "  DisplayDeviceName: "      << hmdinfo.DisplayDeviceName << std::endl;
   std::cout << "  ProductName: "            << hmdinfo.ProductName << std::endl;
@@ -193,17 +199,17 @@ void oculusstorm::setup_left() {
   glLoadMatrixf(projection_left);
 
   glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();                             // reset view matrix
+  glLoadIdentity();                                                             // reset view matrix
 }
 
 void oculusstorm::setup_right() {
   /// Set up frustrum and matrices for right eye
   glMatrixMode(GL_PROJECTION);
   glViewport(viewport_width, 0, viewport_width, viewport_height);
-  glScissor( viewport_width, 0, viewport_width, viewport_height);   // note: requires glEnable(GL_SCISSOR_TEST);
+  glScissor( viewport_width, 0, viewport_width, viewport_height);               // note: requires glEnable(GL_SCISSOR_TEST);
 
   glLoadMatrixf(projection_right);
 
   glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();                             // reset view matrix
+  glLoadIdentity();                                                             // reset view matrix
 }
