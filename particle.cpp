@@ -150,7 +150,7 @@ golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) 
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);

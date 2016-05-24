@@ -16,14 +16,14 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
 
   maxwidth = 15;
   maxheight = 20;
-  //growthrate = 0.000001;  // reaches full height in about 30 days
-  growthrate = 0.00000003;  // reaches full height in about 9 years
-  //growthrate = 0.000000001;  // reaches full height in about 90 years
+  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  growthrate = 0.00000003;                                                      // reaches full height in about 9 years
+  //growthrate = 0.000000001;                                                   // reaches full height in about 90 years
 
   if(treetype == OAKTREE_STANDARD) {
     name = "perfect oak tree";
     description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.  This one has ideal proportions.";
-    height     = 7;   // default sizes
+    height     = 7;                                                             // default sizes
     bottom     = 2;
     width      = 3;
     trunkwidth = width / 5;
@@ -57,7 +57,7 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
   if(bottom < 1.5) {
     collisionoffset.y = ((height - bottom) / 2) + bottom;
     boundingradius = width * 1.6;
-  } else {  // it's tall enough for us to only collide with the trunk
+  } else {                                                                      // it's tall enough for us to only collide with the trunk
     collisionoffset.y = 1;
     boundingradius = trunkwidth;
   }
@@ -83,76 +83,76 @@ void oaktree::updatevbo() {
   // rendering data
   // body:
   GLfloat vbodata[] = {
-    -trunkwidth, -1,      -trunkwidth,    // 0   // sides of trunk
-    -trunkwidth, -1,      trunkwidth,     // 1
-    -trunkwidth, bottom, -trunkwidth,    // 2
-    -trunkwidth, bottom, trunkwidth,     // 3
-    trunkwidth,  -1,      -trunkwidth,    // 4
-    trunkwidth,  -1,      trunkwidth,     // 5
-    trunkwidth,  bottom, -trunkwidth,    // 6
-    trunkwidth,  bottom, trunkwidth,     // 7
+    -trunkwidth, -1,      -trunkwidth,                                          // 0   // sides of trunk
+    -trunkwidth, -1,      trunkwidth,                                           // 1
+    -trunkwidth, bottom, -trunkwidth,                                           // 2
+    -trunkwidth, bottom, trunkwidth,                                            // 3
+    trunkwidth,  -1,      -trunkwidth,                                          // 4
+    trunkwidth,  -1,      trunkwidth,                                           // 5
+    trunkwidth,  bottom, -trunkwidth,                                           // 6
+    trunkwidth,  bottom, trunkwidth,                                            // 7
 
-    -width, bottom, -width,     // 8    // sides of crown
-    -width, bottom, width,      // 9
-    width,  bottom, -width,     // 10
-    width,  bottom, width,      // 11
-    -width, height, -width,     // 12
-    -width, height, width,      // 13
-    width,  height, -width,     // 14
-    width,  height, width,      // 15
+    -width, bottom, -width,                                                     // 8    // sides of crown
+    -width, bottom, width,                                                      // 9
+    width,  bottom, -width,                                                     // 10
+    width,  bottom, width,                                                      // 11
+    -width, height, -width,                                                     // 12
+    -width, height, width,                                                      // 13
+    width,  height, -width,                                                     // 14
+    width,  height, width,                                                      // 15
 
-    -width, bottom, -width,     // 16   // bottom of crown
-    -width, bottom, width,      // 17
-    width,  bottom, -width,     // 18
-    width,  bottom, width,      // 19
+    -width, bottom, -width,                                                     // 16   // bottom of crown
+    -width, bottom, width,                                                      // 17
+    width,  bottom, -width,                                                     // 18
+    width,  bottom, width,                                                      // 19
 
-    -width, height, -width,     // 20   // top of crown
-    -width, height, width,      // 21
-    width,  height, -width,     // 22
-    width,  height, width,      // 23
+    -width, height, -width,                                                     // 20   // top of crown
+    -width, height, width,                                                      // 21
+    width,  height, -width,                                                     // 22
+    width,  height, width,                                                      // 23
   };
-  GLfloat vbodata_n[] = {   // the last vertex of a triangle defines its normal
-    0, 0, -1,   // 0    front
-    -1,0, 0,    // 1    left
-    -1,0, 0,    // 2    left
-    0, 0, 1,    // 3    back
-    1, 0, 0,    // 4    right
-    0, 0, 1,    // 5    back
-    0, 0, -1,   // 6    front
-    1, 0, 0,    // 7    right
+  GLfloat vbodata_n[] = {                                                       // the last vertex of a triangle defines its normal
+    0, 0, -1,                                                                   // 0    front
+    -1,0, 0,                                                                    // 1    left
+    -1,0, 0,                                                                    // 2    left
+    0, 0, 1,                                                                    // 3    back
+    1, 0, 0,                                                                    // 4    right
+    0, 0, 1,                                                                    // 5    back
+    0, 0, -1,                                                                   // 6    front
+    1, 0, 0,                                                                    // 7    right
 
-    0, 0, -1,   // 8    front
-    -1,0, 0,    // 9    left
-    1, 0, 0,    // 10   right
-    0, 0, 1,    // 11   back
-    -1,0, 0,    // 12   left
-    0, 0, 1,    // 13   back
-    0, 0, -1,   // 14   front
-    1, 0, 0,    // 15   right
+    0, 0, -1,                                                                   // 8    front
+    -1,0, 0,                                                                    // 9    left
+    1, 0, 0,                                                                    // 10   right
+    0, 0, 1,                                                                    // 11   back
+    -1,0, 0,                                                                    // 12   left
+    0, 0, 1,                                                                    // 13   back
+    0, 0, -1,                                                                   // 14   front
+    1, 0, 0,                                                                    // 15   right
 
-    0, -1, 0,   // 16   bottom
-    0, -1, 0,   // 17
-    0, -1, 0,   // 18
-    0, -1, 0,   // 19
+    0, -1, 0,                                                                   // 16   bottom
+    0, -1, 0,                                                                   // 17
+    0, -1, 0,                                                                   // 18
+    0, -1, 0,                                                                   // 19
 
-    0,  1, 0,   // 20   top
-    0,  1, 0,   // 21
-    0,  1, 0,   // 22
-    0,  1, 0,   // 23
+    0,  1, 0,                                                                   // 20   top
+    0,  1, 0,                                                                   // 21
+    0,  1, 0,                                                                   // 22
+    0,  1, 0,                                                                   // 23
   };
   GLuint ibodata[] = {
-    6,4,0, 0,2,6,   // front
-    3,1,5, 5,7,3,   // back
-    2,0,1, 1,3,2,   // left
-    7,5,4, 4,6,7,   // right
+    6,4,0, 0,2,6,                                                               // front
+    3,1,5, 5,7,3,                                                               // back
+    2,0,1, 1,3,2,                                                               // left
+    7,5,4, 4,6,7,                                                               // right
 
-    14,12, 8,  8,10,14,   // front
-    11, 9,13, 13,15,11,   // back
-    10,14,15, 15,11,10,   // right
-    9, 13,12, 12, 8, 9,   // left
+    14,12, 8,  8,10,14,                                                         // front
+    11, 9,13, 13,15,11,                                                         // back
+    10,14,15, 15,11,10,                                                         // right
+    9, 13,12, 12, 8, 9,                                                         // left
 
-    19,18,16, 16,17,19,   // bottom
-    23,22,20, 20,21,23,   // top
+    19,18,16, 16,17,19,                                                         // bottom
+    23,22,20, 20,21,23,                                                         // top
   };
   numtris = 20;
 
@@ -167,7 +167,7 @@ void oaktree::updatevbo() {
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -205,7 +205,7 @@ void oaktree::grow(double amount) {
   if(bottom < 1.5) {
     collisionoffset.y = ((height - bottom) / 2) + bottom;
     boundingradius = width * 1.6;
-  } else {  // it's tall enough for us to only collide with the trunk
+  } else {                                                                      // it's tall enough for us to only collide with the trunk
     collisionoffset.y = 1;
     boundingradius = trunkwidth;
   }

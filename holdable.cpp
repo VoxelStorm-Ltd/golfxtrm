@@ -34,13 +34,13 @@ holdable::~holdable() {
 
 void holdable::push(Vector3d impulse) {  /// apply a one-off impulse to this object
   // TODO: if held, apply max holding force, enable knocking out of hand
-  velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
+  velocity += impulse / mass;                                                   // applied directly as a one-off, no delta time considered
 }
 
 void holdable::push(Vector3d impulse, Vector3d impactpoint) {
   /// apply a one-off impulse offset from centre of this object
   // TODO: apply max holding force, enable knocking out of hand
-  velocity += impulse / mass;   // applied directly as a one-off, no delta time considered
+  velocity += impulse / mass;                                                   // applied directly as a one-off, no delta time considered
 
   // TODO: calculate offset from COG and apply rotational acceleration
 }
@@ -54,11 +54,11 @@ void holdable::update(double timedelta) {
   if(held_by == NULL) {
     if(!at_rest) {
       // gravitational force
-      velocity.y -= (currentplanet->gravity * timedelta);     // acceleration
+      velocity.y -= (currentplanet->gravity * timedelta);                       // acceleration
 
       Vector3d newposition = position + (velocity * timedelta);
       //std::cout << "DEBUG last settings " << position.x << " " << position.y << " " << position.z << " " << newposition.x << " " << newposition.y << " " <<newposition.z << std::endl;
-      new golfballtrail(currentplanet, position, newposition);  // particle trails
+      new golfballtrail(currentplanet, position, newposition);                  // particle trails
       position = newposition;
 
       // air resistance and wind effect (combined)
@@ -95,11 +95,11 @@ void holdable::update(double timedelta) {
           }
           position.y += amounttomove;
         }
-        if(velocity.y < 0) {                // stop downwards motion
+        if(velocity.y < 0) {                                                    // stop downwards motion
           velocity.y = 0;
         }
         // apply rolling resistance (different to sliding friction)
-        double thisfrictionimpulse = mass * currentplanet->get_friction_at(position.x, position.z) * timedelta;  // mass cancels
+        double thisfrictionimpulse = mass * currentplanet->get_friction_at(position.x, position.z) * timedelta; // mass cancels
         Vector3d thisdragdecel = velocity;
         thisdragdecel.normalize();
         thisdragdecel = thisdragdecel * -1 * (thisfrictionimpulse

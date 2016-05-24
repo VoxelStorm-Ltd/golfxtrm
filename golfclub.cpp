@@ -33,37 +33,37 @@ golfclub::golfclub(world *parentplanet) {
   float headlength = 0.1;
   float headdepth = 0.05;
   GLfloat vbodata[] = {
-    left,  bottom, back,    // 0
-    left,  bottom, front,   // 1
-    left,  top,    back,    // 2
-    left,  top,    front,   // 3
-    right, bottom, back,    // 4
-    right, bottom, front,   // 5
-    right, top,    back,    // 6
-    right, top,    front,   // 7
+    left,  bottom, back,                                                        // 0
+    left,  bottom, front,                                                       // 1
+    left,  top,    back,                                                        // 2
+    left,  top,    front,                                                       // 3
+    right, bottom, back,                                                        // 4
+    right, bottom, front,                                                       // 5
+    right, top,    back,                                                        // 6
+    right, top,    front,                                                       // 7
 
-    left,  top+headdepth, back,        // 8
-    left,  top+headdepth, headlength,  // 9
-    left,  top,           back,        // 10
-    left,  top,           headlength,  // 11
-    right, top+headdepth, back,        // 12
-    right, top+headdepth, headlength,  // 13
-    right, top,           back,        // 14
-    right, top,           headlength   // 15
+    left,  top+headdepth, back,                                                 // 8
+    left,  top+headdepth, headlength,                                           // 9
+    left,  top,           back,                                                 // 10
+    left,  top,           headlength,                                           // 11
+    right, top+headdepth, back,                                                 // 12
+    right, top+headdepth, headlength,                                           // 13
+    right, top,           back,                                                 // 14
+    right, top,           headlength                                            // 15
   };
   GLuint ibodata[] = {
-    6,4,0, 0,2,6,   // front
-    3,1,5, 5,7,3,   // back
-    2,0,1, 1,3,2,   // left
-    7,5,4, 4,6,7,   // right
-    2,6,7, 7,3,2,   // top
-    5,4,0, 0,1,5,   // bottom
+    6,4,0, 0,2,6,                                                               // front
+    3,1,5, 5,7,3,                                                               // back
+    2,0,1, 1,3,2,                                                               // left
+    7,5,4, 4,6,7,                                                               // right
+    2,6,7, 7,3,2,                                                               // top
+    5,4,0, 0,1,5,                                                               // bottom
 
-    14,12, 8,  8,10,14,  // front
-    10, 8, 9,  9,11,10,  // left
-    15,13,12, 12,14,15,  // right
-    10,14,13, 15,11,10,  // top
-    13,12, 8,  8, 9,13,  // bottom
+    14,12, 8,  8,10,14,                                                         // front
+    10, 8, 9,  9,11,10,                                                         // left
+    15,13,12, 12,14,15,                                                         // right
+    10,14,13, 15,11,10,                                                         // top
+    13,12, 8,  8, 9,13,                                                         // bottom
   };
   numtris = 22;
 
@@ -84,7 +84,7 @@ golfclub::golfclub(world *parentplanet) {
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
     glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArrayARB(0);
@@ -160,14 +160,14 @@ void golfclub::renderlocal() {  /// draw the object using an indexed VBO with VA
 }
 
 void golfclub::impact(holdable *target, golfer *actor, double distance) {
-  soundengine->play2D("GolfXTRM - hit1.ogg", false);  // play sounds as early as possible
+  soundengine->play2D("GolfXTRM - hit1.ogg", false);                            // play sounds as early as possible
   // rotational velocity -> linear velocity
   double pushleft = actor->armsyawvelocity * distance;
   double pushdown = actor->armspitchvelocity * distance;
   Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
-  if(pushvector.length() > 70 * target->mass) {  // cap the launch speed
+  if(pushvector.length() > 70 * target->mass) {                                 // cap the launch speed
     pushvector.normalize();
-    pushvector *= 70 * target->mass;  // momentum - from average golf launch speeds
+    pushvector *= 70 * target->mass;                                            // momentum - from average golf launch speeds
   }
   //std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
   pushvector.rotate(0, 0, actor->armsyaw);
@@ -175,7 +175,7 @@ void golfclub::impact(holdable *target, golfer *actor, double distance) {
   pushvector.rotate(actor->armspitch, 0, 0);
   //std::cout << "vector 3        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;
   pushvector.rotate(0, -actor->bodyyaw, 0);
-  if(actor->armsyawvelocity < 0) {  // club loft effect (only on lofted side)
+  if(actor->armsyawvelocity < 0) {                                              // club loft effect (only on lofted side)
     //pushvector.rotate(-45, 0, 0);
     pushvector.y = pushvector.y + (pushvector.length());
   }

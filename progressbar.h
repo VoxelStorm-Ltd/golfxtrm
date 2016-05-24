@@ -12,11 +12,11 @@
 */
 
 void drawprogressbar(progressbartype type, double value, double maxvalue) {
-  if(type == PROGRESSBAR_CONSOLE) {   // text-only debugging version - minimal resource use
+  if(type == PROGRESSBAR_CONSOLE) {                                             // text-only debugging version - minimal resource use
     short percent = (value * 100) / maxvalue;
     //std::cout <<"Progress: "<<percent<<"%"<<std::endl;
     std::cout <<"\rProgress: "<<percent<<"%";
-  } else if(type == PROGRESSBAR_HORIZONTAL) {  // basic small rectangular progress bar
+  } else if(type == PROGRESSBAR_HORIZONTAL) {                                   // basic small rectangular progress bar
     glLoadIdentity();
     glClearColor(0.3, 0.3, 0.3, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -49,7 +49,7 @@ void drawprogressbar(progressbartype type, double value, double maxvalue) {
 
     glfwSwapBuffers();
 
-  } else if(type == PROGRESSBAR_DISC) {  // partial disc
+  } else if(type == PROGRESSBAR_DISC) {                                         // partial disc
     int angle = (value*360)/maxvalue;
 
     glLoadIdentity();
@@ -75,7 +75,7 @@ void drawprogressbar(progressbartype type, double value, double maxvalue) {
 
     // put things back the way they were
     glEnable(GL_DEPTH_TEST);
-  } else if(type == PROGRESSBAR_TILTEDDISC) {  // partial disc, tilted
+  } else if(type == PROGRESSBAR_TILTEDDISC) {                                   // partial disc, tilted
     double angle = (value*360)/maxvalue;
 
     glLoadIdentity();
@@ -106,7 +106,7 @@ void drawprogressbar(progressbartype type, double value, double maxvalue) {
 
     // put things back the way they were
     glEnable(GL_DEPTH_TEST);
-  } else if(type == PROGRESSBAR_TILTINGDISC) {  // partial disc, tilting progressively
+  } else if(type == PROGRESSBAR_TILTINGDISC) {                                  // partial disc, tilting progressively
     // (perfect for transitioning between 2 and 3)
     double level = value/maxvalue;
     double angle = level * 360;

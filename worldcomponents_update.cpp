@@ -29,7 +29,7 @@ void world::update(double timedelta) {
 
       // update seasons if appropriate
       int dayofyear = calendardate % 365;
-      if(dayofyear > 90 && dayofyear < 330) { // consider snow december to march
+      if(dayofyear > 90 && dayofyear < 330) {                                   // consider snow december to march
         grasscolour   = summergrasscolour;
         skycolour     = summerskycolour;
         fogcolour     = summerfogcolour;
@@ -119,7 +119,7 @@ void world::update(double timedelta) {
       } else {
         //std::cout << "  Updating " << *i << std::endl;
         (*i)->update(timedelta);
-        //(*i)->update(timedelta / 100);   // DEBUG
+        //(*i)->update(timedelta / 100);                                        // DEBUG
       }
     }
   //}

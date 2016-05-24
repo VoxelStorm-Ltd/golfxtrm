@@ -17,14 +17,14 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
 
   maxwidth = 10;
   maxheight = 40;
-  //growthrate = 0.000001;  // reaches full height in about 30 days
-  growthrate = 0.00000003;  // reaches full height in about 3 years
-  //growthrate = 0.000000003;  // reaches full height in about 30 years
+  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  growthrate = 0.00000003;                                                      // reaches full height in about 3 years
+  //growthrate = 0.000000003;                                                   // reaches full height in about 30 years
 
   if(treetype == FIRTREE_STANDARD) {
     name = "perfect fir tree";
     description = "A narrow tall triangular tree that has green foliage all year round, and grows relatively quickly.  This one has perfect proportions.";
-    height     = 5;   // default sizes
+    height     = 5;                                                             // default sizes
     bottom     = 1;
     width      = 1;
     trunkwidth = width / 5;
@@ -58,7 +58,7 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
   if(bottom < 1.5) {
     collisionoffset.y = bottom;
     boundingradius = width * 1.6;
-  } else {  // it's tall enough for us to only collide with the trunk
+  } else {                                                                      // it's tall enough for us to only collide with the trunk
     collisionoffset.y = 1;
     boundingradius = trunkwidth;
   }
@@ -83,61 +83,61 @@ void firtree::updatevbo() {
   // rendering data
   // body:
   GLfloat vbodata[] = {
-    -trunkwidth, -1,      -trunkwidth,    // 0
-    -trunkwidth, -1,      trunkwidth,     // 1
-    -trunkwidth, bottom, -trunkwidth,    // 2
-    -trunkwidth, bottom, trunkwidth,     // 3
-    trunkwidth,  -1,      -trunkwidth,    // 4
-    trunkwidth,  -1,      trunkwidth,     // 5
-    trunkwidth,  bottom, -trunkwidth,    // 6
-    trunkwidth,  bottom, trunkwidth,     // 7
+    -trunkwidth, -1,      -trunkwidth,                                          // 0
+    -trunkwidth, -1,      trunkwidth,                                           // 1
+    -trunkwidth, bottom, -trunkwidth,                                           // 2
+    -trunkwidth, bottom, trunkwidth,                                            // 3
+    trunkwidth,  -1,      -trunkwidth,                                          // 4
+    trunkwidth,  -1,      trunkwidth,                                           // 5
+    trunkwidth,  bottom, -trunkwidth,                                           // 6
+    trunkwidth,  bottom, trunkwidth,                                            // 7
 
-    -width, bottom, -width,     // 8
-    -width, bottom, width,      // 9
-    width,  bottom, -width,     // 10
-    width,  bottom, width,      // 11
+    -width, bottom, -width,                                                     // 8
+    -width, bottom, width,                                                      // 9
+    width,  bottom, -width,                                                     // 10
+    width,  bottom, width,                                                      // 11
 
-    0,      height, 0,          // 12
+    0,      height, 0,                                                          // 12
 
-    -width, bottom, -width,    // 13
-    -width, bottom, width,     // 14
-    width,  bottom, -width,    // 15
-    width,  bottom, width,     // 16
+    -width, bottom, -width,                                                     // 13
+    -width, bottom, width,                                                      // 14
+    width,  bottom, -width,                                                     // 15
+    width,  bottom, width,                                                      // 16
   };
-  GLfloat vbodata_n[] = {   // the last vertex of a triangle defines its normal
-    0, 0, -1, // 0    front
-    -1,0, 0,  // 1    left
-    -1,0, 0,  // 2    left
-    0, 0, 1,  // 3    back
-    1, 0, 0,  // 4    right
-    0, 0, 1,  // 5    back
-    0, 0, -1, // 6    front
-    1, 0, 0,  // 7    right
+  GLfloat vbodata_n[] = {                                                       // the last vertex of a triangle defines its normal
+    0, 0, -1,                                                                   // 0    front
+    -1,0, 0,                                                                    // 1    left
+    -1,0, 0,                                                                    // 2    left
+    0, 0, 1,                                                                    // 3    back
+    1, 0, 0,                                                                    // 4    right
+    0, 0, 1,                                                                    // 5    back
+    0, 0, -1,                                                                   // 6    front
+    1, 0, 0,                                                                    // 7    right
 
-    0, 0, -1, // 8    front
-    -1,0, 0,  // 9    left
-    1, 0, 0,  // 10   right
-    0, 0, 1,  // 11   back
+    0, 0, -1,                                                                   // 8    front
+    -1,0, 0,                                                                    // 9    left
+    1, 0, 0,                                                                    // 10   right
+    0, 0, 1,                                                                    // 11   back
 
-    0, 1, 0,  // 12
+    0, 1, 0,                                                                    // 12
 
-    0, -1, 0,  // 13    bottom
-    0, -1, 0,  // 14
-    0, -1, 0,  // 15
-    0, -1, 0,  // 16
+    0, -1, 0,                                                                   // 13    bottom
+    0, -1, 0,                                                                   // 14
+    0, -1, 0,                                                                   // 15
+    0, -1, 0,                                                                   // 16
   };
   GLuint ibodata[] = {
-    6,4,0, 0,2,6,   // front
-    3,1,5, 5,7,3,   // back
-    2,0,1, 1,3,2,   // left
-    7,5,4, 4,6,7,   // right
+    6,4,0, 0,2,6,                                                               // front
+    3,1,5, 5,7,3,                                                               // back
+    2,0,1, 1,3,2,                                                               // left
+    7,5,4, 4,6,7,                                                               // right
 
-    13,15,16, 16,14,13,   // bottom
+    13,15,16, 16,14,13,                                                         // bottom
 
-    12,10, 8,       // front
-    12,8,  9,       // left
-    12,11,10,       // right
-    12,9, 11,       // back
+    12,10, 8,                                                                   // front
+    12,8,  9,                                                                   // left
+    12,11,10,                                                                   // right
+    12,9, 11,                                                                   // back
   };
   numtris = 14;
 
@@ -152,7 +152,7 @@ void firtree::updatevbo() {
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
     /*
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -195,7 +195,7 @@ void firtree::grow(double amount) {
   if(bottom < 1.5) {
     collisionoffset.y = bottom;
     boundingradius = width * 1.6;
-  } else {  // it's tall enough for us to only collide with the trunk
+  } else {                                                                      // it's tall enough for us to only collide with the trunk
     collisionoffset.y = 1;
     boundingradius = trunkwidth;
   }

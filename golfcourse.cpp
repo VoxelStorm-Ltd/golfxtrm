@@ -8,7 +8,7 @@ golfcourse::golfcourse(world *parent, Vector3d tee, Vector3d hole, unsigned int 
   srand(randomseed);
   parentplanet = parent;
 
-  double detail = 2;  // detail level
+  double detail = 2;                                                            // detail level
 
   double terrainsize = 400;
   double terraingridwidth = 100 * detail;

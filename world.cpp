@@ -6,7 +6,7 @@
 
 world::world() {                                 /// default constructor
   std::cout << "    Initialising new planet..." << std::endl;
-  updatenexttime = 0;                 // this is ready for an update asap
+  updatenexttime = 0;                                                           // this is ready for an update asap
 
   gravity = 9.800;
   airdensity = 1.2041;
@@ -19,30 +19,30 @@ world::world() {                                 /// default constructor
   #endif
 
   if(introon) {
-    timespeed = 31556926;   // 1 year per second
+    timespeed = 31556926;                                                       // 1 year per second
     timeofday = 18 * 60 * 60;
     calendardate = 100;
 
     //featureupdatefreq = (double)1/(double)5;
     featureupdatefreq = (double)60;
   } else {
-    //timespeed = 0;          // frozen
-    //timespeed = 1;          // realtime
-    //timespeed = 60;         // 1 minute per second
-    //timespeed = 120;        // 2 minutes per second
-    //timespeed = 3600;       // 1 hour per second
-    //timespeed = 7200;       // 2 hours per second
-    //timespeed = 86400;      // 1 day per second
-    //timespeed = 2592000;    // 1 month per second
-    //timespeed = 31556926;   // 1 year per second
+    //timespeed = 0;                                                            // frozen
+    //timespeed = 1;                                                            // realtime
+    //timespeed = 60;                                                           // 1 minute per second
+    //timespeed = 120;                                                          // 2 minutes per second
+    //timespeed = 3600;                                                         // 1 hour per second
+    //timespeed = 7200;                                                         // 2 hours per second
+    //timespeed = 86400;                                                        // 1 day per second
+    //timespeed = 2592000;                                                      // 1 month per second
+    //timespeed = 31556926;                                                     // 1 year per second
     timespeed = timesetspeed;
-    timeofday = 5 * 60 * 60;    // 8am
+    timeofday = 5 * 60 * 60;                                                    // 8am
     calendardate = 150;
 
     featureupdatefreq = (double)1/(double)5;
     //featureupdatefreq = 10;
   }
-  updatetime = 1 / featureupdatefreq; // time from frequency
+  updatetime = 1 / featureupdatefreq;                                           // time from frequency
 
   summergrasscolour   = Vector4f(0.75, 0.75, 0.25, 1);
   summerskycolour     = Vector4f(0.90, 0.95, 0.67, 1);
@@ -69,7 +69,7 @@ world::world() {                                 /// default constructor
   //windvelocity.x = 10;
 
   numcourses = 0;
-  //addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));   // no point having less than 1 course
+  //addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));                           // no point having less than 1 course
 
   vao = vbo = vbo_n = ibo = 0;
   vao_sky = vbo_sky = vbo_n_sky = ibo_sky = 0;
@@ -83,7 +83,7 @@ world::world() {                                 /// default constructor
   glGenBuffersARB(1, &vbo_sky);
   glGenBuffersARB(1, &vbo_n_sky);
   glGenBuffersARB(1, &ibo_sky);
-  update_vbo();     // get the VBOs in place for terrain and sky rendering
+  update_vbo();                                                                 // get the VBOs in place for terrain and sky rendering
 
   std::cout << "    Planet initialised" << std::endl;
 }
@@ -286,7 +286,7 @@ void world::update_vbo() {
 
   if(hasvao) {
     std::cout << "      Setting up VAO" << std::endl;
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -296,7 +296,7 @@ void world::update_vbo() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
     glNormalPointer(GL_FLOAT, 0, 0);
 
-    glBindVertexArray(vao_sky);             // set up the VAO's state
+    glBindVertexArray(vao_sky);                                                 // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
     glEnableClientState(GL_VERTEX_ARRAY);

@@ -18,7 +18,7 @@ void world::render() {
   // sort out lighting
   glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
   // give us a basic horizon, sky, atmospheric stuff
-  //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);  // this should be set up already
+  //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);                          // this should be set up already
   //glEnable(GL_COLOR_MATERIAL);
 
   glPushMatrix();
@@ -115,7 +115,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
   // bug workaround prior to adding normals
   //glDisableClientState(GL_NORMAL_ARRAY);
 
-  glPushMatrix();   // body
+  glPushMatrix();                                                               // body
   {
     glTranslated(bodyposition.x, bodyposition.y, bodyposition.z);
     glRotated(bodyyaw, 0, -1, 0);
@@ -138,7 +138,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    glPushMatrix();   // hands
+    glPushMatrix();                                                             // hands
     {
       glColor4f(skincolour.r, skincolour.g, skincolour.b, 1);
       glTranslated(armfulcrum.x, armfulcrum.y, armfulcrum.z);
@@ -162,14 +162,14 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindBufferARB(GL_ARRAY_BUFFER, 0);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
-      if(helditem != NULL) {  // render the held item
+      if(helditem != NULL) {                                                    // render the held item
         glPushMatrix();
         {
           glTranslated(0, 0, -armlength);
-          //glRotated((armspitch+112.5)*0.4, -1, 0, 0);   // (75/0.4)-75 = 112.5
-          //glRotated((armspitch+135)*0.4, -1, 0, 0);   // (90/0.4)-90 = 135
-          //glRotated((armspitch+97.5)*0.4, -1, 0, 0);   // (75/0.4)-90 = 97.5
-          glRotated((armspitch+150)*0.4, -1, 0, 0);   // (90/0.4)-75 = 150
+          //glRotated((armspitch+112.5)*0.4, -1, 0, 0);                         // (75/0.4)-75 = 112.5
+          //glRotated((armspitch+135)*0.4, -1, 0, 0);                           // (90/0.4)-90 = 135
+          //glRotated((armspitch+97.5)*0.4, -1, 0, 0);                          // (75/0.4)-90 = 97.5
+          glRotated((armspitch+150)*0.4, -1, 0, 0);                             // (90/0.4)-75 = 150
           //std::cout << armspitch << std::endl;
           helditem->renderlocal();
         }
@@ -177,7 +177,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       }
     }
     glPopMatrix();
-    glPushMatrix();   // right upper arm
+    glPushMatrix();                                                             // right upper arm
     {
       glColor4f(0.25,0.25,0.25,1);
       fulcrum_to_shoulder.x = armshoulderoffset;
@@ -205,7 +205,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindBufferARB(GL_ARRAY_BUFFER, 0);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
-      glPushMatrix();   // right forearm
+      glPushMatrix();                                                           // right forearm
       {
         glTranslated(0, 0, -armsectionlength);
         glRotated(elbowangle * 2, 0, 1, 0);
@@ -230,7 +230,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
       glPopMatrix();
     }
     glPopMatrix();
-    glPushMatrix();   // left upper arm
+    glPushMatrix();                                                             // left upper arm
     {
       fulcrum_to_shoulder.x = -armshoulderoffset;
       Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
@@ -257,7 +257,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glBindBufferARB(GL_ARRAY_BUFFER, 0);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
-      glPushMatrix();   // left forearm
+      glPushMatrix();                                                           // left forearm
       {
         glTranslated(0, 0, -armsectionlength);
         glRotated(-elbowangle * 2, 0, 1, 0);
@@ -285,7 +285,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
     if(isplayer) {
       // anything we draw for internal view should go here
     } else {
-      glPushMatrix();   // head
+      glPushMatrix();                                                           // head
       {
         glColor4f(skincolour.r, skincolour.g, skincolour.b, 1);
         glTranslated(headfulcrum.x, headfulcrum.y, headfulcrum.z);

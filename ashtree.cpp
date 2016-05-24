@@ -21,18 +21,18 @@ ashtree::ashtree(world *parentplanet, double x, double y, double z, int rseed) {
 
   maxwidth = 10;
   maxheight = 40;
-  //growthrate = 0.000001;  // reaches full height in about 30 days
-  growthrate = 0.00000003;  // reaches full height in about 3 years
-  //growthrate = 0.000000003;  // reaches full height in about 30 years
+  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  growthrate = 0.00000003;                                                      // reaches full height in about 3 years
+  //growthrate = 0.000000003;                                                   // reaches full height in about 30 years
 
-  height     = 5;   // default sizes
+  height     = 5;                                                               // default sizes
   bottom     = 1.5;
   width      = 3.5;
   trunkwidth = 0.1;
   if(bottom < 1.5) {
     collisionoffset.y = ((height - bottom) / 2) + bottom;
     boundingradius = width * 2;
-  } else {  // it's tall enough for us to only collide with the trunk
+  } else {                                                                      // it's tall enough for us to only collide with the trunk
     collisionoffset.y = 1;
     boundingradius = trunkwidth;
   }
@@ -158,7 +158,7 @@ void ashtree::updatevbo() {
             }
           }
         }
-        if(averagecount > 0) {    // check if we have any hits
+        if(averagecount > 0) {                                                  // check if we have any hits
           // average them
           averagevector /= averagecount;
           // normalise that
@@ -166,7 +166,7 @@ void ashtree::updatevbo() {
         } else {
         // check it's valid (we may not be in range of anything)
         //if(std::isnan(averagevector.y)) {
-          averagevector.x = (float)0;  // default to growing straight up
+          averagevector.x = (float)0;                                           // default to growing straight up
           averagevector.y = (float)1;
           averagevector.z = (float)0;
         }
@@ -211,7 +211,7 @@ void ashtree::updatevbo() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
     glBindBuffer(GL_ARRAY_BUFFER,         vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArray(0);

@@ -5,30 +5,30 @@
 #include <GLFW/glfw3.h>
 #include "vmath.h"
 
-class world;  // forward dec
+class world;                                                                    // forward dec
 
 class feature {
 public:
-  Vector3d position;            // where its origin is in the world
-  Quatd rotation;               // how it's oriented
-  Vector3d bbox_start;          // one corner of the bounding box
-  Vector3d bbox_end;            // other corner of the bounding box
+  Vector3d position;                                                            // where its origin is in the world
+  Quatd rotation;                                                               // how it's oriented
+  Vector3d bbox_start;                                                          // one corner of the bounding box
+  Vector3d bbox_end;                                                            // other corner of the bounding box
 
-  Vector3d collisionoffset;     // centre of the collision sphere
-  double boundingradius;        // bounding sphere radius
+  Vector3d collisionoffset;                                                     // centre of the collision sphere
+  double boundingradius;                                                        // bounding sphere radius
 
-  std::string name;             // what it's called
-  std::string description;      // longer description
+  std::string name;                                                             // what it's called
+  std::string description;                                                      // longer description
 
-  world *currentplanet;         // what planet are you even on?
+  world *currentplanet;                                                         // what planet are you even on?
 
-  int randomseed;               // the fixed seed for this object
+  int randomseed;                                                               // the fixed seed for this object
 
-  GLuint vao;                   // vertex array object
-  GLuint vbo;                   // vertex buffer object
-  GLuint vbo_n;                 // vertex buffer object for normals
-  GLuint ibo;                   // index buffer object
-  GLuint numtris;               // number of triangles in the VBO
+  GLuint vao;                                                                   // vertex array object
+  GLuint vbo;                                                                   // vertex buffer object
+  GLuint vbo_n;                                                                 // vertex buffer object for normals
+  GLuint ibo;                                                                   // index buffer object
+  GLuint numtris;                                                               // number of triangles in the VBO
 
   enum featuretype {
     TEE,
@@ -50,14 +50,14 @@ public:
 
 class firtree : public feature {
 public:
-  float maxheight;        // the tallest these can get
-  float maxwidth;         // the widest they can get
-  double growthrate;      // how fast it grows in % per second
+  float maxheight;                                                              // the tallest these can get
+  float maxwidth;                                                               // the widest they can get
+  double growthrate;                                                            // how fast it grows in % per second
 
-  float height;           // overall height
-  float bottom;           // bottom of the foliage from the ground
-  float width;            // width of the bottom section / 2
-  float trunkwidth;       // thickness of the trunk / 2
+  float height;                                                                 // overall height
+  float bottom;                                                                 // bottom of the foliage from the ground
+  float width;                                                                  // width of the bottom section / 2
+  float trunkwidth;                                                             // thickness of the trunk / 2
 
   enum firtreetype {
     FIRTREE_STANDARD,
@@ -77,14 +77,14 @@ public:
 
 class oaktree : public feature {
 public:
-  float maxheight;        // the tallest these can get
-  float maxwidth;         // the widest they can get
-  double growthrate;      // how fast it grows in % per second
+  float maxheight;                                                              // the tallest these can get
+  float maxwidth;                                                               // the widest they can get
+  double growthrate;                                                            // how fast it grows in % per second
 
-  float height;           // overall height
-  float bottom;           // bottom of the foliage from the ground
-  float width;            // width of the bottom section / 2
-  float trunkwidth;       // thickness of the trunk / 2
+  float height;                                                                 // overall height
+  float bottom;                                                                 // bottom of the foliage from the ground
+  float width;                                                                  // width of the bottom section / 2
+  float trunkwidth;                                                             // thickness of the trunk / 2
 
   enum oaktreetype {
     OAKTREE_STANDARD,
@@ -104,14 +104,14 @@ public:
 
 class ashtree : public feature {
 public:
-  float maxheight;        // the tallest these can get
-  float maxwidth;         // the widest they can get
-  double growthrate;      // how fast it grows in % per second
+  float maxheight;                                                              // the tallest these can get
+  float maxwidth;                                                               // the widest they can get
+  double growthrate;                                                            // how fast it grows in % per second
 
-  float height;           // overall height
-  float bottom;           // bottom of the foliage from the ground
-  float width;            // width of the bottom section / 2
-  float trunkwidth;       // thickness of the trunk / 2
+  float height;                                                                 // overall height
+  float bottom;                                                                 // bottom of the foliage from the ground
+  float width;                                                                  // width of the bottom section / 2
+  float trunkwidth;                                                             // thickness of the trunk / 2
 
   struct branch {
     Vector3f start;
@@ -119,7 +119,7 @@ public:
     float thickness;
     bool grow_now;
     //branch *parent;
-    unsigned int parent;  // index
+    unsigned int parent;                                                        // index
   };
 
   ashtree(world *parentplanet, double x, double y, double z, int rseed);

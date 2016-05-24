@@ -25,12 +25,12 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
   // initialise the heightmap
   std::cout << "          Generating heightmap..." << std::endl;
   //heightmap = new double*[gridwidth*gridwidth];
-  srand(randomseed);                  // seed the random generator predictably
+  srand(randomseed);                                                            // seed the random generator predictably
 
-  Perlin *testmap = new Perlin(4,            // octaves - 1 to 16 (~4-8)
-                               4,            // noise freq (~1-8)
-                               1,            // amplitude (1 returns -1 to 1)
-                               randomseed+1);  // seed
+  Perlin *testmap = new Perlin(4,                                               // octaves - 1 to 16 (~4-8)
+                               4,                                               // noise freq (~1-8)
+                               1,                                               // amplitude (1 returns -1 to 1)
+                               randomseed+1);                                   // seed
 
   Perlin *largemap = new Perlin(4, 4, 1, randomseed);
   Perlin *smoothmap = new Perlin(2, 4, 1, randomseed);
@@ -51,8 +51,8 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
   for(int x = 0; x < gridwidth; ++x) {
     for(int z = 0; z < gridwidth; ++z) {
       if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
-        //heightmap[(x * gridwidth) + z] = 0;   // keep the edge skirt down for smoothness
-        heightmap.push_back(0);   // keep the edge skirt down for smoothness
+        //heightmap[(x * gridwidth) + z] = 0;                                   // keep the edge skirt down for smoothness
+        heightmap.push_back(0);                                                 // keep the edge skirt down for smoothness
       } else {
         double randfactor = 0;
         ///double randfactor = 0.2;
@@ -116,10 +116,10 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
   glGenBuffersARB(1, &vbo_n);
   std::cout << "          Generating index buffer" << std::endl;
   glGenBuffersARB(1, &ibo);
-  update_vbo(); // generate the vbo ready for first run
+  update_vbo();                                                                 // generate the vbo ready for first run
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
 
     /*glBindBuffer(GL_ARRAY_BUFFER,             vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -175,7 +175,7 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
         thisnormal = Vector3f(0, 1, 0);
       } else {
         thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + (zgrid + 1)] - heightmap[(xgrid * gridwidth) + zgrid], 1)
-          .crossProduct(Vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0));    // normal is z cross x
+          .crossProduct(Vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0)); // normal is z cross x
         thisnormal.normalize();
       }
       vbodata_n[vbo_offset    ] = thisnormal.x;
@@ -213,7 +213,7 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
 
   if(hasvao) {
     std::cout << "          Setting up VAO" << std::endl;
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -231,16 +231,16 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
 
 void terrain::populatefeatures(int randomseed, feature::featuretype whatfeature) {
   /// call the feature populator with the default probability and density settings
-  float threshold = 1.3;    // minimum perlin result for a forest
-  float probability = 0.5;  // likelihood of making a tree in any one grid square
+  float threshold = 1.3;                                                        // minimum perlin result for a forest
+  float probability = 0.5;                                                      // likelihood of making a tree in any one grid square
   populatefeatures(randomseed, whatfeature, threshold, probability);
 }
 
 void terrain::populatefeatures(int randomseed, feature::featuretype whatfeature, float threshold, float probability) {
-  Perlin *testmap = new Perlin(4,            // octaves - 1 to 16 (~4-8)
-                               8,            // noise freq (~1-8)
-                               1,            // amplitude (1 returns -1 to 1)
-                               randomseed);  // seed
+  Perlin *testmap = new Perlin(4,                                               // octaves - 1 to 16 (~4-8)
+                               8,                                               // noise freq (~1-8)
+                               1,                                               // amplitude (1 returns -1 to 1)
+                               randomseed);                                     // seed
 
 
   double gridscale = bounds.x / gridwidth;
@@ -336,7 +336,7 @@ double terrain::get_hardness_at(double x, double z) {
   // FPS = player/ball reacts to all slopes instantly
   // 1 = player/ball reacts to all slopes within 1 sec
   // <0.98 = player/ball start to sink (> gravity)
-  return 10;   // how quickly things come back up from the ground
+  return 10;                                                                    // how quickly things come back up from the ground
 }
 
 void terrain::update(double timedelta) {
@@ -345,22 +345,22 @@ void terrain::update(double timedelta) {
 
 double terrain::get_friction_at(double x, double z) {
   /// return the coefficient of friction at the current spot
-  return 0.0409;    // from physics forum for ball on golf green
+  return 0.0409;                                                                // from physics forum for ball on golf green
 }
 
 double terrain::get_grass_depth_at(double x, double z) {
   /// return the depth of grass, for friction calculations as well as visuals
-  return 0.01;    // placeholder
+  return 0.01;                                                                  // placeholder
 }
 
 double terrain::get_min_velocity_at(double x, double z) {
   /// return the depth of grass, for friction calculations as well as visuals
-  return 0.1;    // placeholder
+  return 0.1;                                                                   // placeholder
 }
 
 void terrain::render(Vector4f basecolour) {
   /// alias function to render the terrain using the preferred method
-  //render2(basecolour); // DEBUG
+  //render2(basecolour);                                                        // DEBUG
   if(hasvao) {
     render5(basecolour);
   } else {

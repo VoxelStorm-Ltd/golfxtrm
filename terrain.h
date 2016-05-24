@@ -7,27 +7,27 @@
 #include "vmath.h"
 #include "landscape_features.h"
 
-class golfcourse;   // forward dec
+class golfcourse;                                                               // forward dec
 
 class terrain {                 /// object for handling the terrain heightmap
 public:
-  golfcourse *parent;         // what course this belongs to
+  golfcourse *parent;                                                           // what course this belongs to
 
-  Vector3d origin;            // the map's origin's coordinates
-  Vector3d bounds;            // the map's bounding box
+  Vector3d origin;                                                              // the map's origin's coordinates
+  Vector3d bounds;                                                              // the map's bounding box
 
-  //double heightmap[200*200];  // the heightmap data
-  //double **heightmap;  // the heightmap data on the heap
-  std::vector<double> heightmap;  // the heightmap data as a vector
-  int gridwidth;              // the x and z resolution of the heightmap as above
+  //double heightmap[200*200];                                                  // the heightmap data
+  //double **heightmap;                                                         // the heightmap data on the heap
+  std::vector<double> heightmap;                                                // the heightmap data as a vector
+  int gridwidth;                                                                // the x and z resolution of the heightmap as above
 
-  int randomseed;             // the fixed seed for this course
+  int randomseed;                                                               // the fixed seed for this course
 
-  GLuint vao;                 // vertex array object
-  GLuint vbo;                 // vertex buffer object
-  GLuint vbo_n;               // vertex buffer object for normals
-  GLuint ibo;                 // element buffer object (index buffer object)
-  GLuint numtris;             // number of triangles in the index
+  GLuint vao;                                                                   // vertex array object
+  GLuint vbo;                                                                   // vertex buffer object
+  GLuint vbo_n;                                                                 // vertex buffer object for normals
+  GLuint ibo;                                                                   // element buffer object (index buffer object)
+  GLuint numtris;                                                               // number of triangles in the index
 
   terrain(golfcourse *parent, unsigned int randomseed, Vector3d teeposition, Vector3d holeposition, double size, double gridwidth);
   ~terrain();

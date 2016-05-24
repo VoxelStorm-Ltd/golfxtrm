@@ -5,11 +5,11 @@
 golfball::golfball(world *parentplanet) {
   held_by = NULL;
   at_rest = true;
-  mass = 0.04593;             // official maximum
-  radius = 0.04267 / 2;       // official minimum
-  radius *= 2;                // but let's make it bigger for aesthetic reasons
+  mass = 0.04593;                                                               // official maximum
+  radius = 0.04267 / 2;                                                         // official minimum
+  radius *= 2;                                                                  // but let's make it bigger for aesthetic reasons
   momentofinertia = 0;
-  cda = 0.001716;             // guesstimate based on Cd = 0.3
+  cda = 0.001716;                                                               // guesstimate based on Cd = 0.3
   name = "golf ball";
   description = "A small hard white ball with strong elastic properties.";
 
@@ -79,7 +79,7 @@ golfball::golfball(world *parentplanet) {
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao);             // set up the VAO's state
+    glBindVertexArray(vao);                                                     // set up the VAO's state
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);

@@ -6,8 +6,8 @@ universe::universe() {                              /// default constructor
   // big bang!
   numplanets = 0;
 
-  updatetime = 1 / updatefreq;  // set this from the global
-  updatenexttime = 0;           // this is ready for an update asap
+  updatetime = 1 / updatefreq;                                                  // set this from the global
+  updatenexttime = 0;                                                           // this is ready for an update asap
   std::cout << "  Universe initialised" << std::endl;
 }
 

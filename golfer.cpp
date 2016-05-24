@@ -26,49 +26,49 @@ golfer::golfer(golfcourse *course,
   swinglength = armlength;
 
   // biometrics
-  bodymass = 70.8;                            // official biometric average for Europe
-  headmass = 5;                               // rough official biometric
-  armsmass = 3.216 * 2;                       // official biometric
-  headfulcrum.y = 1.38;                       // DIY biometric guess
-  eyeleveloffset.y = 1.6095 - headfulcrum.y;  // official average human standing eye height
-  armlength = 0.60;                           // DIY biometric guess - hand distance from centre fulcrum
-  armfulcrum.x = 0;                           // DIY guesses
+  bodymass = 70.8;                                                              // official biometric average for Europe
+  headmass = 5;                                                                 // rough official biometric
+  armsmass = 3.216 * 2;                                                         // official biometric
+  headfulcrum.y = 1.38;                                                         // DIY biometric guess
+  eyeleveloffset.y = 1.6095 - headfulcrum.y;                                    // official average human standing eye height
+  armlength = 0.60;                                                             // DIY biometric guess - hand distance from centre fulcrum
+  armfulcrum.x = 0;                                                             // DIY guesses
   armfulcrum.y = 1.45;
   armfulcrum.z = 0;
-  armshoulderoffset = 0.32;                   // DIY guess
-  headyawlimit = 90;                          // DIY biometric approximation (including eye angles etc)
-  headpitchuplimit = 75;                      // something reasonable to minimise neck-back effects
-  headpitchdownlimit = 89;                    // consider making this >90?
-  armsyawlimit = 160;                         // DIY guess - can point arms all the way behind yourself
-  headyawdeadzone = 15;                       // arbitrary comfort value
-  armspitchuplimit = 160;                     // DIY guess - arms can go back over your head
-  armspitchdownlimit = 75;                    // limited for basic realism while holding clubs
-  bodymomentofinertia = 1.18668836;           // 103.0 lb.in.sec.2 from US military data
-  headmomentofinertia = 0.015;                // ~150 kg.cm^2 from US naval data
-  //armsmomentofinertia = 0.05014;              // -250.7 kg.m^2 from biomechanics paper
-  armsmomentofinertia = 0.1;                  // estimate based on above plus golf club
-  headdampingcoefficient = 10;                // arbitrary comfort value
-  armsdampingcoefficient = 5;                 // arbitrary comfort value
-  bodyyawtorquelimit = 2000;                  // arbitrary comfort value
-  bodyyawdampingcoefficient = 3;              // arbitrary comfort value
-  walkspeed = 1.50876;                        // average walking
-  walkrunspeed = 6.25856;                     // average male running speed
-  strafespeed = walkspeed * 0.75;             // generous guess
-  straferunspeed = walkrunspeed * 0.75;       // generous guess
-  walkspeed_sq = walkspeed * walkspeed;       // caching
+  armshoulderoffset = 0.32;                                                     // DIY guess
+  headyawlimit = 90;                                                            // DIY biometric approximation (including eye angles etc)
+  headpitchuplimit = 75;                                                        // something reasonable to minimise neck-back effects
+  headpitchdownlimit = 89;                                                      // consider making this >90?
+  armsyawlimit = 160;                                                           // DIY guess - can point arms all the way behind yourself
+  headyawdeadzone = 15;                                                         // arbitrary comfort value
+  armspitchuplimit = 160;                                                       // DIY guess - arms can go back over your head
+  armspitchdownlimit = 75;                                                      // limited for basic realism while holding clubs
+  bodymomentofinertia = 1.18668836;                                             // 103.0 lb.in.sec.2 from US military data
+  headmomentofinertia = 0.015;                                                  // ~150 kg.cm^2 from US naval data
+  //armsmomentofinertia = 0.05014;                                              // -250.7 kg.m^2 from biomechanics paper
+  armsmomentofinertia = 0.1;                                                    // estimate based on above plus golf club
+  headdampingcoefficient = 10;                                                  // arbitrary comfort value
+  armsdampingcoefficient = 5;                                                   // arbitrary comfort value
+  bodyyawtorquelimit = 2000;                                                    // arbitrary comfort value
+  bodyyawdampingcoefficient = 3;                                                // arbitrary comfort value
+  walkspeed = 1.50876;                                                          // average walking
+  walkrunspeed = 6.25856;                                                       // average male running speed
+  strafespeed = walkspeed * 0.75;                                               // generous guess
+  straferunspeed = walkrunspeed * 0.75;                                         // generous guess
+  walkspeed_sq = walkspeed * walkspeed;                                         // caching
   walkrunspeed_sq = walkrunspeed * walkrunspeed;
-  maxforce_walk = bodymass * walkspeed / 1;   // calculated from accelerating to top speed in n seconds
-  maxforce_walkstrafe = maxforce_walk * 0.75; // as above
-  maxforce_run = bodymass * walkrunspeed / 2; // calculated from accelerating to top speed in n seconds
-  maxforce_runstrafe = maxforce_run * 0.75;   // as above
-  maximpulse_jump = 236;                      // from neuromechanics paper (N.s)
-  cda = 0.3963;                               // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
-  skincolour.r = 0.937;                       // average caucasian skin swatch apparently
+  maxforce_walk = bodymass * walkspeed / 1;                                     // calculated from accelerating to top speed in n seconds
+  maxforce_walkstrafe = maxforce_walk * 0.75;                                   // as above
+  maxforce_run = bodymass * walkrunspeed / 2;                                   // calculated from accelerating to top speed in n seconds
+  maxforce_runstrafe = maxforce_run * 0.75;                                     // as above
+  maximpulse_jump = 236;                                                        // from neuromechanics paper (N.s)
+  cda = 0.3963;                                                                 // calculated as (2*71*9.8)/(1.2041*(54^2)) to 4dp (TV ~= 54m/s)
+  skincolour.r = 0.937;                                                         // average caucasian skin swatch apparently
   skincolour.g = 0.815;
   skincolour.b = 0.811;
 
   // bounds
-  boundingradius = (armfulcrum.length() / 4); // about ground to waist, same as used for collision check
+  boundingradius = (armfulcrum.length() / 4);                                   // about ground to waist, same as used for collision check
 
   // rendering data
   // body:
@@ -79,22 +79,22 @@ golfer::golfer(golfcourse *course,
   float front  = 0.10;
   float back   = -0.10;
   GLfloat vbodata[] = {
-    left,  bottom, back,    // 0
-    left,  bottom, front,   // 1
-    left,  top,    back,    // 2
-    left,  top,    front,   // 3
-    right, bottom, back,    // 4
-    right, bottom, front,   // 5
-    right, top,    back,    // 6
-    right, top,    front    // 7
+    left,  bottom, back,                                                        // 0
+    left,  bottom, front,                                                       // 1
+    left,  top,    back,                                                        // 2
+    left,  top,    front,                                                       // 3
+    right, bottom, back,                                                        // 4
+    right, bottom, front,                                                       // 5
+    right, top,    back,                                                        // 6
+    right, top,    front                                                        // 7
   };
   GLuint ibodata[] = {
-    6,4,0, 0,2,6,   // front
-    3,1,5, 5,7,3,   // back
-    2,0,1, 1,3,2,   // left
-    7,5,4, 4,6,7,   // right
-    2,6,7, 7,3,2,   // top
-    5,4,0, 0,1,5    // bottom
+    6,4,0, 0,2,6,                                                               // front
+    3,1,5, 5,7,3,                                                               // back
+    2,0,1, 1,3,2,                                                               // left
+    7,5,4, 4,6,7,                                                               // right
+    2,6,7, 7,3,2,                                                               // top
+    5,4,0, 0,1,5                                                                // bottom
   };
 
 
@@ -106,14 +106,14 @@ golfer::golfer(golfcourse *course,
   front  = -armlength - 0.04;
   back   = -armlength + 0.04;
   GLfloat vbodata_hands[] = {
-    left,  bottom, back,    // 0
-    left,  bottom, front,   // 1
-    left,  top,    back,    // 2
-    left,  top,    front,   // 3
-    right, bottom, back,    // 4
-    right, bottom, front,   // 5
-    right, top,    back,    // 6
-    right, top,    front    // 7
+    left,  bottom, back,                                                        // 0
+    left,  bottom, front,                                                       // 1
+    left,  top,    back,                                                        // 2
+    left,  top,    front,                                                       // 3
+    right, bottom, back,                                                        // 4
+    right, bottom, front,                                                       // 5
+    right, top,    back,                                                        // 6
+    right, top,    front                                                        // 7
   };
 
   // arm sections:
@@ -124,14 +124,14 @@ golfer::golfer(golfcourse *course,
   front  = -((armlength + armshoulderoffset) / 2) + 0.05;
   back   = +0.05;
   GLfloat vbodata_arms[] = {
-    left,  bottom, back,    // 0
-    left,  bottom, front,   // 1
-    left,  top,    back,    // 2
-    left,  top,    front,   // 3
-    right, bottom, back,    // 4
-    right, bottom, front,   // 5
-    right, top,    back,    // 6
-    right, top,    front    // 7
+    left,  bottom, back,                                                        // 0
+    left,  bottom, front,                                                       // 1
+    left,  top,    back,                                                        // 2
+    left,  top,    front,                                                       // 3
+    right, bottom, back,                                                        // 4
+    right, bottom, front,                                                       // 5
+    right, top,    back,                                                        // 6
+    right, top,    front                                                        // 7
   };
   // if he's our avatar, skip drawing the head and neck
   // head:
@@ -142,14 +142,14 @@ golfer::golfer(golfcourse *course,
   front  = -0.12;
   back   = 0.09;
   GLfloat vbodata_head[] = {
-    left,  bottom, back,    // 0
-    left,  bottom, front,   // 1
-    left,  top,    back,    // 2
-    left,  top,    front,   // 3
-    right, bottom, back,    // 4
-    right, bottom, front,   // 5
-    right, top,    back,    // 6
-    right, top,    front    // 7
+    left,  bottom, back,                                                        // 0
+    left,  bottom, front,                                                       // 1
+    left,  top,    back,                                                        // 2
+    left,  top,    front,                                                       // 3
+    right, bottom, back,                                                        // 4
+    right, bottom, front,                                                       // 5
+    right, top,    back,                                                        // 6
+    right, top,    front                                                        // 7
   };
 
   // rendering setup
@@ -173,7 +173,7 @@ golfer::golfer(golfcourse *course,
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao_body);             // set up the VAO's state
+    glBindVertexArray(vao_body);                                                // set up the VAO's state
     glBindBufferARB(GL_ARRAY_BUFFER,         vbo_body);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArrayARB(0);
@@ -193,7 +193,7 @@ golfer::golfer(golfcourse *course,
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao_arms);             // set up the VAO's state
+    glBindVertexArray(vao_arms);                                                // set up the VAO's state
     glBindBufferARB(GL_ARRAY_BUFFER,         vbo_arms);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArrayARB(0);
@@ -213,7 +213,7 @@ golfer::golfer(golfcourse *course,
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao_hands);             // set up the VAO's state
+    glBindVertexArray(vao_hands);                                               // set up the VAO's state
     glBindBufferARB(GL_ARRAY_BUFFER,         vbo_hands);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArrayARB(0);
@@ -233,7 +233,7 @@ golfer::golfer(golfcourse *course,
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
-    glBindVertexArray(vao_head);             // set up the VAO's state
+    glBindVertexArray(vao_head);                                                // set up the VAO's state
     glBindBufferARB(GL_ARRAY_BUFFER,         vbo_head);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableVertexAttribArrayARB(0);
@@ -268,52 +268,52 @@ void render1() {          /// draw this chap as a simple immediate mode cuboid
   double back   = bodyposition.z - 0.10;
   glBegin(GL_TRIANGLES);
     glNormal3i(0,     0,      1);
-    glVertex3d(left,	bottom,	front);  // front face
-    glVertex3d(right,	bottom,	front);
-    glVertex3d(right,	top,	  front);
-    glVertex3d(right,	top,	  front);
-    glVertex3d(left,	top,	  front);
-    glVertex3d(left,	bottom,	front);
+    glVertex3d(left,  bottom,  front);  // front face
+    glVertex3d(right,  bottom,  front);
+    glVertex3d(right,  top,    front);
+    glVertex3d(right,  top,    front);
+    glVertex3d(left,  top,    front);
+    glVertex3d(left,  bottom,  front);
 
     glNormal3i(0,     0,      -1);
-    glVertex3d(right,	bottom,	back);  // back face
-    glVertex3d(left,	bottom,	back);
-    glVertex3d(left,	top,	  back);
-    glVertex3d(left,	top,	  back);
-    glVertex3d(right,	top,	  back);
-    glVertex3d(right,	bottom,	back);
+    glVertex3d(right,  bottom,  back);  // back face
+    glVertex3d(left,  bottom,  back);
+    glVertex3d(left,  top,    back);
+    glVertex3d(left,  top,    back);
+    glVertex3d(right,  top,    back);
+    glVertex3d(right,  bottom,  back);
 
     glNormal3i(-1,    0,      0);
-    glVertex3d(left,	bottom,	back);  // left face
-    glVertex3d(left,	bottom,	front);
-    glVertex3d(left,	top,	  front);
-    glVertex3d(left,	top,	  front);
-    glVertex3d(left,	top,	  back);
-    glVertex3d(left,	bottom,	back);
+    glVertex3d(left,  bottom,  back);  // left face
+    glVertex3d(left,  bottom,  front);
+    glVertex3d(left,  top,    front);
+    glVertex3d(left,  top,    front);
+    glVertex3d(left,  top,    back);
+    glVertex3d(left,  bottom,  back);
 
     glNormal3i(1,     0,      0);
-    glVertex3d(right,	bottom,	front);  // right face
-    glVertex3d(right,	bottom,	back);
-    glVertex3d(right,	top,	  back);
-    glVertex3d(right,	top,	  back);
-    glVertex3d(right,	top,	  front);
-    glVertex3d(right,	bottom,	front);
+    glVertex3d(right,  bottom,  front);  // right face
+    glVertex3d(right,  bottom,  back);
+    glVertex3d(right,  top,    back);
+    glVertex3d(right,  top,    back);
+    glVertex3d(right,  top,    front);
+    glVertex3d(right,  bottom,  front);
 
     glNormal3i(0,     1,      0);
-    glVertex3d(left,	top,	  front);  // top face
-    glVertex3d(right,	top,	  front);
-    glVertex3d(right,	top,	  back);
-    glVertex3d(right,	top,	  back);
-    glVertex3d(left,	top,	  back);
-    glVertex3d(left,	top,	  front);
+    glVertex3d(left,  top,    front);  // top face
+    glVertex3d(right,  top,    front);
+    glVertex3d(right,  top,    back);
+    glVertex3d(right,  top,    back);
+    glVertex3d(left,  top,    back);
+    glVertex3d(left,  top,    front);
 
     glNormal3i(0,     -1,     0);
-    glVertex3d(left,	bottom,	front);  // bottom face
-    glVertex3d(left,	bottom,	back);
-    glVertex3d(right,	bottom,	back);
-    glVertex3d(right,	bottom,	back);
-    glVertex3d(right,	bottom,	front);
-    glVertex3d(left,	bottom,	front);
+    glVertex3d(left,  bottom,  front);  // bottom face
+    glVertex3d(left,  bottom,  back);
+    glVertex3d(right,  bottom,  back);
+    glVertex3d(right,  bottom,  back);
+    glVertex3d(right,  bottom,  front);
+    glVertex3d(left,  bottom,  front);
   glEnd();
 }
 

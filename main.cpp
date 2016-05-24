@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
   cout << "Starting up " << argv[0] << " with " << argc << " arguments" << endl;
   for(int i = 1; i < argc; i++) {
     cout << "Parsing commandline option " << i << endl;
-    if(i != argc) {  // Check that we haven't finished parsing already
+    if(i != argc) {                                                             // Check that we haven't finished parsing already
       cout << "arg " << i << " = " << argv[i] << endl;
       string thisargstring = string(argv[i]);
       if(thisargstring == "-skipintro") {
@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
       } else if (thisargstring == "-smallwindow") {
         fullscreen = false;
         largewindow = false;
-      } else if (thisargstring == "-novao") {  // force VAO disable
+      } else if (thisargstring == "-novao") {                                   // force VAO disable
         hasvao = false;
-      } else if (thisargstring == "-width") {  // manual screen size setting
+      } else if (thisargstring == "-width") {                                   // manual screen size setting
         windowwidth = atoi(argv[i + 1]);
       } else if (thisargstring == "-height") {
         windowheight = atoi(argv[i + 1]);
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     }
   }
   #ifdef SKIPINTRO
-  skipintro = true;   // skip the intro in debug mode
+  skipintro = true;                                                             // skip the intro in debug mode
   #endif
   init(fullscreen, largewindow, skipintro);
 
@@ -107,7 +107,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     _Exit(EXIT_FAILURE);
   }
 
-  oculus = new oculusstorm(1000.0, 0.1);   // initialise the oculus rift before graphics init
+  oculus = new oculusstorm(1000.0, 0.1);                                        // initialise the oculus rift before graphics init
 
   int nummonitors = 0;
   GLFWmonitor **monitor_list = glfwGetMonitors(&nummonitors);
@@ -182,7 +182,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //glfwWindowHint(GLFW_DEPTH_BITS, 32);
   //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);   // forward compat disables all deprecated functions - we don't want that
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);                         // forward compat disables all deprecated functions - we don't want that
   //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
   //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
   //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
@@ -198,14 +198,14 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
                                  NULL);
   glfwMakeContextCurrent(window_main);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glfwShowWindow(window_main);  // only display the window once in position
+  glfwShowWindow(window_main);                                                  // only display the window once in position
 
   if(!window_main) {
     // exit if this didn't work
     std::cout << "ERROR: glfwOpenWindow returned NULL" << std::endl;
     _Exit(EXIT_FAILURE);
   }
-  glfwSetWindowCloseCallback(window_main, callback_windowclose);    // callback for window closing
+  glfwSetWindowCloseCallback(window_main, callback_windowclose);                // callback for window closing
 
   glewExperimental = GL_TRUE;
   if(glewInit() != GLEW_OK) {
@@ -249,18 +249,18 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   oculus->nearplane = camnearplane;
   oculus->farplane  = camfarplane;
 
-  glColor3f(1, 1, 1);       // this may be necessary before enabling lighting
-  glFrontFace(GL_CCW);      // set up counter-clockwise polygon winding
-  //glCullFace(GL_BACK);      // may be redundant to cull back-faces
-  glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer
-  glEnable(GL_DITHER);      // may marginally increase shading quality
-  glEnable(GL_LIGHTING);    // obviously we want lighting... right?
-  //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);  // enable local lighting
-  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);  // to make flat shading ok
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);  // ensure one-sided lighting
-  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);  // slower, checks sign of dot product of normals
+  glColor3f(1, 1, 1);                                                           // this may be necessary before enabling lighting
+  glFrontFace(GL_CCW);                                                          // set up counter-clockwise polygon winding
+  //glCullFace(GL_BACK);                                                        // may be redundant to cull back-faces
+  glEnable(GL_DEPTH_TEST);                                                      // go on, use the zbuffer
+  glEnable(GL_DITHER);                                                          // may marginally increase shading quality
+  glEnable(GL_LIGHTING);                                                        // obviously we want lighting... right?
+  //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);                        // enable local lighting
+  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);                         // to make flat shading ok
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);                             // ensure one-sided lighting
+  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);                            // slower, checks sign of dot product of normals
 
-  //glEnable(GL_MINMAX);      // allow min and max colour tables for HDR effects
+  //glEnable(GL_MINMAX);                                                        // allow min and max colour tables for HDR effects
 
   //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
   glPolygonMode(GL_FRONT, GL_FILL);  //filled
@@ -271,16 +271,16 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   // fog settings
   glEnable(GL_FOG);
   glFogfv(GL_FOG_COLOR, Vector4f(fogred, foggreen, fogblue, 1));
-  //glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR GL_EXP GL_EXP2
-  glFogi(GL_FOG_MODE, GL_EXP); // GL_LINEAR GL_EXP GL_EXP2
-  glFogf(GL_FOG_DENSITY, 0.02);  // only used for exponential fog
-  glFogi(GL_FOG_START, 2);     // only used for linear fog
+  //glFogi(GL_FOG_MODE, GL_LINEAR);                                             // GL_LINEAR GL_EXP GL_EXP2
+  glFogi(GL_FOG_MODE, GL_EXP);                                                  // GL_LINEAR GL_EXP GL_EXP2
+  glFogf(GL_FOG_DENSITY, 0.02);                                                 // only used for exponential fog
+  glFogi(GL_FOG_START, 2);                                                      // only used for linear fog
   glFogi(GL_FOG_END, 100);
 
   // temporary material definition
   GLfloat mat_specular[] = {0.0, 0.0, 0.0, 1.0};
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-  glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);  // range 0-128
+  glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);                              // range 0-128
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
 
@@ -297,10 +297,10 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //glLightfv(GL_LIGHT1, GL_SPECULAR, directionallightspec);
   //glEnable(GL_LIGHT1);
 
-  glfwSetKeyCallback(window_main, callback_key);    // activate the control callback
-  //glfwDisable(GLFW_MOUSE_CURSOR);         // hide the mouse
+  glfwSetKeyCallback(window_main, callback_key);                                // activate the control callback
+  //glfwDisable(GLFW_MOUSE_CURSOR);                                             // hide the mouse
 
-  glfwSwapInterval(1);    // activate vsync
+  glfwSwapInterval(1);                                                          // activate vsync
 
   cout << "Starting sound engine... " << endl;
   soundengine = irrklang::createIrrKlangDevice();
@@ -320,7 +320,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
       #ifdef NOMUSIC
         cout << "Skipping sound engine initialisation" << endl;
       #else
-        soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+        soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false); // introductory, flutey
       #endif
     }
   } else {
@@ -346,7 +346,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, splashscreen1);
   //glEnable(GL_BLEND);
-  //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);  // optimised for inverse alpha
+  //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);                          // optimised for inverse alpha
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
@@ -375,7 +375,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
       glEnd();
       // back to perspective mode
       glDisable(GL_BLEND);
-      glEnable(GL_DEPTH_TEST);  // go on, use the zbuffer again
+      glEnable(GL_DEPTH_TEST);                                                  // go on, use the zbuffer again
       glEnable(GL_LIGHTING);
       glMatrixMode(GL_PROJECTION);
     }
@@ -390,19 +390,19 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   if(skipintro) {
     splashtime = 0;
   } else {
-    splashtime = 12;  // how long to show it for
+    splashtime = 12;                                                            // how long to show it for
   }
 
-  srand(1337);   // seed the random generator predictably
+  srand(1337);                                                                  // seed the random generator predictably
 
   // create and populate the universe
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Growing grass...");
-  root = new universe();      // create the global universe object
-  root->addplanet(0);         // populate it with a default planet
-  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227), 1337);  // add the default course
+  root = new universe();                                                        // create the global universe object
+  root->addplanet(0);                                                           // populate it with a default planet
+  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227), 1337);    // add the default course
 
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Loading prehistoric fauna...");
-  objloader *raptor = new objloader("assets/raptor.obj"); // keep this on the heap
+  objloader *raptor = new objloader("assets/raptor.obj");                       // keep this on the heap
   cout << "Loading raptor... " << endl;
   raptor->load();
   cout << "Raptor loaded." << endl;
@@ -412,9 +412,9 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   player = new golfer(root->planet[0]->course[0],
                       root->planet[0]->course[0]->teeposition.x,
                       root->planet[0]->course[0]->teeposition.y,
-                      root->planet[0]->course[0]->teeposition.z-2);   // our player
+                      root->planet[0]->course[0]->teeposition.z-2);             // our player
   player->bodyyaw = 155;
-  player->isplayer = true;    // give us control
+  player->isplayer = true;                                                      // give us control
   golfclub *randomgroundclub = new golfclub(root->planet[0]);
   randomgroundclub->rotate(golfclub::AXIS_X, 90);
   randomgroundclub->position.x = 1;
@@ -424,7 +424,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   player->helditem->held_by = player;
   player->swinglength = player->armlength + player->helditem->bbox_end.y;
   //glfwSetWindowTitle("GolfXTRM beta: Tipping the caddy...");
-  //golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8); // the caddy
+  //golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8);            // the caddy
   //caddy->bodyyaw = -15;
   //caddy->helditem = new golfclub(root->planet[0]);
   //caddy->helditem->held_by = caddy;
@@ -441,7 +441,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //oaktree *thistree5 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 2), 2, oaktree::OAKTREE_STANDARD, 1);
   //oaktree *thistree6 = new oaktree(root->planet[0], 2, root->planet[0]->course[0]->landscape->get_height_at(2, 0), 0, oaktree::OAKTREE_SAPLING, 1);
 
-  glfwSetWindowTitle(window_main, "GolfXTRM beta");  // set the title to the main run's title
+  glfwSetWindowTitle(window_main, "GolfXTRM beta");                             // set the title to the main run's title
 
   cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
   std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
@@ -449,7 +449,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   //  // lazy-wait while refreshing through the splash screen
   //  glfwSleep(0.1);
   //}
-  glfwSetInputMode(window_main, GLFW_CURSOR, GLFW_CURSOR_DISABLED);   // hide the mouse
+  glfwSetInputMode(window_main, GLFW_CURSOR, GLFW_CURSOR_DISABLED);             // hide the mouse
   #ifdef NOMUSIC
     cout << "Skipping music" << endl;
   #else
@@ -467,32 +467,32 @@ void shutdown(int return_code, string errorstring) {  /// close everything grace
   } else {
     cout << "Fatal error: " << errorstring << endl;
   }
-  soundengine->drop();  // shut down the sound engine
-  glfwTerminate();  // shut down the window
+  soundengine->drop();                                                          // shut down the sound engine
+  glfwTerminate();                                                              // shut down the window
   exit(return_code);
 }
 
 
 void mainloop() {   /// the main rendering loop
-  while(keeprunning) {                                  // cheap infinite loop
+  while(keeprunning) {                                                          // cheap infinite loop
     timelasttickstart = glfwGetTime();
 
-    controls(); // run the control polling loop, if it's time
+    controls();                                                                 // run the control polling loop, if it's time
 
     timelasttickend = glfwGetTime();
-    timedeltatick = timelasttickend - timelasttickstart;          // tick delta
+    timedeltatick = timelasttickend - timelasttickstart;                        // tick delta
 
     // render the frame, if it's time to do so
     timelastrenderstart = glfwGetTime();
-    drawfunction();                                               // do the rendering
+    drawfunction();                                                             // do the rendering
     timelasttotal = timelastrenderend;
     timelastrenderend = glfwGetTime();
-    timedeltarender = timelastrenderend - timelastrenderstart;  // render delta
-    timedeltatotal = timelastrenderend - timelasttotal;         // total delta
-    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;  // update the rolling average
-    timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;  // update the rolling average
+    timedeltarender = timelastrenderend - timelastrenderstart;                  // render delta
+    timedeltatotal = timelastrenderend - timelasttotal;                         // total delta
+    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;               // update the rolling average
+    timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;       // update the rolling average
 
-    physics(timedeltatotal);  // run the physics for this tick, if it's time
+    physics(timedeltatotal);                                                    // run the physics for this tick, if it's time
 
     // framerate capping - don't do this if we're using vsync
     /*double timetowait = 0;
@@ -524,7 +524,7 @@ void controls() {
   }
 
   player->state = golfer::GOLFER_STANDING;
-  if(glfwGetKey(window_main, GLFW_KEY_W) == GLFW_PRESS) {                  // wasd for movement
+  if(glfwGetKey(window_main, GLFW_KEY_W) == GLFW_PRESS) {                       // wasd for movement
     player->moveforce.x += std::sin(player->bodyyaw * M_PI / 180) * thismoveforce;
     player->moveforce.z -= std::cos(player->bodyyaw * M_PI / 180) * thismoveforce;
     keyspressed++;
@@ -585,10 +585,10 @@ void controls() {
 }
 
 void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((unused)), int action, int mods) {
-  if(action == GLFW_PRESS) {   // here are all the down-presses we care about
-    if(key == GLFW_KEY_SPACE) {        // space to jump
+  if(action == GLFW_PRESS) {                                                    // here are all the down-presses we care about
+    if(key == GLFW_KEY_SPACE) {                                                 // space to jump
       player->state = golfer::GOLFER_JUMPING;
-    } else if(key == GLFW_KEY_O) {        // O and P switch render modes
+    } else if(key == GLFW_KEY_O) {                                              // O and P switch render modes
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
       cout << "Switched to filled render mode" << endl;
     } else if(key == GLFW_KEY_P) {
@@ -603,7 +603,7 @@ void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((u
       ball->position.y += 1.5;
       ball->at_rest = false;
       cout << "Dropped another ball" << endl;
-    } else if(key == GLFW_KEY_ESCAPE) {         // escape to quit
+    } else if(key == GLFW_KEY_ESCAPE) {                                         // escape to quit
       keeprunning = false;
       cout << "Stop requested..." << endl;
     }
@@ -612,9 +612,9 @@ void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((u
 
 void physics(double timedelta) {    /// update entity and player locations
   if(timedelta > 0.1) {
-    root->update(0.1);             // clamp our time delta
+    root->update(0.1);                                                          // clamp our time delta
   } else {
-    root->update(timedelta);        // carry out the global physics update
+    root->update(timedelta);                                                    // carry out the global physics update
   }
 }
 
