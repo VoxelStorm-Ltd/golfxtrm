@@ -203,7 +203,7 @@ void Perlin::init(void) {
 }
 
 double Perlin::perlin_noise_2D(double vec[2]) {
-  //double freq   = mFrequency;                                                 // unused
+  //double freq   = mFrequency;                                                   // unused
   double result = 0.0;
   double amp    = mAmplitude;
 
