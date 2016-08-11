@@ -157,7 +157,7 @@ matrix4f oculusstorm::getmatrix() {
 
 matrix4f oculusstorm::convertmatrix(OVR::Matrix4f ovrmatrix) {
   /// Convert from OVR row-major matrices to vmath opengl-compatible column-major
-  return matrix4f::fromRowMajorArray(*ovrmatrix.M);
+  return matrix4f::from_row_major_array(*ovrmatrix.M);
 }
 
 void oculusstorm::cachematrices() {
