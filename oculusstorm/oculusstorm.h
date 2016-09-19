@@ -19,7 +19,7 @@
 
 class oculusstorm {
 public:
-  static float constexpr gravity = 9.81f;
+  static float constexpr const gravity = 9.81f;
   unsigned int viewport_width  = 640;
   unsigned int viewport_height = 800;
   float ipd                    = 6.4f;
