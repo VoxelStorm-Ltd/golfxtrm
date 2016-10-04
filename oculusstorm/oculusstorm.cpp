@@ -9,6 +9,7 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   std::cout << "Oculus: Initialising Oculus Rift..." << std::endl;
   OVR::System::Init();
   //OVR::System::Init(OVR::Log::ConfigureDefaultLog(OVR::LogMask_All));
+  /*
   try {
     manager = *OVR::DeviceManager::Create();
   } catch(std::exception &e) {
@@ -116,6 +117,7 @@ oculusstorm::oculusstorm(float new_farplane, float new_nearplane)
   //std::cout << projection_right << std::endl;
   //std::cout << viewadjust_left  << std::endl;
   //std::cout << viewadjust_right << std::endl;
+  */
 }
 
 oculusstorm::~oculusstorm() {
