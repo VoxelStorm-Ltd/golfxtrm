@@ -192,7 +192,6 @@ void Perlin::init(void) {
     p[B + i] = p[i];
     g1[B + i] = g1[i];
     for(j = 0; j != 2; ++j) {
-      g2[B + i][j] = g2[i][j];
     }
     for(j = 0; j != 3; ++j) {
       g3[B + i][j] = g3[i][j];
