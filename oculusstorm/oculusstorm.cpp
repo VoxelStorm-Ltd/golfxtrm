@@ -188,6 +188,7 @@ void oculusstorm::cachematrices() {
   right  = aspectratio * top    * (1.0f + ild_half);
   glFrustum(left, right, bottom, top, nearplane, farplane);
   glTranslatef(-ipd_half, 0.0, 0.0);
+  glGetFloatv(GL_PROJECTION_MATRIX, projection_right.data.data());
 
 }
 

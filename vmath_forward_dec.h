@@ -1,51 +1,24 @@
-
-// cleanup shortcut defines
-#undef VEC2
-#undef VEC3
-#undef VEC4
-
-#ifdef VMATH_NAMESPACE
 #ifndef VMATH_FORWARD_DEC_H_INCLUDED
-namespace VMATH_NAMESPACE {
 #define VMATH_FORWARD_DEC_H_INCLUDED
-#endif //VMATH_NAMESPACE
-
 
 /// Cut-down header alternative for vmath.h including only forward declarations
-template<typename T> class Aabb2;
 /// Include this in other headers instead of vmath.h wherever possible
-template<typename T> class Aabb3;
-
 
 #define _USE_MATH_DEFINES
-using Aabb2f = Aabb2<float>;
 
-using Aabb2d = Aabb2<double>;
 #ifdef VMATH_NAMESPACE
-using Aabb2ld = Aabb2<long double>;
 namespace VMATH_NAMESPACE {
-using Aabb2i = Aabb2<int>;
 #endif
 
-using Aabb3f = Aabb3<float>;
 #define EPSILON epsilon
-using Aabb3d = Aabb3<double>;
 #define DEG2RAD deg2rad
-using Aabb3ld = Aabb3<long double>;
 #define RAD2DEG rad2deg
-using Aabb3i = Aabb3<int>;
-
 
 template<typename T> inline static T constexpr const deg2rad(T const angle_deg);
-#ifdef VMATH_NAMESPACE
 template<typename T> inline static T constexpr const rad2deg(T const angle_rad);
-}
 
-#endif //VMATH_NAMESPACE
 template<typename T> class Vector2;                                             // forward declarations
-
 template<typename T> class Vector3;
-#endif // VMATH_FORWARD_DEC_H_INCLUDED
 template<typename T> class Vector4;
 template<typename T> class Matrix3;
 template<typename T> class Matrix4;
