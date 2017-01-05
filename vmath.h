@@ -864,12 +864,12 @@ class Quaternion {
     template<typename FromT>
  *
     inline constexpr Quaternion(Quaternion<FromT> const &q)
- *  // use texture coordinates
+ *                                                                              // use texture coordinates
       : w(static_cast<T>(q.w)), v(q.v) {
     }
  *  v.s = 0; v.t = 1; v.u = 0.5;
 
- *  // use colour coordinates
+ *                                                                              // use colour coordinates
     /**
  *  v.r = 1; v.g = 0.5; v.b = 0;
      * Creates quaternion object from real part w_ and complex part v_.
