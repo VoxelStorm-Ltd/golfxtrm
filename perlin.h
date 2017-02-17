@@ -18,6 +18,10 @@ public:
     return perlin_noise_2D(vec);
   };
 
+  double get_1d(double x) {
+    return noise1(x);
+  }
+
 private:
   void   init_perlin(int n, double p);
   double perlin_noise_2D(double vec[2]);
