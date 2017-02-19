@@ -129,7 +129,8 @@
 #include <sstream>
 #include <string>
 #include <array>
-#include <mmintrin.h>
+//#include <mmintrin.h>
+#include <x86intrin.h>
 
 #ifdef VMATH_NAMESPACE
 namespace VMATH_NAMESPACE {
