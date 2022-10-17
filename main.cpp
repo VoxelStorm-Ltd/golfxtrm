@@ -12,7 +12,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 //#include <GL/gl.h>
-#include <SOIL.h>
+//#include <SOIL.h>
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -294,6 +294,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   }
 
   // load and display the splash screen
+  /*
   GLuint splashscreen1 = SOIL_load_OGL_texture(
     "GolfXTRM splash screen.png",
     SOIL_LOAD_AUTO,
@@ -358,6 +359,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   } else {
     splashtime = 12;                                                            // how long to show it for
   }
+  */
 
   srand(1337);                                                                  // seed the random generator predictably
 
@@ -410,7 +412,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glfwSetWindowTitle(window_main, "GolfXTRM beta");                             // set the title to the main run's title
 
   cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
-  std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
+  //std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
   //while(glfwGetTime() < splashtime) {
   //  // lazy-wait while refreshing through the splash screen
   //  glfwSleep(0.1);
