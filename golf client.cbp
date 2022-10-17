@@ -3,31 +3,31 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="GolfXTRM client" />
-                <Option makefile="build/Makefile" />
-                <Option makefile_is_custom="1" />
-                <Option compiler="gcc" />
-                <Option virtualFolders="CMake Files/;" />
-                <Build>
-                        <Target title="client">
-                                <Option output="run.sh" prefix_auto="0" extension_auto="0" />
-                                <Option working_dir="./" />
-                                <Option object_output="obj/" />
-                                <Option type="1" />
-                                <Option compiler="gcc" />
-                                <Option use_console_runner="0" />
-                                <MakeCommands>
-                                        <Build command="./build.sh client" />
-                                        <CompileFile command='./build.sh &quot;$file&quot;' />
-                                        <Clean command="./build.sh clean" />
-                                        <DistClean command="./build.sh clean" />
-                                        <AskRebuildNeeded command="$make -q -f build/Makefile $target" />
-                                        <SilentBuild command="./build.sh client &gt; $(CMD_NULL)" />
-                                </MakeCommands>
-                        </Target>
-                </Build>
-                <Unit filename="CMakeLists.txt">
-                        <Option virtualFolder="CMake Files/" />
-                </Unit>
+		<Option makefile="build/Makefile" />
+		<Option makefile_is_custom="1" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="CMake Files/" />
+		<Build>
+			<Target title="client">
+				<Option output="run.sh" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="./" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<MakeCommands>
+					<Build command="./build.sh client" />
+					<CompileFile command='./build.sh &quot;$file&quot;' />
+					<Clean command="./build.sh clean" />
+					<DistClean command="./build.sh clean" />
+					<AskRebuildNeeded command="$make -q -f build/Makefile $target" />
+					<SilentBuild command="./build.sh client &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="CMakeLists.txt">
+			<Option virtualFolder="CMake Files/" />
+		</Unit>
 		<Unit filename="ashtree.cpp" />
 		<Unit filename="firtree.cpp" />
 		<Unit filename="global_objects.h" />
@@ -56,7 +56,48 @@
 		<Unit filename="terrain.cpp" />
 		<Unit filename="terrain.h" />
 		<Unit filename="universe.cpp" />
+		<Unit filename="vectorstorm/aabb/aabb2.h" />
+		<Unit filename="vectorstorm/aabb/aabb2_forward.h" />
+		<Unit filename="vectorstorm/aabb/aabb2_types.h" />
+		<Unit filename="vectorstorm/aabb/aabb3.h" />
+		<Unit filename="vectorstorm/aabb/aabb3_forward.h" />
+		<Unit filename="vectorstorm/aabb/aabb3_types.h" />
+		<Unit filename="vectorstorm/deg2rad.h" />
+		<Unit filename="vectorstorm/deprecated_macros.h" />
+		<Unit filename="vectorstorm/epsilon.h" />
+		<Unit filename="vectorstorm/floor_fast.h" />
+		<Unit filename="vectorstorm/lerp.h" />
+		<Unit filename="vectorstorm/matrix/matrix3.h" />
+		<Unit filename="vectorstorm/matrix/matrix3_forward.h" />
+		<Unit filename="vectorstorm/matrix/matrix3_types.h" />
+		<Unit filename="vectorstorm/matrix/matrix4.h" />
+		<Unit filename="vectorstorm/matrix/matrix4_forward.h" />
+		<Unit filename="vectorstorm/matrix/matrix4_types.h" />
+		<Unit filename="vectorstorm/pi.h" />
+		<Unit filename="vectorstorm/quat/quat.h" />
+		<Unit filename="vectorstorm/quat/quat_forward.h" />
+		<Unit filename="vectorstorm/quat/quat_types.h" />
+		<Unit filename="vectorstorm/rad2deg.h" />
+		<Unit filename="vectorstorm/sigmoid.h" />
+		<Unit filename="vectorstorm/sincos.h" />
+		<Unit filename="vectorstorm/sqrt_fast.h" />
+		<Unit filename="vectorstorm/vector/hash_combine.h" />
+		<Unit filename="vectorstorm/vector/vector2.h" />
+		<Unit filename="vectorstorm/vector/vector2_forward.h" />
+		<Unit filename="vectorstorm/vector/vector2_types.h" />
+		<Unit filename="vectorstorm/vector/vector3.h" />
+		<Unit filename="vectorstorm/vector/vector3_forward.h" />
+		<Unit filename="vectorstorm/vector/vector3_types.h" />
+		<Unit filename="vectorstorm/vector/vector4.h" />
+		<Unit filename="vectorstorm/vector/vector4_forward.h" />
+		<Unit filename="vectorstorm/vector/vector4_types.h" />
+		<Unit filename="vectorstorm/vectorstorm.cpp" />
+		<Unit filename="vectorstorm/vectorstorm.h" />
+		<Unit filename="vectorstorm/vectorstorm_forward.h" />
 		<Unit filename="version.h" />
+		<Unit filename="vmath.cpp" />
+		<Unit filename="vmath.h" />
+		<Unit filename="vmath_forward_dec.h" />
 		<Unit filename="world.cpp" />
 		<Unit filename="worldcomponents.h" />
 		<Unit filename="worldcomponents_render.cpp" />
