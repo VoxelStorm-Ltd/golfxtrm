@@ -107,6 +107,10 @@ target_link_options(client PRIVATE
   -sMIN_WEBGL_VERSION=2
   -sFETCH=1
   -sUSE_LIBPNG=1
+  # emulate legacy GL fixed pipeline:
+  -sLEGACY_GL_EMULATION
+  # optimisation - fixed pipeline only, no shaders:
+  -sGL_FFP_ONLY
   # enable when support improves (https://emscripten.org/docs/porting/exceptions.html):
   #-fwasm-exceptions
   # enable exit handling code
