@@ -109,6 +109,8 @@ target_link_options(client PRIVATE
   -sUSE_LIBPNG=1
   # emulate legacy GL fixed pipeline:
   -sLEGACY_GL_EMULATION
+  # turn off unsafe optimisations
+  -s GL_UNSAFE_OPTS=0
   # optimisation - fixed pipeline only, no shaders:
   -sGL_FFP_ONLY
   # enable when support improves (https://emscripten.org/docs/porting/exceptions.html):
