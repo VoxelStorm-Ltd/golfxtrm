@@ -3,3 +3,7 @@ Thumbs.db
 *.layout
 bin/
 obj/
+build
+CMakeFiles
+CMakeCache.txt
+git_version.h
