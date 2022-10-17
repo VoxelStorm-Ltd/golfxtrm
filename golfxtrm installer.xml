@@ -87,9 +87,6 @@
                     <platforms>windows</platforms>
                     <distributionFileList>
                         <distributionFile>
-                            <origin>bin/Win32_Release/GolfXTRM/irrKlang.dll</origin>
-                        </distributionFile>
-                        <distributionFile>
                             <origin>bin/Win32_Release/GolfXTRM/GolfXTRM window.lnk</origin>
                         </distributionFile>
                         <distributionFile>

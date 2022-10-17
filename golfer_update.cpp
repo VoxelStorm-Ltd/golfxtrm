@@ -1,5 +1,4 @@
 //#include <cstdlib>
-//#include <irrKlang.h>
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
@@ -7,8 +6,6 @@
 #include "globalvars_client_extern.h"
 
 /// This file contains all the player's control and movement physics
-
-extern irrklang::ISoundEngine *soundengine;
 
 void golfer::update(double timedelta) {
   /// update position and velocity based on force and time delta
@@ -90,17 +87,17 @@ void golfer::update(double timedelta) {
         srand(glfwGetTime());
         short sample = rand() % 4;
         if(sample == 0) {
-          currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true);
+          //currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true);
         } else if(sample == 1) {
-          currentsound = soundengine->play2D("GolfXTRM - swing2.ogg", false, false, true);
+          //currentsound = soundengine->play2D("GolfXTRM - swing2.ogg", false, false, true);
         } else if(sample == 2) {
-          currentsound = soundengine->play2D("GolfXTRM - swing3.ogg", false, false, true);
+          //currentsound = soundengine->play2D("GolfXTRM - swing3.ogg", false, false, true);
         } else {
-          currentsound = soundengine->play2D("GolfXTRM - swing4.ogg", false, false, true);
+          //currentsound = soundengine->play2D("GolfXTRM - swing4.ogg", false, false, true);
         }
       }
     } else {
-      currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true); // our first swing
+      //currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true); // our first swing
     }
   }
 

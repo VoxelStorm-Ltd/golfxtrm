@@ -79,7 +79,6 @@
 			<Add directory="." />
 		</Compiler>
 		<Linker>
-			<Add library="lib/libirrKlang.a" />
 			<Add library="lib/libSOIL.a" />
 			<Add library="lib/libglew32.a" />
 			<Add library="lib/libglfw3.a" />

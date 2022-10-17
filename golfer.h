@@ -3,7 +3,6 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <irrKlang.h>
 #include "vmath.h"
 
 class holdable;                                                                 // forward declaration
@@ -101,8 +100,6 @@ public:
   GLuint vbo_arms;                                                              // vertex buffer object for the arms
   GLuint vbo_head;                                                              // vertex buffer object for the head
   GLuint ibo;                                                                   // element buffer object (index buffer object)
-
-  irrklang::ISound *currentsound;                                               // what sound we're playing, if any
 
   golfer(golfcourse *course, double xpos, double ypos, double zpos);
   ~golfer();

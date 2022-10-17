@@ -12,7 +12,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 //#include <GL/gl.h>
-#include <irrKlang.h>
 #include <SOIL.h>
 #include "vmath.h"
 
@@ -276,11 +275,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
 
   glfwSwapInterval(1);                                                          // activate vsync
 
-  cout << "Starting sound engine... " << endl;
-  soundengine = irrklang::createIrrKlangDevice();
-  if(soundengine) {
-    cout << "Sound engine started." << endl;
-    if(!skipintro) {
+  if(!skipintro) {
     // play one of several random intro sounds
     /*srand(glfwGetTime());
     short introtune = rand() % 3;
@@ -291,14 +286,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     } else {
       soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
     }*/
-      #ifdef NOMUSIC
-        cout << "Skipping sound engine initialisation" << endl;
-      #else
-        soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false); // introductory, flutey
-      #endif
-    }
-  } else {
-    cout << "Sound engine failed to start!" << endl;
+    //#ifdef NOMUSIC
+    //  cout << "Skipping sound engine initialisation" << endl;
+    //#else
+    //  soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false); // introductory, flutey
+    //#endif
   }
 
   // load and display the splash screen
@@ -427,7 +419,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   #ifdef NOMUSIC
     cout << "Skipping music" << endl;
   #else
-    soundengine->play2D("Skin Walker - Berserker - Versus.ogg", true);
+    //soundengine->play2D("Skin Walker - Berserker - Versus.ogg", true);
   #endif
 
   // these must be absolutely last:
@@ -441,7 +433,6 @@ void shutdown(int return_code, string errorstring) {  /// close everything grace
   } else {
     cout << "Fatal error: " << errorstring << endl;
   }
-  soundengine->drop();                                                          // shut down the sound engine
   glfwTerminate();                                                              // shut down the window
   exit(return_code);
 }
