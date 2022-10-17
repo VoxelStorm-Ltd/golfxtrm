@@ -69,23 +69,23 @@ golfclub::golfclub(world *parentplanet) {
   if(hasvao) {
     glGenVertexArrays(1, &vao);
   }
-  glGenBuffersARB(1, &vbo);
-  glGenBuffersARB(1, &vbo_n);
-  glGenBuffersARB(1, &ibo);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &vbo_n);
+  glGenBuffers(1, &ibo);
 
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferDataARB(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao);                                                     // set up the VAO's state
-    glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glEnableVertexAttribArrayARB(0);
-    glVertexAttribPointerARB(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBindVertexArray(0);
   }
 }
@@ -116,18 +116,18 @@ void golfclub::render() {     /// draw the object using an indexed VBO with VAA 
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
       } else {
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glVertexPointer(3, GL_FLOAT, 0, 0);
         //glEnableClientState(GL_NORMAL_ARRAY);
-        glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
         //glNormalPointer(GL_FLOAT, 0, 0);
         glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
         glDisableClientState(GL_VERTEX_ARRAY);
         //glDisableClientState(GL_NORMAL_ARRAY);
-        glBindBufferARB(GL_ARRAY_BUFFER, 0);
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
     glPopMatrix();
   }
@@ -141,18 +141,18 @@ void golfclub::renderlocal() {  /// draw the object using an indexed VBO with VA
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
   } else {
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexPointer(3, GL_FLOAT, 0, 0);
     //glEnableClientState(GL_NORMAL_ARRAY);
-    glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
     //glNormalPointer(GL_FLOAT, 0, 0);
     glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
     //glDisableClientState(GL_NORMAL_ARRAY);
-    glBindBufferARB(GL_ARRAY_BUFFER, 0);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 }
 

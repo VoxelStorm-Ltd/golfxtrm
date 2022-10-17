@@ -56,18 +56,18 @@ void particle::render() {
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
     } else {
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
       glEnableClientState(GL_VERTEX_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glVertexPointer(3, GL_FLOAT, 0, 0);
       glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
       glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glDisableClientState(GL_VERTEX_ARRAY);
       glDisableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, 0);
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
   glPopMatrix();
 }
@@ -139,15 +139,15 @@ golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) 
   glGenBuffers(1, &vbo_n);
   glGenBuffers(1, &ibo);
 
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo);
   glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata), vbodata, GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
   glBufferData(GL_ARRAY_BUFFER,         sizeof(vbodata_n), vbodata_n, GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ibodata), ibodata, GL_STATIC_DRAW);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     glBindVertexArray(vao);                                                     // set up the VAO's state
@@ -183,18 +183,18 @@ void golfballtrail::render() {
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
     } else {
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
       glEnableClientState(GL_VERTEX_ARRAY);
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glVertexPointer(3, GL_FLOAT, 0, 0);
       glEnableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, vbo_n);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo_n);
       glNormalPointer(GL_FLOAT, 0, 0);
       glDrawElements(GL_TRIANGLES, numtris*3, GL_UNSIGNED_INT, 0);
       glDisableClientState(GL_VERTEX_ARRAY);
       glDisableClientState(GL_NORMAL_ARRAY);
-      glBindBufferARB(GL_ARRAY_BUFFER, 0);
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
   glPopMatrix();
 }

@@ -77,12 +77,12 @@ world::world() {                                 /// default constructor
     glGenVertexArrays(1, &vao);
     glGenVertexArrays(1, &vao_sky);
   }
-  glGenBuffersARB(1, &vbo);
-  glGenBuffersARB(1, &vbo_n);
-  glGenBuffersARB(1, &ibo);
-  glGenBuffersARB(1, &vbo_sky);
-  glGenBuffersARB(1, &vbo_n_sky);
-  glGenBuffersARB(1, &ibo_sky);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &vbo_n);
+  glGenBuffers(1, &ibo);
+  glGenBuffers(1, &vbo_sky);
+  glGenBuffers(1, &vbo_n_sky);
+  glGenBuffers(1, &ibo_sky);
   update_vbo();                                                                 // get the VBOs in place for terrain and sky rendering
 
   std::cout << "    Planet initialised" << std::endl;
@@ -259,30 +259,30 @@ void world::update_vbo() {
   numtris_sky = 2;
 
   std::cout << "      Uploading " << vbodata.size() << " vertices to vertex buffer (landscape)" << std::endl;
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo);
-  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata.size() * sizeof(GLfloat), &vbodata[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
   std::cout << "      Uploading " << vbodata_n.size() << " normals to normal buffer (landscape)" << std::endl;
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n);
-  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo_n);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata_n.size() * sizeof(GLfloat), &vbodata_n[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
   std::cout << "      Uploading " << indices.size() << " indices for " << numtris << " triangles to index buffer (landscape)" << std::endl;
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   std::cout << "      Uploading " << vbodata_sky.size() << " vertices to vertex buffer (sky)" << std::endl;
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_sky);
-  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_sky.size() * sizeof(GLfloat), &vbodata_sky[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo_sky);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata_sky.size() * sizeof(GLfloat), &vbodata_sky[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
   std::cout << "      Uploading " << vbodata_n_sky.size() << " normals to normal buffer (sky)" << std::endl;
-  glBindBufferARB(GL_ARRAY_BUFFER,         vbo_n_sky);
-  glBufferDataARB(GL_ARRAY_BUFFER,         vbodata_n_sky.size() * sizeof(GLfloat), &vbodata_n_sky[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ARRAY_BUFFER,         0);
+  glBindBuffer(GL_ARRAY_BUFFER,         vbo_n_sky);
+  glBufferData(GL_ARRAY_BUFFER,         vbodata_n_sky.size() * sizeof(GLfloat), &vbodata_n_sky[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER,         0);
   std::cout << "      Uploading " << indices_sky.size() << " indices for " << numtris_sky << " triangles to index buffer (sky)" << std::endl;
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
-  glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, indices_sky.size() * sizeof(GLuint), &indices_sky[0], GL_STATIC_DRAW);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_sky);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_sky.size() * sizeof(GLuint), &indices_sky[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   if(hasvao) {
     std::cout << "      Setting up VAO" << std::endl;
