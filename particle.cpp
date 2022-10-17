@@ -84,18 +84,18 @@ golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) 
   //std::cout << "offset: " << offset.x << " " << offset.y << " " << offset.z << " " << std::endl;
 
   GLfloat vbodata[] = {
-    0,  0  - size,  0,
-    0,  0  + size,  0,
-    offset.x, offset.y - size, offset.z,
-    offset.x, offset.y + size, offset.z,
-    0  - size,  0,  0,
-    0  + size,  0,  0,
-    offset.x - size, offset.y, offset.z,
-    offset.x + size, offset.y, offset.z,
-    0,  0,  0  - size,
-    0,  0,  0  + size,
-    offset.x, offset.y, offset.z - size,
-    offset.x, offset.y, offset.z + size,
+    0,  0  - static_cast<float>(size),  0,
+    0,  0  + static_cast<float>(size),  0,
+    static_cast<float>(offset.x), static_cast<float>(offset.y - size), static_cast<float>(offset.z),
+    static_cast<float>(offset.x), static_cast<float>(offset.y + size), static_cast<float>(offset.z),
+    0  - static_cast<float>(size),  0,  0,
+    0  + static_cast<float>(size),  0,  0,
+    static_cast<float>(offset.x - size), static_cast<float>(offset.y), static_cast<float>(offset.z),
+    static_cast<float>(offset.x + size), static_cast<float>(offset.y), static_cast<float>(offset.z),
+    0,  0,  0  - static_cast<float>(size),
+    0,  0,  0  + static_cast<float>(size),
+    static_cast<float>(offset.x), static_cast<float>(offset.y), static_cast<float>(offset.z - size),
+    static_cast<float>(offset.x), static_cast<float>(offset.y), static_cast<float>(offset.z + size),
   };
   GLfloat vbodata_n[] = {
     /*0, -1,0,
