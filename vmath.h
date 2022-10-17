@@ -853,7 +853,7 @@ class Vector2 {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -1734,7 +1734,7 @@ class Vector3 {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -2531,7 +2531,7 @@ class Vector4 {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -3170,7 +3170,7 @@ class Matrix3 {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -4061,7 +4061,7 @@ class Matrix4 {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -4612,7 +4612,7 @@ class Quaternion {
     /**
      * Gets string representation.
      */
-    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
+    inline std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
