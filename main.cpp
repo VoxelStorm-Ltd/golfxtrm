@@ -229,8 +229,8 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glEnable(GL_DITHER);                                                          // may marginally increase shading quality
   glEnable(GL_LIGHTING);                                                        // obviously we want lighting... right?
   //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);                        // enable local lighting
-  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);                         // to make flat shading ok
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);                             // ensure one-sided lighting
+  //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);                         // to make flat shading ok
+  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);                             // ensure one-sided lighting
   //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);                            // slower, checks sign of dot product of normals
 
   //glEnable(GL_MINMAX);                                                        // allow min and max colour tables for HDR effects
@@ -253,8 +253,8 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   // temporary material definition
   GLfloat mat_specular[] = {0.0, 0.0, 0.0, 1.0};
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-  glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);                              // range 0-128
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  //glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);                              // range 0-128
+  //glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   glEnable(GL_COLOR_MATERIAL);
 
   // set up some lights
