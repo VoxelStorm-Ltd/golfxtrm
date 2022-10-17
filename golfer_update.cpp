@@ -78,11 +78,11 @@ void golfer::update(double timedelta) {
 
   if(std::abs(armsyawvelocity) > 1000) {
     // check if we're already playing a sound
-    if(currentsound != NULL) {
-      if(currentsound->isFinished()){
+    //if(currentsound != NULL) {
+      //if(currentsound->isFinished()){
         // clear up this sound first
-        delete currentsound;
-        currentsound = NULL;
+        //delete currentsound;
+        //currentsound = NULL;
         // play one of several random intro sounds
         srand(glfwGetTime());
         short sample = rand() % 4;
@@ -95,10 +95,10 @@ void golfer::update(double timedelta) {
         } else {
           //currentsound = soundengine->play2D("GolfXTRM - swing4.ogg", false, false, true);
         }
-      }
-    } else {
+      //}
+    //} else {
       //currentsound = soundengine->play2D("GolfXTRM - swing1.ogg", false, false, true); // our first swing
-    }
+    //}
   }
 
   // gravitational force

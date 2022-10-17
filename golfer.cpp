@@ -242,7 +242,7 @@ golfer::golfer(golfcourse *course,
   }
 
   // sound setup
-  currentsound = NULL;
+  //currentsound = NULL;
 
   // add it to the pointer vector of the home planet
   currentplanet = currentcourse->parentplanet;
