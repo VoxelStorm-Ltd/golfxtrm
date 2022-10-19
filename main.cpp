@@ -29,9 +29,6 @@
 
 //#include "progressbar.h"
 
-
-using namespace std;
-
 void login();
 void init();
 void shutdown(int return_code, string errorstring);
@@ -332,9 +329,9 @@ void init() {
 
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj");                       // keep this on the heap
-  cout << "Loading raptor... " << endl;
+  std::cout << "Loading raptor... " << std::endl;
   raptor->load();
-  cout << "Raptor loaded." << endl;
+  std::cout << "Raptor loaded." << std::endl;
 
 
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Walking to the course...");
@@ -372,7 +369,7 @@ void init() {
 
   glfwSetWindowTitle(window_main, "GolfXTRM beta");                             // set the title to the main run's title
 
-  cout << "Initialisation complete in " << glfwGetTime() << " seconds." << endl;
+  std::cout << "Initialisation complete in " << glfwGetTime() << " seconds." << std::endl;
   //std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((splashtime - glfwGetTime()) * 1000)));
   //while(glfwGetTime() < splashtime) {
   //  // lazy-wait while refreshing through the splash screen
@@ -380,7 +377,7 @@ void init() {
   //}
   glfwSetInputMode(window_main, GLFW_CURSOR, GLFW_CURSOR_DISABLED);             // hide the mouse
   #ifdef NOMUSIC
-    cout << "Skipping music" << endl;
+    std::cout << "Skipping music" << std::endl;
   #else
     //soundengine->play2D("Skin Walker - Berserker - Versus.ogg", true);
   #endif
@@ -390,11 +387,12 @@ void init() {
   glfwSetTime(0.0);   //reset the timer for the start of the main loop
 }
 
-void shutdown(int return_code, string errorstring) {  /// close everything gracefully before exit
+void shutdown(int return_code, std::string errorstring) {
+  /// close everything gracefully before exit
   if(return_code == 0) {
-    cout << "Exiting on command - have a nice day!" << endl;
+    std::cout << "Exiting on command - have a nice day!" << std::endl;
   } else {
-    cout << "Fatal error: " << errorstring << endl;
+    std::cout << "Fatal error: " << errorstring << std::endl;
   }
   glfwTerminate();                                                              // shut down the window
   exit(return_code);
@@ -422,6 +420,8 @@ void mainloop() {   /// the main rendering loop
 
     physics(timedeltatotal);                                                    // run the physics for this tick, if it's time
 
+  //std::cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slp " << timetowait << "s Ttl " << glfwGetTime() - timelasttickstart << " Trg " << timedeltamincap << std::endl;
+  //std::cout << "Coords " << (int)player->bodyposition.x << ":" << (int)player->bodyposition.y << ":" << (int)player->bodyposition.z << std::endl;
     // framerate capping - don't do this if we're using vsync
     /*double timetowait = 0;
     if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
@@ -429,8 +429,6 @@ void mainloop() {   /// the main rendering loop
       glfwSleep(timetowait);
     }*/
 
-    //cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slp " << timetowait << "s Ttl " << glfwGetTime() - timelasttickstart << " Trg " << timedeltamincap << endl;
-    //cout << "Coords " << (int)player->bodyposition.x << ":" << (int)player->bodyposition.y << ":" << (int)player->bodyposition.z << endl;
   }
 }
 
@@ -518,10 +516,10 @@ void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((u
       player->state = golfer::GOLFER_JUMPING;
     } else if(key == GLFW_KEY_O) {                                              // O and P switch render modes
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
-      cout << "Switched to filled render mode" << endl;
+      std::cout << "Switched to filled render mode" << std::endl;
     } else if(key == GLFW_KEY_P) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //wireframe
-      cout << "Switched to wireframe render mode" << endl;
+      std::cout << "Switched to wireframe render mode" << std::endl;
     } else if(key == GLFW_KEY_B) {
       golfball *ball = new golfball(root->planet[0]);
       Vector3d positionvector = Vector3d(0,0,-0.6);
@@ -530,10 +528,10 @@ void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((u
       //ball->position.y += ball->radius;
       ball->position.y += 1.5;
       ball->at_rest = false;
-      cout << "Dropped another ball" << endl;
+      std::cout << "Dropped another ball" << std::endl;
     } else if(key == GLFW_KEY_ESCAPE) {                                         // escape to quit
       keeprunning = false;
-      cout << "Stop requested..." << endl;
+      std::cout << "Stop requested..." << std::endl;
     }
   }
 }
