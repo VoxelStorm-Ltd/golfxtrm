@@ -14,6 +14,9 @@
 //#include <GL/gl.h>
 //#include <SOIL.h>
 #include <emscripten.h>
+#include <emscripten/val.h>
+#include <emscripten/html5.h>
+
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -46,10 +49,44 @@ void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
   _Exit(EXIT_SUCCESS);
 }
 
+void callback_error(int error, char const *description) {
+  std::cout << "ERROR: GLFW: " << error << ": " << description << std::endl;
+}
+
+EM_BOOL callback_window_resize([[maybe_unused]] int event_type, const EmscriptenUiEvent *event, void *data) { // event_type == EMSCRIPTEN_EVENT_RESIZE, docs: https://emscripten.org/docs/api_reference/html5.h.html#id16
+  /// Handle a browser window resize event
+  windowwidth = event->documentBodyClientWidth;
+  windowheight = event->documentBodyClientHeight;
+
+  std::cout << "Window size: " << windowwidth << " " << windowheight << std::endl;
+
+  glfwSetWindowSize(window_main, windowwidth, windowheight);
+  glViewport(0, 0, windowwidth, windowheight);
+  glScissor(0, 0, windowwidth, windowheight);
+
+  float aspect_ratio = static_cast<float>(windowheight) / windowwidth;
+  glFrustum(-camfov * camnearplane,
+            camfov * camnearplane,
+            -camfov * camnearplane * aspect_ratio,
+            camfov  * camnearplane * aspect_ratio,
+            camnearplane, camfarplane);
+
+  return false;                                                                 // allow other handlers to handle this event also
+}
+
 int main(int argc, char *argv[]) {
   init();
 
+  emscripten_set_resize_callback(
+    EMSCRIPTEN_EVENT_TARGET_WINDOW,                                             // target = EMSCRIPTEN_EVENT_TARGET_WINDOW to get resize events from the Window object
+    nullptr,                                                                    // userData
+    false,                                                                      // useCapture
+    callback_window_resize                                                      // callback
+  );
+
+  glfwSetErrorCallback(callback_error);                                         // pass the bound target to GLFW to set the callback
   emscripten_set_main_loop_arg(&mainloop, nullptr, 0, true);                    // loop function, user data, FPS (0 to use browser requestAnimationFrame mechanism), simulate infinite loop
+
   shutdown(0, "");
 }
 
@@ -86,8 +123,9 @@ void init() {
     std::cout << "  Mode: " << videomode->width << " " << videomode->height << " " << videomode->refreshRate << std::endl;
   }
 
-  windowwidth  = 1024;
-  windowheight = 768;
+  windowwidth  = emscripten::val::global("window")["innerWidth"].as<unsigned int>();
+  windowheight = emscripten::val::global("window")["innerHeight"].as<unsigned int>();
+  std::cout << "Window initial size: " << windowwidth << " " << windowheight << std::endl;
 
   /*} else if(fullscreen) {
     if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
