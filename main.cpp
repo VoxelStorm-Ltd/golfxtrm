@@ -33,7 +33,7 @@
 using namespace std;
 
 void login();
-void init(bool fullscreen, bool largewindow, bool skipintro);
+void init();
 void shutdown(int return_code, string errorstring);
 void mainloop();
 
@@ -49,51 +49,14 @@ void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
 }
 
 int main(int argc, char *argv[]) {
-  bool fullscreen, largewindow, skipintro;
-  fullscreen = false;
-  largewindow = true;
-  skipintro = false;
-  cout << "Starting up " << argv[0] << " with " << argc << " arguments" << endl;
-  for(int i = 1; i < argc; i++) {
-    cout << "Parsing commandline option " << i << endl;
-    if(i != argc) {                                                             // Check that we haven't finished parsing already
-      cout << "arg " << i << " = " << argv[i] << endl;
-      string thisargstring = string(argv[i]);
-      if(thisargstring == "-skipintro") {
-        skipintro = true;
-        cout << "  skipping intro" << endl;
-      } else if (thisargstring == "-fullscreen") {
-        fullscreen = true;
-        largewindow = false;
-      } else if (thisargstring == "-largewindow") {
-        fullscreen = false;
-        largewindow = true;
-      } else if (thisargstring == "-smallwindow") {
-        fullscreen = false;
-        largewindow = false;
-      } else if (thisargstring == "-novao") {                                   // force VAO disable
-        hasvao = false;
-      } else if (thisargstring == "-width") {                                   // manual screen size setting
-        windowwidth = atoi(argv[i + 1]);
-      } else if (thisargstring == "-height") {
-        windowheight = atoi(argv[i + 1]);
-      } else if (thisargstring == "-timespeed") {
-        timesetspeed = atof(argv[i + 1]);
-      } else if (thisargstring == "-golfballspeed") {
-        physicsspeed = atof(argv[i + 1]);
-      }
-    }
-  }
-  #ifdef SKIPINTRO
-  skipintro = true;                                                             // skip the intro in debug mode
-  #endif
-  init(fullscreen, largewindow, skipintro);
+  init();
 
   mainloop();
   shutdown(0, "");
 }
 
-void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the one-time initialisation we need for the engine
+void init() {
+  /// all the one-time initialisation we need for the engine
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) {
     std::cout << "ERROR: glfwInit() failed" << std::endl;
@@ -275,23 +238,21 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
 
   glfwSwapInterval(1);                                                          // activate vsync
 
-  if(!skipintro) {
-    // play one of several random intro sounds
-    /*srand(glfwGetTime());
-    short introtune = rand() % 3;
-    if(introtune == 0) {
-      soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
-    } else if(introtune == 1) {
-      soundengine->play2D("GolfXTRM - Anton Riehl - Fresh Dew.ogg", false);    // relieved, xylophone
-    } else {
-      soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
-    }*/
-    //#ifdef NOMUSIC
-    //  cout << "Skipping sound engine initialisation" << endl;
-    //#else
-    //  soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false); // introductory, flutey
-    //#endif
-  }
+  // play one of several random intro sounds
+  /*srand(glfwGetTime());
+  short introtune = rand() % 3;
+  if(introtune == 0) {
+    soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false);  // introductory, flutey
+  } else if(introtune == 1) {
+    soundengine->play2D("GolfXTRM - Anton Riehl - Fresh Dew.ogg", false);    // relieved, xylophone
+  } else {
+    soundengine->play2D("GolfXTRM - Anton Riehl - Amazing Lift.ogg", false); // triumphant orchestral
+  }*/
+  //#ifdef NOMUSIC
+  //  cout << "Skipping sound engine initialisation" << endl;
+  //#else
+  //  soundengine->play2D("GolfXTRM - Anton Riehl - The Green Flash.ogg", false); // introductory, flutey
+  //#endif
 
   // load and display the splash screen
   /*
