@@ -442,7 +442,7 @@ void mainloop(void *data) {
   /// the main rendering loop
   timelasttickstart = glfwGetTime();
 
-    controls();                                                                 // run the control polling loop, if it's time
+  controls();                                                                   // run the control polling
 
   timelasttickend = glfwGetTime();
   timedeltatick = timelasttickend - timelasttickstart;                          // tick delta
@@ -525,12 +525,12 @@ void controls() {
   }
 
   // convert mouse movements to camera rotation
-  glfwGetCursorPos(window_main, &mousex, &mousey);
-  //player->headyaw += (mousex-(windowwidth / 2)) * camyawperpixel;
-  //player->headpitch += (mousey-(windowheight / 2)) * campitchperpixel * mouseinvert;
-  player->yawtorque   = (mousex - (windowwidth  / 2)) * camyawperpixel;
-  player->pitchtorque = (mousey - (windowheight / 2)) * campitchperpixel * mouseinvert;
-  glfwSetCursorPos(window_main, windowwidth / 2, windowheight / 2);   //reset the mouse immediately after
+  double mousex_new, mousey_new;
+  glfwGetCursorPos(window_main, &mousex_new, &mousey_new);
+  player->yawtorque   = (mousex_new - mousex) * camyawperpixel;
+  player->pitchtorque = (mousey_new - mousey) * campitchperpixel * mouseinvert;
+  mousex = mousex_new;
+  mousey = mousey_new;
 
   // poll mouse buttons
   if(glfwGetMouseButton(window_main, GLFW_MOUSE_BUTTON_LEFT)) {
