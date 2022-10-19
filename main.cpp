@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 //#include <GL/gl.h>
 //#include <SOIL.h>
+#include <emscripten.h>
 #include "vmath.h"
 
 #include "globaldefs.h"
@@ -31,8 +32,8 @@
 
 void login();
 void init();
-void shutdown(int return_code, string errorstring);
-void mainloop();
+void shutdown(int return_code, std::string errorstring);
+void mainloop(void *data);
 
 void physics(double timedelta);
 void draw();
@@ -48,7 +49,7 @@ void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
 int main(int argc, char *argv[]) {
   init();
 
-  mainloop();
+  emscripten_set_main_loop_arg(&mainloop, nullptr, 0, true);                    // loop function, user data, FPS (0 to use browser requestAnimationFrame mechanism), simulate infinite loop
   shutdown(0, "");
 }
 
@@ -399,36 +400,39 @@ void shutdown(int return_code, std::string errorstring) {
 }
 
 
-void mainloop() {   /// the main rendering loop
-  while(keeprunning) {                                                          // cheap infinite loop
-    timelasttickstart = glfwGetTime();
+void mainloop(void *data) {
+  /// the main rendering loop
+  timelasttickstart = glfwGetTime();
 
     controls();                                                                 // run the control polling loop, if it's time
 
-    timelasttickend = glfwGetTime();
-    timedeltatick = timelasttickend - timelasttickstart;                        // tick delta
+  timelasttickend = glfwGetTime();
+  timedeltatick = timelasttickend - timelasttickstart;                          // tick delta
 
-    // render the frame, if it's time to do so
-    timelastrenderstart = glfwGetTime();
-    draw();                                                                     // do the rendering
-    timelasttotal = timelastrenderend;
-    timelastrenderend = glfwGetTime();
-    timedeltarender = timelastrenderend - timelastrenderstart;                  // render delta
-    timedeltatotal = timelastrenderend - timelasttotal;                         // total delta
-    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;               // update the rolling average
-    timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;       // update the rolling average
+  // render the frame
+  timelastrenderstart = glfwGetTime();
+  draw();                                                                       // do the rendering
+  timelasttotal = timelastrenderend;
+  timelastrenderend = glfwGetTime();
+  timedeltarender = timelastrenderend - timelastrenderstart;                    // render delta
+  timedeltatotal = timelastrenderend - timelasttotal;                           // total delta
+  //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;                 // update the rolling average
+  timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;         // update the rolling average
 
-    physics(timedeltatotal);                                                    // run the physics for this tick, if it's time
+  physics(timedeltatotal);                                                      // run the physics for this tick, if it's time
+
+  // framerate capping - don't do this if we're using vsync
+  /*double timetowait = 0;
+  if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
+    timetowait = timedeltamincap - timedeltatotal;
+    glfwSleep(timetowait);
+  }*/
 
   //std::cout << "FPS " << (int)(1 / timedeltaaverage) << " Dt: " << (int)(timedeltatick*100/timedeltatotal) << "% Dr: " << (int)(timedeltarender*100/timedeltatotal) << " D " << timedeltaaverage << " Slp " << timetowait << "s Ttl " << glfwGetTime() - timelasttickstart << " Trg " << timedeltamincap << std::endl;
   //std::cout << "Coords " << (int)player->bodyposition.x << ":" << (int)player->bodyposition.y << ":" << (int)player->bodyposition.z << std::endl;
-    // framerate capping - don't do this if we're using vsync
-    /*double timetowait = 0;
-    if(timedeltatotal < timedeltamincap) {      // exceeding the fps limit
-      timetowait = timedeltamincap - timedeltatotal;
-      glfwSleep(timetowait);
-    }*/
 
+  if(!keeprunning) {
+    // TODO: exit the loop
   }
 }
 
