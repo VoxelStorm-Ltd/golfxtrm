@@ -5619,4 +5619,3 @@ using Aabb3i = Aabb3<int>;
 #endif //VMATH_NAMESPACE
 
 #endif // __vmath_Header_File__
-

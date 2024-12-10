@@ -1,5 +1,4 @@
-#ifndef VMATH_FORWARD_DEC_H_INCLUDED
-#define VMATH_FORWARD_DEC_H_INCLUDED
+#pragma once
 
 /// Cut-down header alternative for vmath.h including only forward declarations
 /// Include this in other headers instead of vmath.h wherever possible
@@ -111,5 +110,3 @@ using Aabb3i = Aabb3<int>;
 #ifdef VMATH_NAMESPACE
 }
 #endif //VMATH_NAMESPACE
-
-#endif // VMATH_FORWARD_DEC_H_INCLUDED

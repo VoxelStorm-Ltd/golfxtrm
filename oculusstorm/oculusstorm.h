@@ -1,5 +1,4 @@
-#ifndef OCULUSSTORM_H_INCLUDED
-#define OCULUSSTORM_H_INCLUDED
+#pragma once
 
 // A lightweight class to manage the Oculus Rift
 // Written by Eugene Hopkinson for VoxelStorm Ltd, 2013-2015
@@ -58,5 +57,3 @@ public:
   void setup_left();
   void setup_right();
 };
-
-#endif // OCULUSSTORM_H_INCLUDED
