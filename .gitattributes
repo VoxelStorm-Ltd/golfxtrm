@@ -22,3 +22,7 @@
 *.sample binary
 *.xml binary
 *.layout binary
+
+# overrides for better parsing by github-linguist
+include/** linguist-vendored
+**/*.h linguist-language=C++
