@@ -1,5 +1,7 @@
+git_version.h
 Thumbs.db
 *.depend
 *.layout
 bin/
 obj/
+build/
