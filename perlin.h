@@ -1,5 +1,4 @@
-#ifndef PERLIN_H_
-#define PERLIN_H_
+#pragma once
 
 #include <cstdlib>
 
@@ -44,5 +43,3 @@ private:
   double g1[SAMPLE_SIZE + SAMPLE_SIZE + 2];
   bool   mStart;
 };
-
-#endif
