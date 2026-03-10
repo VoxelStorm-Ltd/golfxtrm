@@ -18,14 +18,14 @@
 
 class oculusstorm {
 public:
-  static float constexpr const gravity = 9.81f;
-  unsigned int viewport_width  = 640;
-  unsigned int viewport_height = 800;
-  float ipd                    = 6.4f;
-  float ipd_half               = ipd / 2.0f;
+  static float constexpr gravity{9.81f};
+  unsigned int viewport_width{640};
+  unsigned int viewport_height{800};
+  float ipd{6.4f};
+  float ipd_half{ipd / 2.0f};
   float ild;
   float ild_half;
-  float aspectratio            = static_cast<float>(viewport_width) / static_cast<float>(viewport_height);
+  float aspectratio{static_cast<float>(viewport_width) / static_cast<float>(viewport_height)};
   float fov;
 
   GLfloat nearplane;
@@ -36,15 +36,15 @@ public:
   matrix4<GLfloat> viewadjust_left;
   matrix4<GLfloat> viewadjust_right;
 
-  OVR::Ptr<OVR::DeviceManager>    manager       = nullptr;
-  OVR::Ptr<OVR::HMDDevice>        device        = nullptr;
-  OVR::Ptr<OVR::SensorDevice>     sensor        = nullptr;
-  OVR::SensorFusion               *sensorfusion = nullptr;
+  OVR::Ptr<OVR::DeviceManager>    manager{nullptr};
+  OVR::Ptr<OVR::HMDDevice>        device{nullptr};
+  OVR::Ptr<OVR::SensorDevice>     sensor{nullptr};
+  OVR::SensorFusion               *sensorfusion{nullptr};
   OVR::HMDInfo                    hmdinfo;
   OVR::Util::Render::StereoConfig stereoconfig;
 
-  bool                            infoloaded    = false;
-  bool                            enabled       = false;
+  bool                            infoloaded{false};
+  bool                            enabled{false};
 
   oculusstorm(float new_farplane, float new_nearplane = 0.0f);
   ~oculusstorm();
