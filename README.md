@@ -44,4 +44,17 @@ The supported arguments are:
 
 If more than one window mode is supplied, the last of `-fullscreen`, `-largewindow`, and `-smallwindow` takes precedence.
 
+To play, use `W`, `A`, `S`, and `D` to move relative to the direction the golfer is facing. Hold Left Shift to run and press Space to jump. Walk within reach of the ball, then hold the left mouse button and sweep the mouse to swing the golfer's arms and club through it.
+
+Mouse movement has four modes depending on which buttons are held:
+
+| Mouse buttons | Input mode | Effect |
+| --- | --- | --- |
+| None | Head and body | Looks around. The golfer's body turns to follow the view, and the arms return to their resting position. |
+| Left only | Arms | Swings or aims the arms while the head and body remain facing the same direction. |
+| Right only | Head and arms | Swings or aims the arms while the head follows their direction; the body remains still. |
+| Left and right | Head | Looks around while the body remains still and the arms retain their position. |
+
+Press `B` to drop another ball, `O` for filled rendering, `P` for wireframe rendering, and Escape to quit.
+
 On Windows, run each `.exe` directly instead of using `wine`. `CMAKE_BUILD_TYPE` is the only project-specific user-facing build switch. All builds target SSE2-capable x86 hardware. `GLEW_STATIC` is always enabled so the bundled static GLEW library is used; `SKIPINTRO` disables the intro in Debug, `INTRO` enables the intro in Release, and `NDEBUG` disables standard assertions in Release.
