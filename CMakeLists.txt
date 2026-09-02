@@ -19,35 +19,25 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-# Boost is used as a header-only dependency. Prefer its package configuration
-# when available, with the classic FindBoost module as a fallback.
-if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 OLD)
-endif()
-find_package(Boost QUIET CONFIG)
-if(NOT Boost_FOUND)
-  find_package(Boost REQUIRED MODULE)
-endif()
-
-# A cross-build must not add a host path such as /usr/include directly: doing
-# so mixes the host C runtime headers with MinGW's headers. Expose only Boost's
-# own directory through an isolated include root in the build tree.
-set(GOLFXTRM_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+# Boost is used as a header-only dependency. A cross-build must not add a host
+# path such as /usr/include directly, because that mixes the host C runtime
+# headers with MinGW's headers. Locate host Boost explicitly, then expose only
+# its boost directory through an isolated include root in the build tree.
 if(CMAKE_CROSSCOMPILING)
-  unset(_boost_header_source)
-  foreach(_boost_include_dir IN LISTS Boost_INCLUDE_DIRS)
-    if(EXISTS "${_boost_include_dir}/boost/version.hpp")
-      get_filename_component(
-        _boost_header_source "${_boost_include_dir}/boost" REALPATH)
-      break()
-    endif()
-  endforeach()
-
-  if(NOT _boost_header_source)
+  find_path(GOLFXTRM_HOST_BOOST_INCLUDE_DIR
+    NAMES boost/version.hpp
+    HINTS ENV BOOST_ROOT ENV BOOST_INCLUDEDIR
+    PATHS /usr/local/include /usr/include
+    PATH_SUFFIXES include
+    NO_CMAKE_FIND_ROOT_PATH
+  )
+  if(NOT GOLFXTRM_HOST_BOOST_INCLUDE_DIR)
     message(FATAL_ERROR
-      "Boost was found, but its boost/version.hpp header could not be located")
+      "Boost headers could not be located on the build host")
   endif()
 
+  get_filename_component(_boost_header_source
+    "${GOLFXTRM_HOST_BOOST_INCLUDE_DIR}/boost" REALPATH)
   string(MD5 _boost_header_path_hash "${_boost_header_source}")
   set(_boost_isolated_root
     "${CMAKE_BINARY_DIR}/boost-include-${_boost_header_path_hash}")
@@ -67,6 +57,15 @@ if(CMAKE_CROSSCOMPILING)
   endif()
 
   set(GOLFXTRM_BOOST_INCLUDE_DIRS "${_boost_isolated_root}")
+else()
+  if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD)
+  endif()
+  find_package(Boost QUIET CONFIG)
+  if(NOT Boost_FOUND)
+    find_package(Boost REQUIRED MODULE)
+  endif()
+  set(GOLFXTRM_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif()
 
 # Mirrors the retained <Unit> entries in golf client.cbp. Headers are included
