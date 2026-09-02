@@ -23,7 +23,6 @@ golfer::golfer(golfcourse *course,
   yawtorque = 0;
   pitchtorque = 0;
   helditem = NULL;
-  swinglength = armlength;
 
   // biometrics
   bodymass = 70.8;                                                              // official biometric average for Europe
@@ -32,6 +31,7 @@ golfer::golfer(golfcourse *course,
   headfulcrum.y = 1.38;                                                         // DIY biometric guess
   eyeleveloffset.y = 1.6095 - headfulcrum.y;                                    // official average human standing eye height
   armlength = 0.60;                                                             // DIY biometric guess - hand distance from centre fulcrum
+  swinglength = armlength;
   armfulcrum.x = 0;                                                             // DIY guesses
   armfulcrum.y = 1.45;
   armfulcrum.z = 0;
