@@ -3,15 +3,16 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/quat/quat.h"
 
 class world;                                                                    // forward dec
 
 class particle {
 public:
-  Vector3d position;                                                            // where it is
-  Vector3d velocity;                                                            // where it's going
-  Quatd rotation;                                                               // how it's oriented
+  vector3d position;                                                            // where it is
+  vector3d velocity;                                                            // where it's going
+  quatd rotation;                                                               // how it's oriented
 
   double size;                                                                  // relative size modifier
 
@@ -35,7 +36,7 @@ public:
 
 class golfballtrail : particle {
 public:
-  golfballtrail(world *parentplanet, Vector3d start, Vector3d end);
+  golfballtrail(world *parentplanet, vector3d const &start, vector3d const &end);
   virtual ~golfballtrail();
   void render();
 };

@@ -1,4 +1,5 @@
 //#include <irrKlang.h>
+#include <iostream>
 #include "holdable.h"
 #include "worldcomponents.h"
 #include "golfer.h"
@@ -18,8 +19,8 @@ golfclub::golfclub(world *parentplanet) {
   currentplanet = parentplanet;
   currentplanet->items.push_back(this);
 
-  bbox_start = Vector3d(-0.01,-0.1,-0.01);
-  bbox_end = Vector3d(0.01,0.95,0.1);
+  bbox_start = vector3d(-0.01,-0.1,-0.01);
+  bbox_end = vector3d(0.01,0.95,0.1);
   boundingradius = 0.06;
 
   // rendering data
@@ -103,8 +104,8 @@ void golfclub::render() {     /// draw the object using an indexed VBO with VAA 
       glTranslated(position.x, position.y, position.z);
       glMultMatrixd(rotation.transform());
       //glRotated(bodyyaw, 0, -1, 0);
-      //Matrix3d rotmatrix = rotation.rotMatrix();
-      //glLoadMatrixd(rotation.rotMatrix());
+      //matrix3d rotmatrix = rotation.rotmatrix();
+      //glLoadMatrixd(rotation.rotmatrix());
       //GLdouble temp[16];
       //glGetDoublev(GL_MODELVIEW_MATRIX, temp);
       //std::cout << temp[0] << " " << temp[1] << " " << temp[2] << " " << temp[3] << " " << std::endl;
@@ -112,7 +113,7 @@ void golfclub::render() {     /// draw the object using an indexed VBO with VAA 
       //std::cout << temp[8] << " " << temp[9] << " " << temp[10] << " " << temp[11] << " " << std::endl;
       //std::cout << temp[12] << " " << temp[13] << " " << temp[14] << " " << temp[15] << " " << std::endl;
       //std::cout << "---" << std::endl;
-      //std::cout << rotation.rotMatrix().toString() << std::endl;
+      //std::cout << rotation.rotmatrix() << std::endl;
       if(hasvao) {
         glColor4f(1, 1, 1, 1);
         glBindVertexArray(vao);
@@ -164,9 +165,9 @@ void golfclub::impact(holdable *target, golfer *actor, double distance) {
   // rotational velocity -> linear velocity
   double pushleft = actor->armsyawvelocity * distance;
   double pushdown = actor->armspitchvelocity * distance;
-  Vector3d pushvector = Vector3d(pushleft, pushdown, 0) * 0.001;
+  vector3d pushvector = vector3d(pushleft, pushdown, 0) * 0.001;
   if(pushvector.length() > 70 * target->mass) {                                 // cap the launch speed
-    pushvector.normalize();
+    pushvector.normalise();
     pushvector *= 70 * target->mass;                                            // momentum - from average golf launch speeds
   }
   //std::cout << "vector 1        " << pushvector.x << " " << pushvector.y << " " << pushvector.z << std::endl;

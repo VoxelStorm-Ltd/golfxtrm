@@ -14,7 +14,8 @@
 //#include <GL/gl.h>
 #include <irrKlang.h>
 #include <SOIL.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/vector/vector4.h"
 
 #include "globaldefs.h"
 #include "globalvars_client.h"
@@ -270,7 +271,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
 
   // fog settings
   glEnable(GL_FOG);
-  glFogfv(GL_FOG_COLOR, Vector4f(fogred, foggreen, fogblue, 1));
+  glFogfv(GL_FOG_COLOR, vector4f(fogred, foggreen, fogblue, 1));
   //glFogi(GL_FOG_MODE, GL_LINEAR);                                             // GL_LINEAR GL_EXP GL_EXP2
   glFogi(GL_FOG_MODE, GL_EXP);                                                  // GL_LINEAR GL_EXP GL_EXP2
   glFogf(GL_FOG_DENSITY, 0.02);                                                 // only used for exponential fog
@@ -285,7 +286,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glEnable(GL_COLOR_MATERIAL);
 
   // set up some lights
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Vector4f(ambientred, ambientgreen, ambientblue, 1)); //global ambient
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, vector4f(ambientred, ambientgreen, ambientblue, 1)); //global ambient
   //glLightfv(GL_LIGHT0, GL_AMBIENT, ambientlightcol);
   GLfloat directionallightdiff[] = {0.8,0.7,0.5,1};
   glLightfv(GL_LIGHT0, GL_DIFFUSE, directionallightdiff);
@@ -399,7 +400,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Growing grass...");
   root = new universe();                                                        // create the global universe object
   root->addplanet(0);                                                           // populate it with a default planet
-  root->planet[0]->addcourse(0, Vector3d(0,0,0), Vector3d(205,9,227), 1337);    // add the default course
+  root->planet[0]->addcourse(0, vector3d(0,0,0), vector3d(205,9,227), 1337);    // add the default course
 
   glfwSetWindowTitle(window_main, "GolfXTRM beta: Loading prehistoric fauna...");
   objloader *raptor = new objloader("assets/raptor.obj");                       // keep this on the heap
@@ -596,7 +597,7 @@ void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((u
       cout << "Switched to wireframe render mode" << endl;
     } else if(key == GLFW_KEY_B) {
       golfball *ball = new golfball(root->planet[0]);
-      Vector3d positionvector = Vector3d(0,0,-0.6);
+      vector3d positionvector = vector3d(0,0,-0.6);
       positionvector.rotate(0,-player->bodyyaw,0);
       ball->position = player->bodyposition + positionvector;
       //ball->position.y += ball->radius;

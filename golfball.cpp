@@ -13,8 +13,8 @@ golfball::golfball(world *parentplanet) {
   name = "golf ball";
   description = "A small hard white ball with strong elastic properties.";
 
-  bbox_start = Vector3d(-radius, -radius, -radius);
-  bbox_end   = Vector3d( radius,  radius,  radius);
+  bbox_start = vector3d(-radius, -radius, -radius);
+  bbox_end   = vector3d( radius,  radius,  radius);
   boundingradius = radius;
 
   currentplanet = parentplanet;

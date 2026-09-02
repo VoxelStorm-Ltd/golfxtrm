@@ -1,4 +1,5 @@
 //#include <cstdlib>
+#include <iostream>
 #include "terrain.h"
 #include "globalvars_client_extern.h"
 #include "perlin.h"
@@ -6,7 +7,7 @@
 #include "worldcomponents.h"
 
 terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
-                 Vector3d teeposition, Vector3d holeposition,
+                 vector3d const &teeposition, vector3d const &holeposition,
                  double terrainsize, double terraingridwidth) {
   /// default constructor
   std::cout << "        Initialising terrain..." << std::endl;
@@ -170,13 +171,13 @@ void terrain::update_vbo() {   /// update the VBO from the current grid heightma
       vbodata[vbo_offset + 5] = origin.z + ((double)(zgrid + 1 ) / gridwidth * bounds.z);
 
       // populate the normals (z vector cross product x vector)
-      Vector3f thisnormal;
+      vector3f thisnormal;
       if(xgrid == gridwidth - 1 || zgrid == gridwidth - 1) {
-        thisnormal = Vector3f(0, 1, 0);
+        thisnormal = vector3f(0, 1, 0);
       } else {
-        thisnormal = Vector3f(0, heightmap[(xgrid * gridwidth) + (zgrid + 1)] - heightmap[(xgrid * gridwidth) + zgrid], 1)
-          .crossProduct(Vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0)); // normal is z cross x
-        thisnormal.normalize();
+        thisnormal = vector3f(0, heightmap[(xgrid * gridwidth) + (zgrid + 1)] - heightmap[(xgrid * gridwidth) + zgrid], 1)
+          .cross(vector3f(1, heightmap[((xgrid+1) * gridwidth) + zgrid] - heightmap[(xgrid * gridwidth) + zgrid], 0)); // normal is z cross x
+        thisnormal.normalise();
       }
       vbodata_n[vbo_offset    ] = thisnormal.x;
       vbodata_n[vbo_offset + 1] = thisnormal.y;
@@ -320,9 +321,9 @@ double terrain::get_height_at(double x, double z) {
   }
 }
 
-Vector3d terrain::get_slope_at(double x, double z) {
+vector3d terrain::get_slope_at(double x, double z) {
   /// return the downward slope vector at this spot
-  Vector3d result;
+  vector3d result;
 
   result.x = (double)0;
   result.y = (double)1;
@@ -358,7 +359,7 @@ double terrain::get_min_velocity_at(double x, double z) {
   return 0.1;                                                                   // placeholder
 }
 
-void terrain::render(Vector4f basecolour) {
+void terrain::render(vector4f const &basecolour) {
   /// alias function to render the terrain using the preferred method
   //render2(basecolour);                                                        // DEBUG
   if(hasvao) {
@@ -368,7 +369,7 @@ void terrain::render(Vector4f basecolour) {
   }
 }
 
-void terrain::render1(Vector4f basecolour) {      /// draw the terrain based on world coords (immediate mode)
+void terrain::render1(vector4f const &basecolour) {      /// draw the terrain based on world coords (immediate mode)
   double xpolysize = bounds.x / gridwidth;
   double zpolysize = bounds.z / gridwidth;
   glColor4fv(basecolour);
@@ -383,7 +384,7 @@ void terrain::render1(Vector4f basecolour) {      /// draw the terrain based on 
   }
 }
 
-void terrain::render2(Vector4f basecolour) {      /// draw the terrain based on grid coords (immediate mode)
+void terrain::render2(vector4f const &basecolour) {      /// draw the terrain based on grid coords (immediate mode)
   glColor4fv(basecolour);
   for(int xgrid = 0; xgrid < gridwidth - 1; ++xgrid) {
     double xpolysize = bounds.x / gridwidth;
@@ -402,7 +403,7 @@ void terrain::render2(Vector4f basecolour) {      /// draw the terrain based on 
   }
 }
 
-void terrain::render3(Vector4f basecolour) {      /// draw the terrain using an indexed VBO
+void terrain::render3(vector4f const &basecolour) {      /// draw the terrain using an indexed VBO
   glColor4fv(basecolour);
 
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -422,7 +423,7 @@ void terrain::render3(Vector4f basecolour) {      /// draw the terrain using an 
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void terrain::render4(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAA
+void terrain::render4(vector4f const &basecolour) {      /// draw the terrain using an indexed VBO with VAA
   glColor4fv(basecolour);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -439,7 +440,7 @@ void terrain::render4(Vector4f basecolour) {      /// draw the terrain using an 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void terrain::render5(Vector4f basecolour) {      /// draw the terrain using an indexed VBO with VAO
+void terrain::render5(vector4f const &basecolour) {      /// draw the terrain using an indexed VBO with VAO
   glColor4fv(basecolour);
 
   glBindVertexArray(vao);

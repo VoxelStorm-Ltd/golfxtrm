@@ -36,7 +36,7 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
     bottom     = 1.0 + ((float)rand() / RAND_MAX * 0.5);
     width      = 1 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
     trunkwidth = width / 5;
-    rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
+    rotation = quaternion<double>::from_axis_rot(vector3d(0,1,0), rand() % 360);
   } else if(treetype == FIRTREE_SAPLING) {
     // make it tiny
     name = "perfect fir tree sapling";
@@ -53,7 +53,7 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
     bottom     = 0.1 + ((float)rand() / RAND_MAX * 0.05);
     width      = 0.1 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
     trunkwidth = width / 5;
-    rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
+    rotation = quaternion<double>::from_axis_rot(vector3d(0,1,0), rand() % 360);
   }
   if(bottom < 1.5) {
     collisionoffset.y = bottom;

@@ -72,13 +72,13 @@ void particle::render() {
   glPopMatrix();
 }
 
-golfballtrail::golfballtrail(world *parentplanet, Vector3d start, Vector3d end) {
+golfballtrail::golfballtrail(world *parentplanet, vector3d const &start, vector3d const &end) {
   age = 0;
   lifespan = 3;
 
   size = 0.04;
   position = end;
-  Vector3d offset = start - end;
+  vector3d offset = start - end;
   //std::cout << "start:  " << start.x << " " << start.y << " " << start.z << " " << std::endl;
   //std::cout << "end:    " << end.x << " " << end.y << " " << end.z << " " << std::endl;
   //std::cout << "offset: " << offset.x << " " << offset.y << " " << offset.z << " " << std::endl;

@@ -1,4 +1,5 @@
 #include "worldcomponents.h"
+#include <iostream>
 
 //#include <cstdlib>
 #include "terrain.h"
@@ -44,16 +45,16 @@ world::world() {                                 /// default constructor
   }
   updatetime = 1 / featureupdatefreq;                                           // time from frequency
 
-  summergrasscolour   = Vector4f(0.75, 0.75, 0.25, 1);
-  summerskycolour     = Vector4f(0.90, 0.95, 0.67, 1);
-  summerfogcolour     = Vector4f(0.98, 0.92, 0.50, 1);
+  summergrasscolour   = vector4f(0.75, 0.75, 0.25, 1);
+  summerskycolour     = vector4f(0.90, 0.95, 0.67, 1);
+  summerfogcolour     = vector4f(0.98, 0.92, 0.50, 1);
   summerclearcolour   = summerskycolour;
-  summerambientcolour = Vector4f(0.7, 0.7, 0.7, 1);
-  wintergrasscolour   = Vector4f(1, 1, 1, 1);
-  winterskycolour     = Vector4f(0.3, 0.6, 1, 1);
-  winterfogcolour     = Vector4f(0.9, 0.95, 1, 1);
+  summerambientcolour = vector4f(0.7, 0.7, 0.7, 1);
+  wintergrasscolour   = vector4f(1, 1, 1, 1);
+  winterskycolour     = vector4f(0.3, 0.6, 1, 1);
+  winterfogcolour     = vector4f(0.9, 0.95, 1, 1);
   winterclearcolour   = winterfogcolour;
-  winterambientcolour = Vector4f(0.9, 0.9, 0.85, 1);
+  winterambientcolour = vector4f(0.9, 0.9, 0.85, 1);
 
   grasscolour   = summergrasscolour;
   skycolour     = summerskycolour;
@@ -61,15 +62,15 @@ world::world() {                                 /// default constructor
   clearcolour   = summerclearcolour;
   ambientcolour = summerambientcolour;
 
-  sundirection = Vector3f(0, 0, 1);
-  sunambient   = Vector4f(0, 0, 0, 1);
-  sundiffuse   = Vector4f(1, 1, 1, 1);
-  sunspecular  = Vector4f(1, 1, 1, 1);
+  sundirection = vector3f(0, 0, 1);
+  sunambient   = vector4f(0, 0, 0, 1);
+  sundiffuse   = vector4f(1, 1, 1, 1);
+  sunspecular  = vector4f(1, 1, 1, 1);
 
   //windvelocity.x = 10;
 
   numcourses = 0;
-  //addcourse(0, Vector3d(0,0,0), Vector3d(50,0,50));                           // no point having less than 1 course
+  //addcourse(0, vector3d(0,0,0), vector3d(50,0,50));                           // no point having less than 1 course
 
   vao = vbo = vbo_n = ibo = 0;
   vao_sky = vbo_sky = vbo_n_sky = ibo_sky = 0;
@@ -88,7 +89,7 @@ world::world() {                                 /// default constructor
   std::cout << "    Planet initialised" << std::endl;
 }
 
-void world::addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition, unsigned int randomseed) {
+void world::addcourse(int coursenum, vector3d const &teeposition, vector3d const &holeposition, unsigned int randomseed) {
   /// add a golf course to this planet
   course.push_back(new golfcourse(this, teeposition, holeposition, randomseed));
   ++numcourses;

@@ -106,8 +106,8 @@ void golfer::render() {           /// alias function for preferred render method
 
 void golfer::render5() {          /// draw this fellow using an indexed VBO with VAA and VAO
   glColor4f(0.25,0.25,0.25,1);
-  Vector3d fulcrum_to_hands;
-  Vector3d fulcrum_to_shoulder;
+  vector3d fulcrum_to_hands;
+  vector3d fulcrum_to_shoulder;
   double armsectionlength = (armlength + armshoulderoffset) / 2;
   fulcrum_to_hands.z = armlength;
   fulcrum_to_hands.rotate(0, armsyaw, 0);
@@ -181,7 +181,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
     {
       glColor4f(0.25,0.25,0.25,1);
       fulcrum_to_shoulder.x = armshoulderoffset;
-      Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
+      vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
       double armangle = std::atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
       double elbowangle = std::acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
       glTranslated(armfulcrum.x + armshoulderoffset, armfulcrum.y, armfulcrum.z);
@@ -233,7 +233,7 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
     glPushMatrix();                                                             // left upper arm
     {
       fulcrum_to_shoulder.x = -armshoulderoffset;
-      Vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
+      vector3d shoulder_to_hands = fulcrum_to_hands - fulcrum_to_shoulder;
       double armangle = std::atan2(shoulder_to_hands.x, shoulder_to_hands.z) * 180 / M_PI;
       double elbowangle = std::acos((shoulder_to_hands.length()/2) / armsectionlength) * 180 / M_PI;
       glTranslated(armfulcrum.x - armshoulderoffset, armfulcrum.y, armfulcrum.z);

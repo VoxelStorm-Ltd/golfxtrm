@@ -3,18 +3,19 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/quat/quat.h"
 
 class world;                                                                    // forward dec
 
 class feature {
 public:
-  Vector3d position;                                                            // where its origin is in the world
-  Quatd rotation;                                                               // how it's oriented
-  Vector3d bbox_start;                                                          // one corner of the bounding box
-  Vector3d bbox_end;                                                            // other corner of the bounding box
+  vector3d position;                                                            // where its origin is in the world
+  quatd rotation;                                                               // how it's oriented
+  vector3d bbox_start;                                                          // one corner of the bounding box
+  vector3d bbox_end;                                                            // other corner of the bounding box
 
-  Vector3d collisionoffset;                                                     // centre of the collision sphere
+  vector3d collisionoffset;                                                     // centre of the collision sphere
   double boundingradius;                                                        // bounding sphere radius
 
   std::string name;                                                             // what it's called
@@ -114,8 +115,8 @@ public:
   float trunkwidth;                                                             // thickness of the trunk / 2
 
   struct branch {
-    Vector3f start;
-    Vector3f end;
+    vector3f start;
+    vector3f end;
     float thickness;
     bool grow_now;
     //branch *parent;

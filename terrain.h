@@ -4,7 +4,8 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/vector/vector4.h"
 #include "landscape_features.h"
 
 class golfcourse;                                                               // forward dec
@@ -13,8 +14,8 @@ class terrain {                 /// object for handling the terrain heightmap
 public:
   golfcourse *parent;                                                           // what course this belongs to
 
-  Vector3d origin;                                                              // the map's origin's coordinates
-  Vector3d bounds;                                                              // the map's bounding box
+  vector3d origin;                                                              // the map's origin's coordinates
+  vector3d bounds;                                                              // the map's bounding box
 
   //double heightmap[200*200];                                                  // the heightmap data
   //double **heightmap;                                                         // the heightmap data on the heap
@@ -29,24 +30,24 @@ public:
   GLuint ibo;                                                                   // element buffer object (index buffer object)
   GLuint numtris;                                                               // number of triangles in the index
 
-  terrain(golfcourse *parent, unsigned int randomseed, Vector3d teeposition, Vector3d holeposition, double size, double gridwidth);
+  terrain(golfcourse *parent, unsigned int randomseed, vector3d const &teeposition, vector3d const &holeposition, double size, double gridwidth);
   ~terrain();
   void update_vbo();
   void populatefeatures(int randomseed, feature::featuretype whatfeature);
   void populatefeatures(int randomseed, feature::featuretype whatfeature, float threshold, float probability);
   double get_height_at(double x, double z);
-  Vector3d get_slope_at(double x, double z);
+  vector3d get_slope_at(double x, double z);
   double get_hardness_at(double x, double z);
   void update(double timedelta);
   double get_friction_at(double x, double z);
   double get_grass_depth_at(double x, double z);
   double get_min_velocity_at(double x, double z);
-  void render(Vector4f basecolour);
-  void render1(Vector4f basecolour);
-  void render2(Vector4f basecolour);
-  void render3(Vector4f basecolour);
-  void render4(Vector4f basecolour);
-  void render5(Vector4f basecolour);
+  void render(vector4f const &basecolour);
+  void render1(vector4f const &basecolour);
+  void render2(vector4f const &basecolour);
+  void render3(vector4f const &basecolour);
+  void render4(vector4f const &basecolour);
+  void render5(vector4f const &basecolour);
 };
 
 

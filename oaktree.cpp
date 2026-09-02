@@ -35,7 +35,7 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
     bottom     = 0.5 + ((float)rand() / RAND_MAX * 0.5);
     width      = 3 + ((float)rand() / RAND_MAX * 0.8) - 0.4;
     trunkwidth = width / 5;
-    rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
+    rotation = quaternion<double>::from_axis_rot(vector3d(0,1,0), rand() % 360);
   } else if(treetype == OAKTREE_SAPLING) {
     name = "perfect oak tree sapling";
     description = "A stately, slow-groing tree with a heavy cube top and a thick cube trunk.  This one grew from a sapling of ideal proportions.";
@@ -52,7 +52,7 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
     bottom     = 0.025 + ((float)rand() / RAND_MAX * 0.025);
     width      = 0.3 + ((float)rand() / RAND_MAX * 0.08) - 0.04;
     trunkwidth = width / 5;
-    rotation = Quaternion<double>::fromAxisRot(Vector3d(0,1,0), rand() % 360);
+    rotation = quaternion<double>::from_axis_rot(vector3d(0,1,0), rand() % 360);
   }
   if(bottom < 1.5) {
     collisionoffset.y = ((height - bottom) / 2) + bottom;

@@ -148,7 +148,7 @@ void oculusstorm::dumpinfo() {
 quatf oculusstorm::getquat() {
   /// Fetch the rotation quaternion
   OVR::Quatf const orientation = sensorfusion->GetOrientation();
-  // translate from OVR quat to vmath quat (w + Xi + Yj + Zk)
+  // translate from OVR quat to vectorstorm quat (w + Xi + Yj + Zk)
   return quatf(orientation.w, orientation.x, orientation.y, orientation.z);
 }
 
@@ -158,7 +158,7 @@ matrix4f oculusstorm::getmatrix() {
 }
 
 matrix4f oculusstorm::convertmatrix(OVR::Matrix4f ovrmatrix) {
-  /// Convert from OVR row-major matrices to vmath opengl-compatible column-major
+  /// Convert from OVR row-major matrices to vectorstorm OpenGL-compatible column-major
   return matrix4f::from_row_major_array(*ovrmatrix.M);
 }
 

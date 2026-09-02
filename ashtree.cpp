@@ -1,5 +1,6 @@
 //#include <cstdlib>
 #include <GL/glew.h>
+#include <iostream>
 //#include <GLFW/glfw3.h>
 #include "landscape_features.h"
 #include "worldcomponents.h"
@@ -57,13 +58,13 @@ void ashtree::updatevbo() {
   srand(randomseed);
 
   std::vector<ashtree::branch> branches;
-  std::vector<Vector3f> leaves;
+  std::vector<vector3f> leaves;
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
   numtris = 0;
 
   for(int i = 0; i < 4000; ++i) {
-    Vector3f leaf;
+    vector3f leaf;
     leaf.x = ((float)rand() * width * 2 / (float)RAND_MAX) - width;
     leaf.y = ((float)rand() * (height - bottom) / (float)RAND_MAX) + bottom;
     leaf.z = ((float)rand() * width * 2 / (float)RAND_MAX) - width;
@@ -94,8 +95,8 @@ void ashtree::updatevbo() {
   float attractrange = 15 * growdist;
 
   branch rootbranch;
-  rootbranch.start = Vector3f(0,0,0);
-  rootbranch.end = Vector3f(0,0,0);
+  rootbranch.start = vector3f(0,0,0);
+  rootbranch.end = vector3f(0,0,0);
   rootbranch.thickness = 0;
   rootbranch.grow_now = false;
   rootbranch.parent = 0;
@@ -122,7 +123,7 @@ void ashtree::updatevbo() {
       int closestb = -1;
       float closestdist = 1000;
       for(unsigned int b = 0; b < branches.size(); ++b) {
-        Vector3f btol = leaves[l] - branches[b].end;
+        vector3f btol = leaves[l] - branches[b].end;
         float distance = btol.length();
         // find closest tree node to this leaf
         if(distance < closestdist) {
@@ -138,16 +139,16 @@ void ashtree::updatevbo() {
       if(branches[b].grow_now) {
         branches[b].grow_now = false;
         // get all vectors of leaves within range of this branch
-        Vector3f averagevector = Vector3f(0,0,0);
+        vector3f averagevector = vector3f(0,0,0);
         int averagecount = 0;
         unsigned int llimit = leaves.size();
         for(unsigned int l = 0; l < llimit; ++l) {
-          Vector3f btol = leaves[l] - branches[b].end;
+          vector3f btol = leaves[l] - branches[b].end;
           float distance = btol.length();
           if(distance < attractrange) {
             // normalise them
-            Vector3f thisleaf = leaves[l];
-            thisleaf.normalize();
+            vector3f thisleaf{leaves[l]};
+            thisleaf.normalise();
             averagevector += thisleaf;
             ++averagecount;
             // check for leaves to remove
@@ -162,7 +163,7 @@ void ashtree::updatevbo() {
           // average them
           averagevector /= averagecount;
           // normalise that
-          averagevector.normalize();
+          averagevector.normalise();
         } else {
         // check it's valid (we may not be in range of anything)
         //if(std::isnan(averagevector.y)) {

@@ -1,6 +1,7 @@
 #include "holdable.h"
 #include "worldcomponents.h"
 #include "particle.h"
+#include <iostream>
 
 holdable::holdable() {                                /// default constructor
   held_by = NULL;
@@ -32,12 +33,12 @@ holdable::~holdable() {
   //                                        {return ptr == &other;} ));
 }
 
-void holdable::push(Vector3d impulse) {  /// apply a one-off impulse to this object
+void holdable::push(vector3d const &impulse) {  /// apply a one-off impulse to this object
   // TODO: if held, apply max holding force, enable knocking out of hand
   velocity += impulse / mass;                                                   // applied directly as a one-off, no delta time considered
 }
 
-void holdable::push(Vector3d impulse, Vector3d impactpoint) {
+void holdable::push(vector3d const &impulse, vector3d const &impactpoint) {
   /// apply a one-off impulse offset from centre of this object
   // TODO: apply max holding force, enable knocking out of hand
   velocity += impulse / mass;                                                   // applied directly as a one-off, no delta time considered
@@ -56,30 +57,30 @@ void holdable::update(double timedelta) {
       // gravitational force
       velocity.y -= (currentplanet->gravity * timedelta);                       // acceleration
 
-      Vector3d newposition = position + (velocity * timedelta);
+      vector3d newposition = position + (velocity * timedelta);
       //std::cout << "DEBUG last settings " << position.x << " " << position.y << " " << position.z << " " << newposition.x << " " << newposition.y << " " <<newposition.z << std::endl;
       new golfballtrail(currentplanet, position, newposition);                  // particle trails
       position = newposition;
 
       // air resistance and wind effect (combined)
-      Vector3d thisveldiff = velocity - currentplanet->windvelocity;
+      vector3d thisveldiff = velocity - currentplanet->windvelocity;
       if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
         if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
           // no calculations necessary
         } else {
-          double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
-          Vector3d thisdragdecel;
+          double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.length_sq() * timedelta) / mass ;
+          vector3d thisdragdecel;
           thisdragdecel = currentplanet->windvelocity;
-          thisdragdecel.normalize();
+          thisdragdecel.normalise();
           thisdragdecel *= thisdragimpulse;
           velocity += thisdragdecel;
         }
       } else {
-        double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / mass ;
-        Vector3d thisdragdecel;
+        double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.length_sq() * timedelta) / mass ;
+        vector3d thisdragdecel;
         thisdragdecel = thisveldiff;
-        thisdragdecel.normalize();
-        thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
+        thisdragdecel.normalise();
+        thisdragdecel = vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
         velocity += thisdragdecel;
       }
 
@@ -100,8 +101,8 @@ void holdable::update(double timedelta) {
         }
         // apply rolling resistance (different to sliding friction)
         double thisfrictionimpulse = mass * currentplanet->get_friction_at(position.x, position.z) * timedelta; // mass cancels
-        Vector3d thisdragdecel = velocity;
-        thisdragdecel.normalize();
+        vector3d thisdragdecel{velocity};
+        thisdragdecel.normalise();
         thisdragdecel = thisdragdecel * -1 * (thisfrictionimpulse
                                               + ((currentplanet->get_grass_depth_at(position.x,position.z)
                                                   * 120) * velocity.length() * timedelta));
@@ -126,14 +127,14 @@ void holdable::update(double timedelta) {
 
 void holdable::rotate(axistype axis, double angle) {
   if(axis == AXIS_X) {
-    rotation += Quaternion<double>::fromAxisRot(Vector3d(1,0,0), angle);
-    rotation.normalize();
+    rotation += quaternion<double>::from_axis_rot(vector3d(1,0,0), angle);
+    rotation.normalise();
   } else if (axis == AXIS_Y) {
-    rotation += Quaternion<double>::fromAxisRot(Vector3d(0,1,0), angle);
-    rotation.normalize();
+    rotation += quaternion<double>::from_axis_rot(vector3d(0,1,0), angle);
+    rotation.normalise();
   } else if (axis == AXIS_Z) {
-    rotation += Quaternion<double>::fromAxisRot(Vector3d(0,0,1), angle);
-    rotation.normalize();
+    rotation += quaternion<double>::from_axis_rot(vector3d(0,0,1), angle);
+    rotation.normalise();
   }
 }
 

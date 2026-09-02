@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <irrKlang.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
 
 class holdable;                                                                 // forward declaration
 class golfcourse;
@@ -16,15 +16,15 @@ public:
   double headmass;                                                              // self-explanatory, useful for severing (Kg)
   double armsmass;                                                              // how much the arms weigh, held out (Kg)
 
-  Vector3d headfulcrum;                                                         // head fulcrim position (base of the neck)
-  Vector3d eyeleveloffset;                                                      // the eye position within the head
-  Vector3d armfulcrum;                                                          // where the arms pivot about
+  vector3d headfulcrum;                                                         // head fulcrim position (base of the neck)
+  vector3d eyeleveloffset;                                                      // the eye position within the head
+  vector3d armfulcrum;                                                          // where the arms pivot about
   double armlength;                                                             // how far away the hand-hold point is from fulcrum
   double armshoulderoffset;                                                     // how far the shoulder is from fulcrum
 
-  Vector3d bodyposition;                                                        // current location of standing spot in 3D world (m)
-  Vector3d bodyvelocity;                                                        // current velocity (m/s)
-  Vector3d moveforce;                                                           // (velocity change) wanted right now (N)
+  vector3d bodyposition;                                                        // current location of standing spot in 3D world (m)
+  vector3d bodyvelocity;                                                        // current velocity (m/s)
+  vector3d moveforce;                                                           // (velocity change) wanted right now (N)
 
   double bodyyaw;                                                               // body facing rotation
   double bodyyawvelocity;                                                       // how fast the body is already turning right
@@ -73,7 +73,7 @@ public:
 
   double cda;                                                                   // coefficient of drag * crossectional area
 
-  Vector3f skincolour;                                                          // keep this adjustable per golfer
+  vector3f skincolour;                                                          // keep this adjustable per golfer
 
   double boundingradius;                                                        // bounding sphere radius for world collisions
 

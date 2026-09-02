@@ -1,5 +1,6 @@
 #include "worldcomponents.h"
 #include "globalvars_client_extern.h"
+#include <iostream>
 
 universe::universe() {                              /// default constructor
   std::cout << "  Initialising the universe" << std::endl;

@@ -1,5 +1,6 @@
 //#include <cstdlib>
 //#include <irrKlang.h>
+#include <iostream>
 #include "golfer.h"
 #include "holdable.h"
 #include "landscape_features.h"
@@ -112,7 +113,7 @@ void golfer::update(double timedelta) {
   // first see what objects, if any, are within our swing radius
   for(std::vector<holdable*>::iterator i = currentplanet->items.begin(); i != currentplanet->items.end(); ++i) {
     if((*i)->held_by == NULL) {                                                 // only check those loose on the ground
-      Vector3d difference = (*i)->position - (bodyposition + armfulcrum);
+      vector3d difference = (*i)->position - (bodyposition + armfulcrum);
       if(difference.length() < (swinglength + (bodyvelocity.length() * timedelta))) {
         // this is within our sphere of influence for this frame, so check for collision
         difference.rotate(0, bodyyaw, 0);                                       // first centre this on our body
@@ -188,25 +189,25 @@ void golfer::update(double timedelta) {
   bodyyawvelocity   *= 1 - (bodyyawdampingcoefficient * timedelta);
 
   // air resistance and wind effect (combined)
-  Vector3d thisveldiff = bodyvelocity - currentplanet->windvelocity;
+  vector3d thisveldiff = bodyvelocity - currentplanet->windvelocity;
   if(thisveldiff.x == 0 && thisveldiff.y == 0 && thisveldiff.z == 0) {
     if(currentplanet->windvelocity.x == 0 && currentplanet->windvelocity.y == 0 && currentplanet->windvelocity.z == 0) {
       // no calculations necessary
     } else {
-      double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
-      Vector3d thisdragdecel;
+      double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.length_sq() * timedelta) / bodymass ;
+      vector3d thisdragdecel;
       thisdragdecel = currentplanet->windvelocity;
-      thisdragdecel.normalize();
+      thisdragdecel.normalise();
       thisdragdecel *= thisdragimpulse;
       //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
       bodyvelocity += thisdragdecel;
     }
   } else {
-    double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.lengthSq() * timedelta) / bodymass ;
-    Vector3d thisdragdecel;
+    double thisdragimpulse = (0.5 * cda * currentplanet->airdensity * thisveldiff.length_sq() * timedelta) / bodymass ;
+    vector3d thisdragdecel;
     thisdragdecel = thisveldiff;
-    thisdragdecel.normalize();
-    thisdragdecel = Vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
+    thisdragdecel.normalise();
+    thisdragdecel = vector3d(0,0,0) - (thisdragdecel * thisdragimpulse);
     //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Wind: " << currentplanet->windvelocity.length() * 2.23693629 << "mph Rel: " << thisveldiff.length() * 2.23693629 << "mph " << std::endl;
     bodyvelocity += thisdragdecel;
   }
@@ -221,12 +222,12 @@ void golfer::update(double timedelta) {
       bodyvelocity.y = 0;
     }
     // apply ground friction
-    if(((state == GOLFER_STANDING) && (bodyvelocity.lengthSq() > 0.0001 )) ||
-       ((state == GOLFER_WALKING) && (bodyvelocity.lengthSq() > walkspeed_sq)) ||
-       ((state == GOLFER_RUNNING) && (bodyvelocity.lengthSq() > walkrunspeed_sq))) {
+    if(((state == GOLFER_STANDING) && (bodyvelocity.length_sq() > 0.0001 )) ||
+       ((state == GOLFER_WALKING) && (bodyvelocity.length_sq() > walkspeed_sq)) ||
+       ((state == GOLFER_RUNNING) && (bodyvelocity.length_sq() > walkrunspeed_sq))) {
       double thisfrictionimpulse = bodymass * currentcourse->get_friction_at(bodyposition.x, bodyposition.z) * timedelta; // mass cancels
-      Vector3d thisdragdecel = bodyvelocity;
-      thisdragdecel.normalize();
+      vector3d thisdragdecel{bodyvelocity};
+      thisdragdecel.normalise();
       thisdragdecel = thisdragdecel * -1 * thisfrictionimpulse;
       //std::cout << "dragdecel: " << thisdragdecel.x << ":" << thisdragdecel.y << ":" << thisdragdecel.z << ", " << thisfrictionimpulse << std::endl;
       //std::cout << "Vel: " << bodyvelocity.length() * 2.23693629 << "mph Friction: " << thisdragdecel.length() << " " << std::endl;
@@ -240,13 +241,13 @@ void golfer::update(double timedelta) {
   // course feature collision (trees etc)
   for(std::vector<feature*>::iterator i = currentplanet->features.begin(); i != currentplanet->features.end(); ++i) {
     // check if it's within our bounding sphere
-    Vector3d difference = ((*i)->position + (*i)->collisionoffset) - (bodyposition + (armfulcrum / 2)); // about waist height
+    vector3d difference = ((*i)->position + (*i)->collisionoffset) - (bodyposition + (armfulcrum / 2)); // about waist height
     if(difference.length() < boundingradius + (*i)->boundingradius) {
       std::cout << "Collided with " << (*i)->name << std::endl;
       // TODO: add finer checks here
       // our radii are overlapping so bounce us back, directly away from the centre
       double interference = 1-(difference.length() / (boundingradius + (*i)->boundingradius));
-      difference.normalize();
+      difference.normalise();
       difference *= -1;
       double pushbackaccel = 100;
       bodyvelocity += difference * (interference * pushbackaccel * timedelta);  // brackets ensure fastest computation order

@@ -1,8 +1,9 @@
 //#include <cstdlib>
 #include "worldcomponents.h"
 #include "terrain.h"
+#include <iostream>
 
-golfcourse::golfcourse(world *parent, Vector3d tee, Vector3d hole, unsigned int randomseed)
+golfcourse::golfcourse(world *parent, vector3d const &tee, vector3d const &hole, unsigned int randomseed)
   : teeposition(tee), holeposition(hole) {                      /// default constructor
   std::cout << "      Initialising new golf course..." << std::endl;
   srand(randomseed);

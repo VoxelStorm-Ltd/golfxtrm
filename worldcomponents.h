@@ -4,7 +4,8 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/vector/vector4.h"
 
 class golfer;                                                                   // forward decs
 class holdable;
@@ -18,12 +19,12 @@ public:
   world *parentplanet;
   terrain *landscape;
 
-  Vector3d origin;                                                              // where this is located in the world
+  vector3d origin;                                                              // where this is located in the world
 
-  Vector3d teeposition;                                                         // where we tee off from
-  Vector3d holeposition;                                                        // where the hole is
+  vector3d teeposition;                                                         // where we tee off from
+  vector3d holeposition;                                                        // where the hole is
 
-  golfcourse(world *parent, Vector3d tee, Vector3d hole, unsigned int randomseed);
+  golfcourse(world *parent, vector3d const &tee, vector3d const &hole, unsigned int randomseed);
 
   void update(double timedelta);
   void render();
@@ -55,29 +56,29 @@ public:
 
   double gravity;                                                               // downward acceleration in m/s^2
   double airdensity;                                                            // ya rly, for drag calculations (kg/m^3)
-  Vector3d windvelocity;                                                        // also used for air resistance (m/s)
+  vector3d windvelocity;                                                        // also used for air resistance (m/s)
 
-  Vector4f grasscolour;                                                         // colour of the grass / snow / whatever
-  Vector4f skycolour;                                                           // colour of the sky lid
-  Vector4f clearcolour;                                                         // colour of the opengl background
-  Vector4f fogcolour;                                                           // colour of the distance fog
-  Vector4f ambientcolour;                                                       // colour of the backgrass light
+  vector4f grasscolour;                                                         // colour of the grass / snow / whatever
+  vector4f skycolour;                                                           // colour of the sky lid
+  vector4f clearcolour;                                                         // colour of the opengl background
+  vector4f fogcolour;                                                           // colour of the distance fog
+  vector4f ambientcolour;                                                       // colour of the backgrass light
 
-  Vector4f summergrasscolour;                                                   // seasonal colours
-  Vector4f summerskycolour;
-  Vector4f summerfogcolour;
-  Vector4f summerclearcolour;
-  Vector4f summerambientcolour;
-  Vector4f wintergrasscolour;
-  Vector4f winterskycolour;
-  Vector4f winterfogcolour;
-  Vector4f winterclearcolour;
-  Vector4f winterambientcolour;
+  vector4f summergrasscolour;                                                   // seasonal colours
+  vector4f summerskycolour;
+  vector4f summerfogcolour;
+  vector4f summerclearcolour;
+  vector4f summerambientcolour;
+  vector4f wintergrasscolour;
+  vector4f winterskycolour;
+  vector4f winterfogcolour;
+  vector4f winterclearcolour;
+  vector4f winterambientcolour;
 
-  Vector3f sundirection;                                                        // vector representing sun angle
-  Vector4f sunambient;                                                          // sun light colours
-  Vector4f sundiffuse;
-  Vector4f sunspecular;
+  vector3f sundirection;                                                        // vector representing sun angle
+  vector4f sunambient;                                                          // sun light colours
+  vector4f sundiffuse;
+  vector4f sunspecular;
 
   std::vector<golfer*> players;                                                 // all the players on this planet
   std::vector<holdable*> items;                                                 // all the loose items on this planet
@@ -97,7 +98,7 @@ public:
   GLuint numtris_sky;                                                           // number of triangles in the index
 
   world();
-  void addcourse(int coursenum, Vector3d teeposition, Vector3d holeposition, unsigned int randomseed);
+  void addcourse(int coursenum, vector3d const &teeposition, vector3d const &holeposition, unsigned int randomseed);
   golfcourse *get_course_at(double x, double z);
   double get_height_at(double x, double z);
   double get_friction_at(double x, double z);

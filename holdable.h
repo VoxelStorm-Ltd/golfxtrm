@@ -3,7 +3,8 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/quat/quat.h"
 
 class golfer;                                                                   // forward dec
 class world;
@@ -15,7 +16,7 @@ public:
 
   double mass;                                                                  // how much it weighs (kg)
   double momentofinertia;                                                       // moment of inertia (hand-hold as fulcrum)
-  Vector3d cog;                                                                 // centre of gravity relative to hand-hold
+  vector3d cog;                                                                 // centre of gravity relative to hand-hold
   double airresistance;                                                         // how much its flight is slowed by atmospheric drag
   double slideresistance;                                                       // how much its slide along the ground is slowed
 
@@ -24,17 +25,17 @@ public:
   std::string name;                                                             // what it's called
   std::string description;                                                      // longer description
 
-  Vector3d bbox_start;                                                          // one corner of the bounding box
-  Vector3d bbox_end;                                                            // other corner of the bounding box
+  vector3d bbox_start;                                                          // one corner of the bounding box
+  vector3d bbox_end;                                                            // other corner of the bounding box
 
   double boundingradius;                                                        // collision radius for sphere type collisions
 
   world *currentplanet;                                                         // what planet are you even on?
 
-  Vector3d position;                                                            // location in space
-  Vector3d velocity;                                                            // movement velocity
-  Quatd rotation;                                                               // current rotation
-  Quatd angularvelocity;                                                        // rotational velocity
+  vector3d position;                                                            // location in space
+  vector3d velocity;                                                            // movement velocity
+  quatd rotation;                                                               // current rotation
+  quatd angularvelocity;                                                        // rotational velocity
 
   GLuint vao;                                                                   // vertex array object
   GLuint vbo;
@@ -51,8 +52,8 @@ public:
   holdable();
   holdable(world *parentplanet);
   virtual ~holdable();
-  virtual void push(Vector3d impulse);
-  virtual void push(Vector3d impulse, Vector3d impactpoint);
+  virtual void push(vector3d const &impulse);
+  virtual void push(vector3d const &impulse, vector3d const &impactpoint);
   virtual void impact(holdable *target, golfer *actor, double distance);
   virtual void update(double timedelta);
   virtual void rotate(axistype axis, double angle);
