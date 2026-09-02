@@ -13,7 +13,7 @@ Features
 
 The latest build can be downloaded from this repository's automated [https://github.com/VoxelStorm-Ltd/golfxtrm/releases](releases).
 
-The original edition is available at https://voxelstorm.itch.io/golfxtrm
+The original edition is available at https://golfxtrm.com or https://voxelstorm.itch.io/golfxtrm
 
 ## Controls
 
