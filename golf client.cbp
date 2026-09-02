@@ -24,7 +24,6 @@
 					<Add option="-static" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
-					<Add library="lib/libOVR_MinGW_Win32_d.a" />
 				</Linker>
 			</Target>
 			<Target title="Win32_Release">
@@ -67,7 +66,6 @@
 					<Add option="-fuse-linker-plugin" />
 					<Add option="-flto" />
 					<Add option="-funsafe-math-optimizations" />
-					<Add library="lib/libOVR_MinGW_Win32.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -113,8 +111,6 @@
 		<Unit filename="oaktree.cpp" />
 		<Unit filename="objloader.cpp" />
 		<Unit filename="objloader.h" />
-		<Unit filename="oculusstorm/oculusstorm.cpp" />
-		<Unit filename="oculusstorm/oculusstorm.h" />
 		<Unit filename="particle.cpp" />
 		<Unit filename="particle.h" />
 		<Unit filename="perlin.cpp" />

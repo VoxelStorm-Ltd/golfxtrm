@@ -74,7 +74,4 @@ double mousey = 0;
 
 GLFWwindow *window_main;                                                        // the main game window
 
-class oculusstorm;
-oculusstorm *oculus;                                                            // oculus rift controller
-
 #endif // GLOBALVARS_CLIENT_H_INCLUDED

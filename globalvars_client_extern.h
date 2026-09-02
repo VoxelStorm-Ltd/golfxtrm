@@ -83,7 +83,4 @@ extern double mousey;
 
 extern GLFWwindow *window_main;
 
-class oculusstorm;
-extern oculusstorm *oculus;
-
 #endif // GLOBALVARS_CLIENT_H_INCLUDED

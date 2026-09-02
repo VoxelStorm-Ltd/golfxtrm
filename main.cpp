@@ -25,7 +25,6 @@
 #include "golfer.h"
 #include "particle.h"
 #include "holdable.h"
-#include "oculusstorm/oculusstorm.h"
 
 #include "global_objects.h"
 #include "objloader.h"
@@ -42,16 +41,12 @@ void mainloop();
 
 void physics(double timedelta);
 void draw();
-void draw_oculus();
 void (*drawfunction)() = nullptr;
 void controls();
 void callback_key(GLFWwindow *thiswindow, int key, int scancode __attribute__((unused)), int action, int mods);
 void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
   /// Callback for handling window close events
   std::cout << "Window closed, exiting" << std::endl;
-
-  delete oculus;
-  oculus = nullptr;
 
   _Exit(EXIT_SUCCESS);
 }
@@ -108,12 +103,9 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     _Exit(EXIT_FAILURE);
   }
 
-  oculus = new oculusstorm(1000.0, 0.1);                                        // initialise the oculus rift before graphics init
-
   int nummonitors = 0;
   GLFWmonitor **monitor_list = glfwGetMonitors(&nummonitors);
   GLFWmonitor *monitor_primary = glfwGetPrimaryMonitor();
-  GLFWmonitor *oculusmonitor = NULL;
   std::cout << "Monitors: " << nummonitors << std::endl;
   for(int monitornum = 0; monitornum != nummonitors; ++monitornum) {
     GLFWmonitor *thismonitor = monitor_list[monitornum];
@@ -134,25 +126,11 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     std::cout << "  Physical size: " << physicalwidth << " " << physicalheight << std::endl;
     std::cout << "  Position: " << xpos << " " << ypos << std::endl;
     std::cout << "  Mode: " << videomode->width << " " << videomode->height << " " << videomode->refreshRate << std::endl;
-
-    // try to determine if this monitor is the Oculus Rift's display
-    if(static_cast<unsigned int>(videomode->width)  == oculus->hmdinfo.HResolution &&
-       static_cast<unsigned int>(videomode->height) == oculus->hmdinfo.VResolution &&
-       thismonitor != monitor_primary) {
-      std::cout << "  (Oculus Rift candidate)" << std::endl;
-      oculusmonitor = thismonitor;
-    }
   }
 
-  if(oculusmonitor != NULL) {
-    windowwidth  = oculus->hmdinfo.HResolution;
-    windowheight = oculus->hmdinfo.VResolution;
-    drawfunction = &draw_oculus;
-  } else {
-    windowwidth  = 1024;
-    windowheight = 768;
-    drawfunction = &draw;
-  }
+  windowwidth  = 1024;
+  windowheight = 768;
+  drawfunction = &draw;
   /*} else if(fullscreen) {
     if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
   } else if(largewindow) {
@@ -195,7 +173,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   window_main = glfwCreateWindow(windowwidth,
                                  windowheight,
                                  "GolfXTRM",
-                                 oculusmonitor,
+                                 NULL,
                                  NULL);
   glfwMakeContextCurrent(window_main);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -246,9 +224,6 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
             camfov  * camnearplane * aspect_ratio,
             camnearplane, camfarplane);
   glMatrixMode(GL_MODELVIEW);
-
-  oculus->nearplane = camnearplane;
-  oculus->farplane  = camfarplane;
 
   glColor3f(1, 1, 1);                                                           // this may be necessary before enabling lighting
   glFrontFace(GL_CCW);                                                          // set up counter-clockwise polygon winding
@@ -640,44 +615,6 @@ void draw() {
                -player->bodyposition.z);
 
   // tell the universe to go render itself
-  root->render();
-
-  // do the buffer shuffle
-  glfwSwapBuffers(window_main);
-}
-
-
-void draw_oculus() {
-  // clear the buffer
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // poll controls
-  glfwPollEvents();
-
-  // left eye
-  oculus->setup_left();
-  glRotatef(player->headyaw,   0, 1, 0);
-  glRotatef(player->headpitch, 1, 0, 0);
-  glTranslated(0, -player->eyeleveloffset.y, 0);
-  glMultMatrixf(oculus->getmatrix().inverse());
-  glTranslated(0, -player->headfulcrum.y, 0);
-  glRotatef(player->bodyyaw,   0, 1, 0);
-  glTranslated(-player->bodyposition.x,
-               -player->bodyposition.y,
-               -player->bodyposition.z);
-  root->render();
-
-  // right eye
-  oculus->setup_right();
-  glRotatef(player->headyaw,   0, 1, 0);
-  glRotatef(player->headpitch, 1, 0, 0);
-  glTranslated(0, -player->eyeleveloffset.y, 0);
-  glMultMatrixf(oculus->getmatrix().inverse());
-  glTranslated(0, -player->headfulcrum.y, 0);
-  glRotatef(player->bodyyaw,   0, 1, 0);
-  glTranslated(-player->bodyposition.x,
-               -player->bodyposition.y,
-               -player->bodyposition.z);
   root->render();
 
   // do the buffer shuffle
