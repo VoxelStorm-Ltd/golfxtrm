@@ -135,6 +135,7 @@ target_include_directories(GolfXTRM SYSTEM PRIVATE
 # Global and configuration-specific compiler settings from the CBP.
 target_compile_options(GolfXTRM PRIVATE
   -Wall
+  -msse2
 
   $<$<CONFIG:Debug>:-g>
   $<$<CONFIG:Debug>:-Og>
