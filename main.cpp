@@ -33,7 +33,7 @@
 
 
 void login();
-void init(bool fullscreen, bool largewindow, bool skipintro);
+void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool heightset);
 void shutdown(int return_code, std::string errorstring);
 void mainloop();
 
@@ -50,10 +50,12 @@ void callback_windowclose(GLFWwindow *thiswindow __attribute__((unused))) {
 }
 
 int main(int argc, char *argv[]) {
-  bool fullscreen, largewindow, skipintro;
+  bool fullscreen, largewindow, skipintro, widthset, heightset;
   fullscreen = false;
   largewindow = true;
   skipintro = false;
+  widthset = false;
+  heightset = false;
   std::cout << "Starting up " << argv[0] << " with " << argc << " arguments" << std::endl;
   for(int i = 1; i < argc; i++) {
     std::cout << "Parsing commandline option " << i << std::endl;
@@ -76,8 +78,10 @@ int main(int argc, char *argv[]) {
         hasvao = false;
       } else if (thisargstring == "-width") {                                   // manual screen size setting
         windowwidth = atoi(argv[i + 1]);
+        widthset = true;
       } else if (thisargstring == "-height") {
         windowheight = atoi(argv[i + 1]);
+        heightset = true;
       } else if (thisargstring == "-timespeed") {
         timesetspeed = atof(argv[i + 1]);
       } else if (thisargstring == "-golfballspeed") {
@@ -88,13 +92,13 @@ int main(int argc, char *argv[]) {
   #ifdef SKIPINTRO
   skipintro = true;                                                             // skip the intro in debug mode
   #endif
-  init(fullscreen, largewindow, skipintro);
+  init(fullscreen, largewindow, skipintro, widthset, heightset);
 
   mainloop();
   shutdown(0, "");
 }
 
-void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the one-time initialisation we need for the engine
+void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool heightset) { /// all the one-time initialisation we need for the engine
   // initialise the opengl window
   if(glfwInit() != GL_TRUE) {
     std::cout << "ERROR: glfwInit() failed" << std::endl;
@@ -126,31 +130,40 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
     std::cout << "  Mode: " << videomode->width << " " << videomode->height << " " << videomode->refreshRate << std::endl;
   }
 
-  windowwidth  = 1024;
-  windowheight = 768;
-  drawfunction = &draw;
-  /*} else if(fullscreen) {
-    if(glfwOpenWindow(desktopmode.Width, desktopmode.Height, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_FULLSCREEN) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
+  if(monitor_primary == NULL) {
+    std::cout << "ERROR: GLFW could not find a primary monitor" << std::endl;
+    _Exit(EXIT_FAILURE);
+  }
+  const GLFWvidmode *desktopmode = glfwGetVideoMode(monitor_primary);
+  if(desktopmode == NULL) {
+    std::cout << "ERROR: GLFW could not determine the primary monitor's video mode" << std::endl;
+    _Exit(EXIT_FAILURE);
+  }
+
+  GLFWmonitor *windowmonitor = NULL;
+  if(fullscreen) {
+    if(!widthset) {
+      windowwidth = desktopmode->width;
+    }
+    if(!heightset) {
+      windowheight = desktopmode->height;
+    }
+    windowmonitor = monitor_primary;
   } else if(largewindow) {
-    windowwidth  = desktopmode.Width  - 80;
-    windowheight = desktopmode.Height - 80;
-    if(windowwidth < 800) {
-      windowwidth = 800;
+    if(!widthset) {
+      windowwidth = desktopmode->width - 80;
+      if(windowwidth < 800) {
+        windowwidth = 800;
+      }
     }
-    if(windowheight < 750) {
-      windowheight = 750;
+    if(!heightset) {
+      windowheight = desktopmode->height - 80;
+      if(windowheight < 750) {
+        windowheight = 750;
+      }
     }
-    if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-    int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-    int winfinalposy = 10;
-    glfwSetWindowPos(winfinalposx,winfinalposy);
-  } else {
-    std::cout << "Starting in " << windowwidth << "x" << windowheight << " with bit depth " << desktopmode.RedBits << "," << desktopmode.GreenBits << "," << desktopmode.BlueBits << std::endl;
-    if(glfwOpenWindow(windowwidth, windowheight, desktopmode.RedBits, desktopmode.GreenBits, desktopmode.BlueBits, 0, 24, 0, GLFW_WINDOW) != GL_TRUE) shutdown(1, "GLFW failed to open a window");
-    int winfinalposx = (desktopmode.Width  / 2) - (windowwidth  / 2);
-    int winfinalposy = (desktopmode.Height / 2) - (windowheight / 2);
-    glfwSetWindowPos(winfinalposx,winfinalposy);
-  }*/
+  }
+  drawfunction = &draw;
 
   // set up window hints in advance
   //glfwWindowHint(GLFW_RED_BITS,   state->videomode->redBits);
@@ -171,17 +184,25 @@ void init(bool fullscreen, bool largewindow, bool skipintro) {       /// all the
   window_main = glfwCreateWindow(windowwidth,
                                  windowheight,
                                  "GolfXTRM",
-                                 NULL,
+                                 windowmonitor,
                                  NULL);
+  if(!window_main) {
+    // exit if this didn't work
+    std::cout << "ERROR: glfwCreateWindow returned NULL" << std::endl;
+    _Exit(EXIT_FAILURE);
+  }
+  if(windowmonitor == NULL) {
+    int monitorx = 0;
+    int monitory = 0;
+    glfwGetMonitorPos(monitor_primary, &monitorx, &monitory);
+    glfwSetWindowPos(window_main,
+                     monitorx + ((desktopmode->width - windowwidth) / 2),
+                     monitory + ((desktopmode->height - windowheight) / 2));
+  }
   glfwMakeContextCurrent(window_main);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glfwShowWindow(window_main);                                                  // only display the window once in position
 
-  if(!window_main) {
-    // exit if this didn't work
-    std::cout << "ERROR: glfwOpenWindow returned NULL" << std::endl;
-    _Exit(EXIT_FAILURE);
-  }
   glfwSetWindowCloseCallback(window_main, callback_windowclose);                // callback for window closing
 
   glewExperimental = GL_TRUE;
