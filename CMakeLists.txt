@@ -30,6 +30,46 @@ if(NOT Boost_FOUND)
   find_package(Boost REQUIRED MODULE)
 endif()
 
+# A cross-build must not add a host path such as /usr/include directly: doing
+# so mixes the host C runtime headers with MinGW's headers. Expose only Boost's
+# own directory through an isolated include root in the build tree.
+set(GOLFXTRM_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+if(CMAKE_CROSSCOMPILING)
+  unset(_boost_header_source)
+  foreach(_boost_include_dir IN LISTS Boost_INCLUDE_DIRS)
+    if(EXISTS "${_boost_include_dir}/boost/version.hpp")
+      get_filename_component(
+        _boost_header_source "${_boost_include_dir}/boost" REALPATH)
+      break()
+    endif()
+  endforeach()
+
+  if(NOT _boost_header_source)
+    message(FATAL_ERROR
+      "Boost was found, but its boost/version.hpp header could not be located")
+  endif()
+
+  string(MD5 _boost_header_path_hash "${_boost_header_source}")
+  set(_boost_isolated_root
+    "${CMAKE_BINARY_DIR}/boost-include-${_boost_header_path_hash}")
+  set(_boost_isolated_link "${_boost_isolated_root}/boost")
+  file(MAKE_DIRECTORY "${_boost_isolated_root}")
+
+  if(NOT EXISTS "${_boost_isolated_link}")
+    file(CREATE_LINK
+      "${_boost_header_source}"
+      "${_boost_isolated_link}"
+      SYMBOLIC
+      RESULT _boost_link_result)
+    if(NOT _boost_link_result STREQUAL "0")
+      message(FATAL_ERROR
+        "Could not create isolated Boost include link: ${_boost_link_result}")
+    endif()
+  endif()
+
+  set(GOLFXTRM_BOOST_INCLUDE_DIRS "${_boost_isolated_root}")
+endif()
+
 # Mirrors the retained <Unit> entries in golf client.cbp. Headers are included
 # so IDE generators expose the same project files as CodeBlocks.
 set(GOLFXTRM_SOURCES
@@ -88,7 +128,7 @@ target_include_directories(GolfXTRM PRIVATE
 )
 target_include_directories(GolfXTRM SYSTEM PRIVATE
   "${PROJECT_SOURCE_DIR}/include"
-  ${Boost_INCLUDE_DIRS}
+  ${GOLFXTRM_BOOST_INCLUDE_DIRS}
 )
 
 # Global and configuration-specific compiler settings from the CBP.
