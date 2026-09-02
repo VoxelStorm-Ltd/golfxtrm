@@ -444,6 +444,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
   //  // lazy-wait while refreshing through the splash screen
   //  glfwSleep(0.1);
   //}
+  glfwPollEvents();                                                             // discard input queued during the intro
   glfwSetInputMode(window_main, GLFW_CURSOR, GLFW_CURSOR_DISABLED);             // hide the mouse
   #ifdef NOMUSIC
     std::cout << "Skipping music" << std::endl;
