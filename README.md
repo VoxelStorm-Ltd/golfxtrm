@@ -17,18 +17,15 @@ The original edition is available at https://voxelstorm.itch.io/golfxtrm
 
 ## Controls
 
-To play, use `W`, `A`, `S`, and `D` to move relative to the direction the golfer is facing. Hold Left Shift to run and press Space to jump. Walk within reach of the ball, then hold the left mouse button and sweep the mouse to swing the golfer's arms and club through it.
-
-Mouse movement has four modes depending on which buttons are held:
-
-| Mouse buttons | Input mode | Effect |
-| --- | --- | --- |
-| None | Head and body | Looks around. The golfer's body turns to follow the view, and the arms return to their resting position. |
-| Left only | Arms | Swings or aims the arms while the head and body remain facing the same direction. |
-| Right only | Head and arms | Swings or aims the arms while the head follows their direction; the body remains still. |
-| Left and right | Head | Looks around while the body remains still and the arms retain their position. |
-
-Press `B` to drop another ball (when you inevitably lose your first one).  `Escape` to quit.  For debugging, you can switch between filled and wireframe rendering with `O` and `P`.
+- WASD to walk,
+- Shift to run,
+- Space to jump (why would you need to jump on a golf course? Perhaps to leap over a short shrub...)
+- Hold left mouse button to move arms,
+- Hold right mouse button to move arms and head,
+- Hold both mouse buttons at the same time to move just your head.
+- Press `B` to drop another ball (when you inevitably lose your first one).
+-`Escape` to quit.
+- For debugging, you can switch between filled and wireframe rendering with `O` and `P`.
 
 ## Commandline switches
 
