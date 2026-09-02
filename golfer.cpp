@@ -45,7 +45,7 @@ golfer::golfer(golfcourse *course,
   armspitchdownlimit = 75;                                                      // limited for basic realism while holding clubs
   bodymomentofinertia = 1.18668836;                                             // 103.0 lb.in.sec.2 from US military data
   headmomentofinertia = 0.015;                                                  // ~150 kg.cm^2 from US naval data
-  //armsmomentofinertia = 0.05014;                                              // -250.7 kg.m^2 from biomechanics paper
+  //armsmomentofinertia = 0.05014;                                                // -250.7 kg.m^2 from biomechanics paper
   armsmomentofinertia = 0.1;                                                    // estimate based on above plus golf club
   headdampingcoefficient = 10;                                                  // arbitrary comfort value
   armsdampingcoefficient = 5;                                                   // arbitrary comfort value

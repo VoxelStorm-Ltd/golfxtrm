@@ -17,9 +17,9 @@ firtree::firtree(world *parentplanet, double x, double y, double z, firtreetype 
 
   maxwidth = 10;
   maxheight = 40;
-  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  //growthrate = 0.000001;                                                        // reaches full height in about 30 days
   growthrate = 0.00000003;                                                      // reaches full height in about 3 years
-  //growthrate = 0.000000003;                                                   // reaches full height in about 30 years
+  //growthrate = 0.000000003;                                                     // reaches full height in about 30 years
 
   if(treetype == FIRTREE_STANDARD) {
     name = "perfect fir tree";

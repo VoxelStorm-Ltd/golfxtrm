@@ -27,15 +27,15 @@ world::world() {                                 /// default constructor
     //featureupdatefreq = (double)1/(double)5;
     featureupdatefreq = (double)60;
   } else {
-    //timespeed = 0;                                                            // frozen
-    //timespeed = 1;                                                            // realtime
-    //timespeed = 60;                                                           // 1 minute per second
-    //timespeed = 120;                                                          // 2 minutes per second
-    //timespeed = 3600;                                                         // 1 hour per second
-    //timespeed = 7200;                                                         // 2 hours per second
-    //timespeed = 86400;                                                        // 1 day per second
-    //timespeed = 2592000;                                                      // 1 month per second
-    //timespeed = 31556926;                                                     // 1 year per second
+    //timespeed = 0;                                                              // frozen
+    //timespeed = 1;                                                              // realtime
+    //timespeed = 60;                                                             // 1 minute per second
+    //timespeed = 120;                                                            // 2 minutes per second
+    //timespeed = 3600;                                                           // 1 hour per second
+    //timespeed = 7200;                                                           // 2 hours per second
+    //timespeed = 86400;                                                          // 1 day per second
+    //timespeed = 2592000;                                                        // 1 month per second
+    //timespeed = 31556926;                                                       // 1 year per second
     timespeed = timesetspeed;
     timeofday = 5 * 60 * 60;                                                    // 8am
     calendardate = 150;
@@ -70,7 +70,7 @@ world::world() {                                 /// default constructor
   //windvelocity.x = 10;
 
   numcourses = 0;
-  //addcourse(0, vector3d(0,0,0), vector3d(50,0,50));                           // no point having less than 1 course
+  //addcourse(0, vector3d(0,0,0), vector3d(50,0,50));                             // no point having less than 1 course
 
   vao = vbo = vbo_n = ibo = 0;
   vao_sky = vbo_sky = vbo_n_sky = ibo_sky = 0;

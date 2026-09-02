@@ -22,9 +22,9 @@ ashtree::ashtree(world *parentplanet, double x, double y, double z, int rseed) {
 
   maxwidth = 10;
   maxheight = 40;
-  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  //growthrate = 0.000001;                                                        // reaches full height in about 30 days
   growthrate = 0.00000003;                                                      // reaches full height in about 3 years
-  //growthrate = 0.000000003;                                                   // reaches full height in about 30 years
+  //growthrate = 0.000000003;                                                     // reaches full height in about 30 years
 
   height     = 5;                                                               // default sizes
   bottom     = 1.5;

@@ -18,7 +18,7 @@ void world::render() {
   // sort out lighting
   glLightfv(GL_LIGHT0, GL_POSITION, sundirection);
   // give us a basic horizon, sky, atmospheric stuff
-  //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);                          // this should be set up already
+  //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);                            // this should be set up already
   //glEnable(GL_COLOR_MATERIAL);
 
   glPushMatrix();
@@ -166,9 +166,9 @@ void golfer::render5() {          /// draw this fellow using an indexed VBO with
         glPushMatrix();
         {
           glTranslated(0, 0, -armlength);
-          //glRotated((armspitch+112.5)*0.4, -1, 0, 0);                         // (75/0.4)-75 = 112.5
-          //glRotated((armspitch+135)*0.4, -1, 0, 0);                           // (90/0.4)-90 = 135
-          //glRotated((armspitch+97.5)*0.4, -1, 0, 0);                          // (75/0.4)-90 = 97.5
+          //glRotated((armspitch+112.5)*0.4, -1, 0, 0);                           // (75/0.4)-75 = 112.5
+          //glRotated((armspitch+135)*0.4, -1, 0, 0);                             // (90/0.4)-90 = 135
+          //glRotated((armspitch+97.5)*0.4, -1, 0, 0);                            // (75/0.4)-90 = 97.5
           glRotated((armspitch+150)*0.4, -1, 0, 0);                             // (90/0.4)-75 = 150
           //std::cout << armspitch << std::endl;
           helditem->renderlocal();

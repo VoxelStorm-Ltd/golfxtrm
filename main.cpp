@@ -246,16 +246,16 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
 
   glColor3f(1, 1, 1);                                                           // this may be necessary before enabling lighting
   glFrontFace(GL_CCW);                                                          // set up counter-clockwise polygon winding
-  //glCullFace(GL_BACK);                                                        // may be redundant to cull back-faces
+  //glCullFace(GL_BACK);                                                          // may be redundant to cull back-faces
   glEnable(GL_DEPTH_TEST);                                                      // go on, use the zbuffer
   glEnable(GL_DITHER);                                                          // may marginally increase shading quality
   glEnable(GL_LIGHTING);                                                        // obviously we want lighting... right?
-  //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);                        // enable local lighting
+  //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);                          // enable local lighting
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);                         // to make flat shading ok
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);                             // ensure one-sided lighting
-  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);                            // slower, checks sign of dot product of normals
+  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);                              // slower, checks sign of dot product of normals
 
-  //glEnable(GL_MINMAX);                                                        // allow min and max colour tables for HDR effects
+  //glEnable(GL_MINMAX);                                                          // allow min and max colour tables for HDR effects
 
   //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  //filled
   glPolygonMode(GL_FRONT, GL_FILL);  //filled
@@ -266,7 +266,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
   // fog settings
   glEnable(GL_FOG);
   glFogfv(GL_FOG_COLOR, vector4f(fogred, foggreen, fogblue, 1));
-  //glFogi(GL_FOG_MODE, GL_LINEAR);                                             // GL_LINEAR GL_EXP GL_EXP2
+  //glFogi(GL_FOG_MODE, GL_LINEAR);                                               // GL_LINEAR GL_EXP GL_EXP2
   glFogi(GL_FOG_MODE, GL_EXP);                                                  // GL_LINEAR GL_EXP GL_EXP2
   glFogf(GL_FOG_DENSITY, 0.02);                                                 // only used for exponential fog
   glFogi(GL_FOG_START, 2);                                                      // only used for linear fog
@@ -293,7 +293,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
   //glEnable(GL_LIGHT1);
 
   glfwSetKeyCallback(window_main, callback_key);                                // activate the control callback
-  //glfwDisable(GLFW_MOUSE_CURSOR);                                             // hide the mouse
+  //glfwDisable(GLFW_MOUSE_CURSOR);                                               // hide the mouse
 
   glfwSwapInterval(1);                                                          // activate vsync
 
@@ -341,7 +341,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, splashscreen1);
   //glEnable(GL_BLEND);
-  //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);                          // optimised for inverse alpha
+  //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);                            // optimised for inverse alpha
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
@@ -419,7 +419,7 @@ void init(bool fullscreen, bool largewindow, bool skipintro, bool widthset, bool
   player->helditem->held_by = player;
   player->swinglength = player->armlength + player->helditem->bbox_end.y;
   //glfwSetWindowTitle("GolfXTRM beta: Tipping the caddy...");
-  //golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8);            // the caddy
+  //golfer *caddy = new golfer(root->planet[0]->course[0], 5, 0, 8);              // the caddy
   //caddy->bodyyaw = -15;
   //caddy->helditem = new golfclub(root->planet[0]);
   //caddy->helditem->held_by = caddy;
@@ -485,7 +485,7 @@ void mainloop() {   /// the main rendering loop
     timelastrenderend = glfwGetTime();
     timedeltarender = timelastrenderend - timelastrenderstart;                  // render delta
     timedeltatotal = timelastrenderend - timelasttotal;                         // total delta
-    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;               // update the rolling average
+    //timedeltaaverage = (timedeltaaverage + timedeltatotal) / 2;                 // update the rolling average
     timedeltaaverage = ((timedeltaaverage * 100) + timedeltatotal) / 101;       // update the rolling average
 
     physics(timedeltatotal);                                                    // run the physics for this tick, if it's time

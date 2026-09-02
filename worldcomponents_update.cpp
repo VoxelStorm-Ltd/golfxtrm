@@ -120,7 +120,7 @@ void world::update(double timedelta) {
       } else {
         //std::cout << "  Updating " << *i << std::endl;
         (*i)->update(timedelta);
-        //(*i)->update(timedelta / 100);                                        // DEBUG
+        //(*i)->update(timedelta / 100);                                          // DEBUG
       }
     }
   //}

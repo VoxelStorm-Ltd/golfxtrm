@@ -16,9 +16,9 @@ oaktree::oaktree(world *parentplanet, double x, double y, double z, oaktreetype 
 
   maxwidth = 15;
   maxheight = 20;
-  //growthrate = 0.000001;                                                      // reaches full height in about 30 days
+  //growthrate = 0.000001;                                                        // reaches full height in about 30 days
   growthrate = 0.00000003;                                                      // reaches full height in about 9 years
-  //growthrate = 0.000000001;                                                   // reaches full height in about 90 years
+  //growthrate = 0.000000001;                                                     // reaches full height in about 90 years
 
   if(treetype == OAKTREE_STANDARD) {
     name = "perfect oak tree";

@@ -52,7 +52,7 @@ terrain::terrain(golfcourse *parentcourse, unsigned int randomseed,
   for(int x = 0; x < gridwidth; ++x) {
     for(int z = 0; z < gridwidth; ++z) {
       if((x == 0) || (x == gridwidth - 1) || (z == 0) || (z == gridwidth - 1)) {
-        //heightmap[(x * gridwidth) + z] = 0;                                   // keep the edge skirt down for smoothness
+        //heightmap[(x * gridwidth) + z] = 0;                                     // keep the edge skirt down for smoothness
         heightmap.push_back(0);                                                 // keep the edge skirt down for smoothness
       } else {
         double randfactor = 0;
@@ -361,7 +361,7 @@ double terrain::get_min_velocity_at(double x, double z) {
 
 void terrain::render(vector4f const &basecolour) {
   /// alias function to render the terrain using the preferred method
-  //render2(basecolour);                                                        // DEBUG
+  //render2(basecolour);                                                          // DEBUG
   if(hasvao) {
     render5(basecolour);
   } else {

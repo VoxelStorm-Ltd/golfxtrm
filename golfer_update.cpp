@@ -117,8 +117,8 @@ void golfer::update(double timedelta) {
       if(difference.length() < (swinglength + (bodyvelocity.length() * timedelta))) {
         // this is within our sphere of influence for this frame, so check for collision
         difference.rotate(0, bodyyaw, 0);                                       // first centre this on our body
-        //difference.rotate(armspitch, 0, 0);                                   // tilt back for our current pitch
-        //difference.rotate(0, armsyaw, 0);                                     // finally adjust for our arm position
+        //difference.rotate(armspitch, 0, 0);                                     // tilt back for our current pitch
+        //difference.rotate(0, armsyaw, 0);                                       // finally adjust for our arm position
         // now collision is just a matter of being close enough to 0...
         double targetyaw   = std::atan2(difference.x, -difference.z) * 180 / M_PI;
         double targetpitch = std::atan2(-difference.y, -difference.z) * 180 / M_PI;
