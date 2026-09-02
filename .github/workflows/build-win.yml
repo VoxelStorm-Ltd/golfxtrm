@@ -1,0 +1,57 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-win-debug:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Cache build
+      uses: actions/cache@v4
+      with:
+        path: build_win/
+        key: win-debug-${{ hashFiles('CMakeLists.txt', '**/*.cpp', '**/*.h') }}
+        restore-keys: |
+          win-debug-
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libboost1.83-all-dev mingw-w64-i686-dev gcc-mingw-w64-i686 g++-mingw-w64-i686 binutils-mingw-w64-i686
+    - name: Build
+      run: |
+        cmake -S . -B build_win -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build_win --parallel "$(nproc)"
+
+  build-win-release:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Cache build
+      uses: actions/cache@v4
+      with:
+        path: build_win_rel/
+        key: win-release-${{ hashFiles('CMakeLists.txt', '**/*.cpp', '**/*.h') }}
+        restore-keys: |
+          win-release-
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libboost1.83-all-dev mingw-w64-i686-dev gcc-mingw-w64-i686 g++-mingw-w64-i686 binutils-mingw-w64-i686
+    - name: Build
+      run: |
+        cmake -S . -B build_win_rel -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_BUILD_TYPE=Release
+        cmake --build build_win_rel --parallel "$(nproc)"
+    - name: Publish release
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-GolfXTRM
+        path: bin/Win32_Release/GolfXTRM/GolfXTRM.exe
+        if-no-files-found: error
