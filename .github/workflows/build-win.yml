@@ -52,8 +52,12 @@ jobs:
     - name: Package release
       run: |
         cmake -E make_directory package/GolfXTRM
+        cmake -E make_directory package/GolfXTRM/assets
         cmake -E copy bin/Win32_Release/GolfXTRM/GolfXTRM.exe package/GolfXTRM/GolfXTRM.exe
         cmake -E copy irrKlang.dll package/GolfXTRM/irrKlang.dll
+        cmake -E copy *.ogg package/GolfXTRM
+        cmake -E copy "GolfXTRM splash screen.png" package/GolfXTRM
+        cmake -E copy assets/raptor.obj package/GolfXTRM/assets/raptor.obj
         cmake -E chdir package cmake -E tar cf ../GolfXTRM-windows.zip --format=zip GolfXTRM
     - name: Upload release artifact
       uses: actions/upload-artifact@v4
