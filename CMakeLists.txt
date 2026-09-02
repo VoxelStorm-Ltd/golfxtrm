@@ -65,7 +65,7 @@ else()
   set(GOLFXTRM_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif()
 
-set(GOLFXTRM_SOURCES
+add_executable(GolfXTRM
   ashtree.cpp
   firtree.cpp
   golfball.cpp
@@ -103,8 +103,6 @@ set(GOLFXTRM_SOURCES
   version.h
   worldcomponents.h
 )
-
-add_executable(GolfXTRM ${GOLFXTRM_SOURCES})
 
 set_target_properties(GolfXTRM PROPERTIES
   OUTPUT_NAME_DEBUG "GolfXTRM debug"
