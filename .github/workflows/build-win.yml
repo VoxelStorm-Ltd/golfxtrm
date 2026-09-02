@@ -49,9 +49,37 @@ jobs:
       run: |
         cmake -S . -B build_win_rel -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_BUILD_TYPE=Release
         cmake --build build_win_rel --parallel "$(nproc)"
-    - name: Publish release
+    - name: Upload release artifact
       uses: actions/upload-artifact@v4
       with:
         name: windows-GolfXTRM
         path: bin/Win32_Release/GolfXTRM/GolfXTRM.exe
         if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build-win-release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+    - name: Download release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-GolfXTRM
+        path: release
+    - name: Create GitHub release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+      run: |
+        release_tag="release-${GITHUB_SHA::7}"
+        if gh release view "$release_tag" >/dev/null 2>&1; then
+          echo "Release $release_tag already exists"
+        else
+          gh release create "$release_tag" \
+            release/GolfXTRM.exe \
+            --target "$GITHUB_SHA" \
+            --title "GolfXTRM ${GITHUB_SHA::7}" \
+            --generate-notes
+        fi
