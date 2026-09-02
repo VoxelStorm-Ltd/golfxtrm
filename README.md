@@ -11,7 +11,7 @@ Features
 - Trees grow realistically, in real-time. Of course, that’s very slow - you’d have to leave the computer running for a very long time to see it.
 - Time is sped up 120x, so 1 second = 2 minutes in-game. A day lasts about 12 minutes, but you’d have to leave the game running for about 3 days to see the winter snow. The ball is of course very hard to find in the snow.
 
-The latest build can be downloaded from this repository's automated [https://github.com/VoxelStorm-Ltd/golfxtrm/releases](releases).
+The latest build can be downloaded from this repository's automated [releases](https://github.com/VoxelStorm-Ltd/golfxtrm/releases)
 
 The original edition is available at https://golfxtrm.com or https://voxelstorm.itch.io/golfxtrm
 
