@@ -11,6 +11,11 @@ Features
 - Trees grow realistically, in real-time. Of course, that’s very slow - you’d have to leave the computer running for a very long time to see it.
 - Time is sped up 120x, so 1 second = 2 minutes in-game. A day lasts about 12 minutes, but you’d have to leave the game running for about 3 days to see the winter snow. The ball is of course very hard to find in the snow.
 
+The latest build can be downloaded from this repository's automated releases.
+
+The original edition is available on Itch.io:
+
+<iframe style="border:0;width:100%;max-width:700px;height:165px" src="https://itch.io/embed/16807?linkback=true&amp;border_width=0&amp;bg_color=333333&amp;fg_color=C3D7FA&amp;link_color=7690C9"></iframe>
 
 ## Controls
 
