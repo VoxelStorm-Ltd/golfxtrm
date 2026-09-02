@@ -13,9 +13,7 @@ Features
 
 The latest build can be downloaded from this repository's automated releases.
 
-The original edition is available on Itch.io:
-
-<iframe style="border:0;width:100%;max-width:700px;height:165px" src="https://itch.io/embed/16807?linkback=true&amp;border_width=0&amp;bg_color=333333&amp;fg_color=C3D7FA&amp;link_color=7690C9"></iframe>
+The original edition is available at https://voxelstorm.itch.io/golfxtrm
 
 ## Controls
 
