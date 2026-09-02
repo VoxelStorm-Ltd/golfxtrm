@@ -58,7 +58,7 @@ cmake --build build/debug --parallel
 wine 'bin/Win32_Debug/GolfXTRM debug.exe'
 ```
 
-For a Release build (`-Ofast`, LTO, profiling flags, stripping, `INTRO`, and `NDEBUG`):
+For a Release build (`-Ofast`, LTO, stripping, `INTRO`, and `NDEBUG`):
 
 ```sh
 cmake -S . -B build/release \

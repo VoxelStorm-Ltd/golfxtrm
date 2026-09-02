@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 project(GolfXTRM LANGUAGES CXX)
 
-# The CodeBlocks project defines Debug and Release targets and defaults to
-# Release. Keep the same configurations for both single- and multi-config
-# generators.
 get_property(_is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(_is_multi_config)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING
@@ -68,8 +65,6 @@ else()
   set(GOLFXTRM_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 endif()
 
-# Mirrors the retained <Unit> entries in golf client.cbp. Headers are included
-# so IDE generators expose the same project files as CodeBlocks.
 set(GOLFXTRM_SOURCES
   ashtree.cpp
   firtree.cpp
@@ -111,8 +106,6 @@ set(GOLFXTRM_SOURCES
 
 add_executable(GolfXTRM ${GOLFXTRM_SOURCES})
 
-# CodeBlocks creates a console executable named "GolfXTRM debug" for Debug,
-# and a GUI executable named "GolfXTRM" for Release.
 set_target_properties(GolfXTRM PROPERTIES
   OUTPUT_NAME_DEBUG "GolfXTRM debug"
   OUTPUT_NAME_RELEASE "GolfXTRM"
@@ -131,7 +124,6 @@ target_include_directories(GolfXTRM SYSTEM PRIVATE
   ${GOLFXTRM_BOOST_INCLUDE_DIRS}
 )
 
-# Global and configuration-specific compiler settings from the CBP.
 target_compile_options(GolfXTRM PRIVATE
   -Wall
   -msse2
@@ -147,11 +139,6 @@ target_compile_options(GolfXTRM PRIVATE
   $<$<CONFIG:Release>:-fgcse-after-reload>
   $<$<CONFIG:Release>:-fsched-spec-load>
   $<$<CONFIG:Release>:-fsched-spec-load-dangerous>
-  $<$<CONFIG:Release>:-fprofile-generate>
-  $<$<CONFIG:Release>:-fbranch-probabilities>
-  $<$<CONFIG:Release>:-fprofile-arcs>
-  $<$<CONFIG:Release>:-fprofile-use>
-  $<$<CONFIG:Release>:-fprofile-values>
   $<$<CONFIG:Release>:-fsched2-use-traces>
   $<$<CONFIG:Release>:-fpeel-loops>
   $<$<CONFIG:Release>:-funroll-loops>
@@ -165,25 +152,19 @@ target_compile_definitions(GolfXTRM PRIVATE
   $<$<CONFIG:Release>:NDEBUG>
 )
 
-# Static MinGW runtime linkage is used by both original targets. The remaining
-# options belong only to the release target.
 target_link_options(GolfXTRM PRIVATE
   -static
   -static-libgcc
   -static-libstdc++
 
   $<$<CONFIG:Release>:-s>
-  $<$<CONFIG:Release>:-fprofile-arcs>
   $<$<CONFIG:Release>:-fuse-linker-plugin>
   $<$<CONFIG:Release>:-flto>
   $<$<CONFIG:Release>:-funsafe-math-optimizations>
 )
 
-# Preserve the CBP's bundled-library order. These archives target 32-bit
-# MinGW, so a matching compiler/toolchain is required for a successful link.
 set(GOLFXTRM_LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
 target_link_libraries(GolfXTRM PRIVATE
-  $<$<CONFIG:Release>:gcov>
   "${GOLFXTRM_LIB_DIR}/libirrKlang.a"
   "${GOLFXTRM_LIB_DIR}/libSOIL.a"
   "${GOLFXTRM_LIB_DIR}/libglew32.a"
