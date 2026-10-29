@@ -1,7 +1,10 @@
-git_version.h
-Thumbs.db
+obj
+bin
 *.depend
 *.layout
-bin/
-obj/
-build/
+config.ini
+Thumbs.db
+.DS_Store
+git_version.h
+libvoxelstorm_update.lock
+.codex
